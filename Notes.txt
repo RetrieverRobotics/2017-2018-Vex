@@ -1,0 +1,46 @@
+// NOTES FOR WIRING:
+//
+// Y's:
+// port | name
+// -------------
+// 2		|	driveL
+// 4A		|	Swing
+// 6C		|	driveR
+// 9		|	mogo
+//
+// -----------DRIVE------------
+// farthest back drive motors are red to red
+// the next drive motors are red to black
+//
+// -----------LIFT------------
+// All wires red to red
+//
+// -----------SWING------------
+// right motor is red to black
+// left motor is red to red
+//
+// -----------MOGO------------
+// right motor is red to black
+// left motor is red to red
+
+
+// PROGRAMMING NOTES:
+// -----------SWING------------
+// positive is up/intake
+//
+// -----------MOGO------------
+// positive is up/intake
+
+GYRO:
+CCW positive
+0 starting offset is facing positive Y
+heading: trig style i.e. straight ahead is 90
+
+FIELD:
+Positive Y: away from operators
+Positive X: to the right of operators
+
+Working tuning for test setup:
+  armPID.Kp = 0.1; 			// P
+	armPID.Ki = 0.000060; // I
+	armPID.Kd = 7; 				// D
