@@ -4,21 +4,61 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+void smackVcat(){}
+
+void drivePIDsOn(bool on){
+	if(on){
+		// turn drive PIDS back on set to where we are currently
+		driveLPID.target = nMotorEncoder[driveL];
+		driveRPID.target = nMotorEncoder[driveR];
+
+		driveLPID.enabled = true;
+		driveRPID.enabled = true;
+	}
+	else{
+		driveLPID.enabled = false;
+		driveRPID.enabled = false;
+	}
+}
+
+void stackCone(int currStackHeight){
+
+}
+
+void intakeMogo(){
+	motor[mogo] = 127; // positive for in
+	wait1Msec(MOGO_INTAKE_TIME);
+	motor[mogo] = 0;
+}
+
+void extendMogo(){
+	motor[mogo] = -127; // negative for out
+	wait1Msec(MOGO_EXTEND_TIME);
+	motor[mogo] = -50;
+	wait1Msec(MOGO_SECONDARY_WAIT_TIME);
+	motor[mogo] = 0;
+}
+
 void driveIncremental(float distance){
 	// TODO: check if drive PID started, if not start now and end it after
 	// if getTaskPriority(drivePIDTask) > 0:
 	// 		then itsProbablyRunning
+	//distance = distance * DRIVE_TICKS_PER_INCH;
 
 	driveLPID.target = nMotorEncoder[driveL] + distance;
 	driveRPID.target = nMotorEncoder[driveR] + distance;
-
-	waitUntilPIDAtTarget(driveLPID);
-	waitUntilPIDAtTarget(driveRPID);
-
 }
 
-void turnClockwise(float degrees){
+void turnCounterClockwise(float degrees){
+	//turn off distance PIDS so they dont resist
+	drivePIDsOn(false);
+
 	gyroPID.target += degrees;
+
+	waitUntilPIDAtTarget(gyroPID);
+
+	// turn drive PIDS back on
+	drivePIDsOn(true);
 }
 
 void swingTurnLeft(float degrees){
@@ -28,17 +68,25 @@ void swingTurnLeft(float degrees){
 	//driveRPID.target = nMotorEncoder[driveR] + encoderDistance;
 
 	//turn gyro PID back on at the new position
-	gyroPID.target = SensorValue[gyro];
+	//gyroPID.target = getHeading();
 	gyroPID.enabled = true;
 }
 
-void driveAbsolute(float xCoord, float yCoord){
-	int heading = GET_HEADING();
+//void driveAbsolute(float xCoord, float yCoord){
+//	int heading = GET_HEADING();
 
-}
+//}
 
 void turnAbsolute(float degrees){
+	//turn off distance PIDS so they dont resist
+	drivePIDsOn(false);
+
 	gyroPID.target = degrees;
+
+	waitUntilPIDAtTarget(gyroPID);
+
+	// turn drive PIDS back on
+	drivePIDsOn(true);
 }
 
 void setLift(int setPow){
@@ -89,28 +137,51 @@ task coordinateMonitoring(){
 // PID functions
 /////////////////////////////////////////////////////////////
 
+//wait until position at target and velocity = 0
 void waitUntilPIDAtTarget(PIDStruct PIDVar){
-	//wait until position at target and velocity = 0
+	float error;
+	float inputLast = PIDVar.input;
+
+	while(true){
+		wait1Msec(PIDVar.loopTime);
+
+		error = PIDVar.target - PIDVar.input;
+		//if pos within desired range of target
+		if(fabs(error) < PIDVar.errorThreshold){
+			// if the speed is close to 0
+			if(fabs((PIDVar.input-inputLast) / PIDVar.loopTime) < PIDVar.speedThreshold){
+				return; // exit loop
+			}
+		}
+
+		inputLast = PIDVar.input;
+	}
+	return;
 }
 
-void initAllPIDsToZero(){
-	// iterate through each PID variable (drive, lift, etc)
-	for(int i; i < MAX_PID_VARS; i++){
-		PIDVars[i]->debug = false;
-		PIDVars[i]->enabled = true;
-		PIDVars[i]->target = 0;
-		PIDVars[i]->previousError = 0;
-		PIDVars[i]->integral = 0;
-		PIDVars[i]->output = 0;
-		PIDVars[i]->input = 0;
-		PIDVars[i]->Kp = 0;
-		PIDVars[i]->Ki = 0;
-		PIDVars[i]->Kd = 0;
-		PIDVars[i]->integralLimit = 0;
-		PIDVars[i]->integralActiveZone = 0;
-		PIDVars[i]->loopTime = 0;
-	}
-}
+//void initAllPIDsToZero(PIDStruct *PIDVars[7]){
+//	writeDebugStreamLine("here3");
+//	//testerino2->integral = 7778;
+//	// iterate through each PID variable (drive, lift, etc)
+//	for(int i = 0; i < MAX_PID_VARS; i++){
+//		PIDVars[i]->debug = false;
+//		PIDVars[i]->enabled = true;
+//		PIDVars[i]->target = 0;
+//		PIDVars[i]->previousError = 0;
+//		PIDVars[i]->integral = 777777;
+//		PIDVars[i]->output = 0;
+//		PIDVars[i]->input = 0;
+//		PIDVars[i]->errorThreshold = 0;
+//		PIDVars[i]->speedThreshold = 0;
+//		PIDVars[i]->Kp = 0;
+//		PIDVars[i]->Ki = 0;
+//		PIDVars[i]->Kd = 0;
+//		PIDVars[i]->integralLimit = 0;
+//		PIDVars[i]->integralActiveZone = 0;
+//		PIDVars[i]->loopTime = 0;
+//		writeDebugStreamLine("%i",i);
+//	}
+//}
 
 // The heavy lifter for PID tasks
 void updatePIDVar(PIDStruct *PIDVar){
@@ -142,6 +213,10 @@ void updatePIDVar(PIDStruct *PIDVar){
 }
 
 task drivePIDTask(){
+	driveLPID.enabled = true;
+	driveRPID.enabled = true;
+	gyroPID.enabled = true;
+
 	while(true){
 		driveLPID.input = nMotorEncoder[driveL];
 		driveRPID.input = nMotorEncoder[driveR];
@@ -160,29 +235,50 @@ task drivePIDTask(){
 	}
 }
 
+//task globalDrivePIDTask(){
+//	while(true){
+//		globalDrivePID.input = globalXPos;
+
+
+
+//		wait1Msec(globalDrivePID.loopTime);
+//	}
+//}
+
 task armPIDTask(){
+	armPID.enabled = true;
+	//armCrossCouplePID.enabled = true;
+
 	while(true){
-		//current arm height is average of the 2 pots
-		armPID.input = (SensorValue[armPotL] + SensorValue[armPotR]) / 2;
-		armCrossCouplePID.input = SensorValue[armPotL] - SensorValue[armPotR] + ARM_POT_OFFSET;
+		//use left pot for height
+		armPID.input = SensorValue[armPotL];
+		//armCrossCouplePID.input = SensorValue[armPotL] - SensorValue[armPotR] + ARM_POT_OFFSET;
 
 		updatePIDVar(&armPID);
-		updatePIDVar(&armCrossCouplePID);
+		//updatePIDVar(&armCrossCouplePID);
 
-		motor[liftTl] = lim127(armPID.output) + lim127(armCrossCouplePID.output);
-		motor[liftBl] = lim127(armPID.output) + lim127(armCrossCouplePID.output);
+		motor[liftTl] = lim127(armPID.output);// + lim127(armCrossCouplePID.output);
+		motor[liftBl] = lim127(armPID.output);// + lim127(armCrossCouplePID.output);
 
-		motor[liftTr] = lim127(armPID.output) - lim127(armCrossCouplePID.output);
-		motor[liftBr] = lim127(armPID.output) - lim127(armCrossCouplePID.output);
+		motor[liftTr] = lim127(armPID.output);// - lim127(armCrossCouplePID.output);
+		motor[liftBr] = lim127(armPID.output);// - lim127(armCrossCouplePID.output);
 
 		wait1Msec(armPID.loopTime);
 	}
 }
 
 task usrCtrlArmPID(){
+	armCrossCouplePID.enabled = true;
+
 	int setPow = 0;
+	int armPotOffset = 0;
 	while(true){
-		armCrossCouplePID.input = SensorValue[armPotL] - SensorValue[armPotR] + ARM_POT_OFFSET;
+		//armPotOffset = ((SensorValue[armPotL] + SensorValue[armPotR]) / 2) /
+		armCrossCouplePID.input = SensorValue[armPotL] - (1.08*SensorValue[armPotR] - 74);
+		//SensorValue[armPotL] - (SensorValue[armPotR] * 0.93) + armPotOffset;
+
+		// smaller values tilts it right
+		// bigger values tilts it left
 
 		updatePIDVar(&armCrossCouplePID);
 
@@ -194,6 +290,7 @@ task usrCtrlArmPID(){
 		else if(vexRT[Btn5D]){
 			setPow = -127;
 		}
+		//setPow = 127;
 
 		motor[liftTl] = setPow + lim127(armCrossCouplePID.output);
 		motor[liftBl] = setPow + lim127(armCrossCouplePID.output);
@@ -206,6 +303,8 @@ task usrCtrlArmPID(){
 }
 
 task mogoPIDTask(){
+	mogoPID.enabled = true;
+
 	while(true){
 		mogoPID.input = SensorValue[mogoPot];
 		updatePIDVar(&mogoPID);
@@ -216,6 +315,8 @@ task mogoPIDTask(){
 }
 
 task swingPIDTask(){
+	swingPID.enabled = true;
+
 	while(true){
 		swingPID.input = SensorValue[swingPot];
 		updatePIDVar(&swingPID);

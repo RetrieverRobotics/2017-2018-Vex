@@ -31,6 +31,8 @@
 // -----------MOGO------------
 // positive is up/intake
 
+// everything up until now is probably wrong
+
 GYRO:
 CCW positive
 0 starting offset is facing positive Y
@@ -44,3 +46,38 @@ Working tuning for test setup:
   armPID.Kp = 0.1; 			// P
 	armPID.Ki = 0.000060; // I
 	armPID.Kd = 7; 				// D
+
+Potentiometers:
+range of motion roughly 265 degrees, output of 0-4095. ~15.45 ticks per degree
+
+Lift pot testing:
+
+Bottom:
+L: 1190
+R: 1350
+
+Top:
+L: 2890
+R: 2950
+
+Change:
+dL: 1700
+dR: 1600
+
+R - 2950 = .9412(L-2890)
+
+R = .9412L + 230
+
+.9412L = R - 230
+
+L = 1.0625R - 244
+
+L - 2890 = 1.0625(R - 2950)
+L = m*R - m*2950 + 2890
+
+/////////////////////////////////
+// INTEGRATED ENCODERS
+/////////////////////////////////
+- Measures 627.2 ticks per revolution of the output shaft in High Torque Configuration
+- Measures 392 ticks per revolution of the output shaft in High Speed Configuration
+- Measures 261.333 ticks per revolution of the output shaft in Turbo Gear Configuration
