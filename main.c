@@ -5,12 +5,11 @@
 #pragma config(Sensor, in4,    mogoPot,        sensorPotentiometer)
 #pragma config(Sensor, in5,    swingPot,       sensorPotentiometer)
 #pragma config(Sensor, dgtl1,  claw,           sensorDigitalOut)
-#pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign )
 #pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign )
-#pragma config(Motor,  port2,           driveL,        tmotorVex393HighSpeed_MC29, openLoop, encoderPort, I2C_1)
+#pragma config(Motor,  port2,           liftTr,        tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port3,           liftBl,        tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port4,           swing,         tmotorVex393HighSpeed_MC29, openLoop)
-#pragma config(Motor,  port5,           liftTr,        tmotorVex393_MC29, openLoop, reversed)
+#pragma config(Motor,  port5,           driveL,        tmotorVex393HighSpeed_MC29, openLoop, reversed)
 #pragma config(Motor,  port6,           driveR,        tmotorVex393HighSpeed_MC29, openLoop, encoderPort, I2C_2)
 #pragma config(Motor,  port7,           liftTl,        tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port8,           liftBr,        tmotorVex393_MC29, openLoop, reversed)
@@ -239,7 +238,7 @@ task usercontrol()
 	//startTask(usrCtrlArmPID);
 
 	armPID.target = SensorValue[armPotL];
-	startTask(armPIDTask);
+	//startTask(armPIDTask);
 
 	while ("Kent is driving")
 	{
@@ -250,6 +249,8 @@ task usercontrol()
 			//--------------------------------------------------------------------------------
 
 			// tank drive
+			//motor[driveL] = 127;
+			//motor[driveR] = 127;
 			motor[driveL] = vexRT[Ch3];
 			motor[driveR] = vexRT[Ch2];
 
