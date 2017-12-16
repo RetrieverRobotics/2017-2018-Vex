@@ -81,3 +81,60 @@ L = m*R - m*2950 + 2890
 - Measures 627.2 ticks per revolution of the output shaft in High Torque Configuration
 - Measures 392 ticks per revolution of the output shaft in High Speed Configuration
 - Measures 261.333 ticks per revolution of the output shaft in Turbo Gear Configuration
+
+
+
+gyroPID.Kp = .7; // P
+	gyroPID.Ki = .0015; // I
+	gyroPID.Kd = 40; // D
+  80./kp
+  @ 10 ms loop
+
+
+  gyroPID.Kp = 1.2; // P
+	gyroPID.Ki = .003; // I
+	gyroPID.Kd = 40; // D
+
+
+  gyroPID.Kp = 1.2; // P
+	gyroPID.Ki = 0.003;//.003; // I
+	gyroPID.Kd = 70;//40; // D
+  @20 ms
+
+
+  gyroPID.Kp = .8; // P
+	gyroPID.Ki = .005; // I
+	gyroPID.Kd = 10; // D
+  @50 ms
+
+  GOOD:
+  gyroPID.Kp = 1; // P
+	gyroPID.Ki = .002; // I
+	gyroPID.Kd = 80; // D
+  @50
+
+  driveLPID.Kp = 1.8; 		// P
+	driveLPID.Ki = 0.0025; // I
+	driveLPID.Kd = 50; 			// D
+  @10
+
+  GOOD:
+  driveLPID.Kp = 1.2; 		// P
+	driveLPID.Ki = .002;//0.002; // I
+	driveLPID.Kd = 90;
+  @50
+
+  GOOD CONBO:
+  driveLPID.Kp = .75; 		// P
+	driveLPID.Ki = .0005;//0.002; // I
+	driveLPID.Kd = 70;//80;
+  gyroPID.Kp = 1; // P
+	gyroPID.Ki = .002; // I
+	gyroPID.Kd = 80; // D
+  @50
+
+ARM:
+  lowest:
+  lower bar is 6" off ground
+  highest:
+  59" off the ground
