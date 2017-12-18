@@ -21,45 +21,6 @@
 #pragma platform(VEX2)
 #pragma competitionControl(Competition)
 
-///////////////////////////////////////
-// Global variables
-///////////////////////////////////////
-
-typedef struct PIDStruct{
-	bool debug;
-	bool enabled;
-	float target;
-	float previousError;
-	float integral;
-	int 	output;
-	float input;
-	float errorThreshold;
-	float speedThreshold;
-
-	float Kp;
-	float Ki;
-	float Kd;
-	float integralLimit;
-	float integralActiveZone;
-
-	int 	loopTime;
-
-}PIDStruct;
-
-PIDStruct driveLPID;
-PIDStruct driveRPID;
-PIDStruct gyroPID;
-PIDStruct armPID;
-PIDStruct armCrossCouplePID;
-PIDStruct mogoPID;
-PIDStruct swingPID;
-#define MAX_PID_VARS 7
-
-int autonSelection = 0;
-float globalXPos = 0;
-float globalYPos = 0;
-float startingRotationOffset = 90; // 90 is facing positive y
-
 //Main competition background code...do not modify!
 #include "Vex_Competition_Includes.c"
 //#include "vex.c"
@@ -67,14 +28,11 @@ float startingRotationOffset = 90; // 90 is facing positive y
 #include "variablesForKent.c"
 #include "functions.c"
 
-//void pre_auton(){
-//	clearDebugStream();
-//	bStopTasksBetweenModes = true;
-//	writeDebugStreamLine("here");
-//}
+///////////////////////////////////////////////////////////////////////////////////
+// PRE AUTON
+///////////////////////////////////////////////////////////////////////////////////
 
-void pre_auton()
-{
+void pre_auton(){
 
 	bDisplayCompetitionStatusOnLcd = false;
 	bStopTasksBetweenModes = true;
@@ -85,8 +43,8 @@ void pre_auton()
 	displayLCDCenteredString(0, "yeet");
 	bLCDBacklight = true;
 	short nLCDButtons_last = 0;
-	const int numAutons = 2;
-	string selectionString[numAutons] = {"777default", "eyb0ss"};
+	const int numAutons = 3;
+	string selectionString[numAutons] = {"Default", "Blue Preloads", "Red Preloads"};
 
 	// only run if a button is pushed to prevent hanging up in a reset
 	if(nLCDButtons > 0){
@@ -120,7 +78,7 @@ void pre_auton()
 		SensorType[gyro] = sensorGyro;
 		wait1Msec(1300);
 		//Adjust SensorScale to correct the scaling for your gyro
-		SensorScale[gyro] = 138;
+		SensorScale[gyro] = 138.5;//138.85;//138;
 		clearLCDLine(0);
 		clearLCDLine(1);
 	}//end buttons > 0
@@ -130,23 +88,20 @@ void pre_auton()
 	bLCDBacklight = false;
 }//END pre_auton
 
+///////////////////////////////////////////////////////////////////////////////////
+// AUTONOMOUS
+///////////////////////////////////////////////////////////////////////////////////
 
-task autonomous()
-{
+task autonomous(){
 	writeDebugStreamLine("auton");
 	//zero encoders
 	nMotorEncoder[driveR] = 0;
 	nMotorEncoder[driveL]	= 0;
-
-	//startTask(coordinateMonitoring);
-	////armPID.target = STARTING_HEIGHT;
-	//startTask(armPIDTask);
-	//startTask(drivePIDTask);
 	clearTimer(T1);
 
 	// Blue preloads auton
-	if(true){//autonSelection == BLUE_PRELOAD){//make separate function
-		startingRotationOffset = -90; // facing positive x towards mogo
+	if(true){//autonSelection == BLUE_PRELOAD){//make separate function or file
+		startingRotationOffset = 0; // facing positive x towards mogo
 		SensorValue[claw] = CLAW_CLOSE;
 		// startTask(coordinateMonitoring);
 		armPID.target = ARM_SCHMEDIUM;
@@ -154,16 +109,15 @@ task autonomous()
 		gyroPID.target = 0;
 		startTask(drivePIDTask);
 		swingPID.target = SWING_IN;
-		//startTask(swingPIDTask);
+		startTask(swingPIDTask);
 
 		//raise arm and put out mobile goal thing all while driving forward
 		//arm already rising
 		driveIncremental(48); // forward 48 inches
 		wait1Msec(300);
-		//extendMogo();
+		extendMogo();
 
-		waitUntilPIDAtTarget(driveLPID);
-		//waitUntilPIDAtTarget(driveRPID);
+		waitForPID(drivePID);
 
 		//once at destination, pick up mobile goal
 		intakeMogo();
@@ -172,9 +126,8 @@ task autonomous()
 		driveIncremental(-12); // backward 12 inches
 		//armPID.target = STARTING_HEIGHT; // lower arm to place cone
 
-		waitUntilPIDAtTarget(driveLPID);
-		waitUntilPIDAtTarget(driveRPID);
-		waitUntilPIDAtTarget(armPID);
+		waitForPID(drivePID);
+		waitForPID(armPID);
 
 		// drop cone
 		SensorValue[claw] = CLAW_OPEN;
@@ -199,12 +152,12 @@ task autonomous()
 		// do the first few runs until arm differential is needed
 		for(int i = 0; i < 2; i++){
 			swingPID.target = SWING_OUT;
-			waitUntilPIDAtTarget(swingPID);
+			waitForPID(swingPID);
 			wait1Msec(200); // insert reasonable wait time for humans to place cone
 			SensorValue[claw] = CLAW_CLOSE;
 
 			swingPID.target = SWING_IN;
-			waitUntilPIDAtTarget(swingPID);
+			waitForPID(swingPID);
 			SensorValue[claw] = CLAW_OPEN;
 		}
 
@@ -213,8 +166,8 @@ task autonomous()
 		for(int i = 0; i < 13; i++){
 			swingPID.target = SWING_OUT;
 			armPID.target = ARM_PRELOAD_HEIGHT;
-			waitUntilPIDAtTarget(swingPID);
-			waitUntilPIDAtTarget(armPID);
+			waitForPID(swingPID);
+			waitForPID(armPID);
 			wait1Msec(200); // insert reasonable wait time for humans to place cone
 			SensorValue[claw] = CLAW_CLOSE;
 
@@ -223,8 +176,8 @@ task autonomous()
 			// wait until arm a specific distance from target
 			//while(fabs(armPID.target - armPID.input) < SWING_ACTIVATE_ON_ARM_VAL);
 			swingPID.target = SWING_IN;
-			waitUntilPIDAtTarget(swingPID);
-			waitUntilPIDAtTarget(armPID);
+			waitForPID(swingPID);
+			waitForPID(armPID);
 			SensorValue[claw] = CLAW_OPEN;
 		}
 
@@ -232,159 +185,117 @@ task autonomous()
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+// USERCONTROL
+///////////////////////////////////////////////////////////////////////////////////
 
-task usercontrol()
-{
-	startTask(usrCtrlArmPID);
+task usercontrol(){
+	writeDebugStreamLine("usrctrl");
+
+	//armPID.target = 2000;//(SensorValue[armPotL] + scalePotRToL(SensorValue[armPotR])) / 2;
+	//startTask(usrCtrlArmPID);
+
+	//driveIncremental(12);
+	//drivePID.target = 300;
 	//gyroPID.target = 0;
-	//driveIncremental(24);
+	//gyroPID.target = -900;
 	//startTask(drivePIDTask);
-	////startTask(autonomous);
-	while(true){
-		wait1Msec(1000);
-	}
+	//startTask(autonomous);
+	//while(true){ wait1Msec(1000); } // for testing code above here
+
 	clearTimer(T1);
-	int timeKeked = 0;
-	bool wasHereBefore = false;
-	bool DaBaDeeDaBaDai = true;
+	bool bSwingManual = false;
 	nMotorEncoder[driveL] = 0;
 	nMotorEncoder[driveR] = 0;
 
-	//motor[port10] = 127;
-	//setLift(127);
-	//motor[liftTr] = 127;
-	//motor[liftBr] = 127;
-	//wait1Msec(2000);
+	// everything for the lift in usrctrl is handled in this task
+	armPID.target = (SensorValue[armPotL] + scalePotRToL(SensorValue[armPotR])) / 2;
+	startTask(usrCtrlArmPID);
 
-	//startTask(usrCtrlArmPID);
+	swingPID.target = SensorValue[swingPot];
+	//startTask(swingPIDTask);
 
-	armPID.target = SensorValue[armPotL];
-	//startTask(armPIDTask);
 
-	driveLPID.target = 300;
-	//driveRPID.target = 300;
-	gyroPID.target = 0;
-
-	//startTask(drivePIDTask);
-	//waitUntilPIDAtTarget(gyroPID);
-	writeDebugStreamLine("usrctrl");
-
-	swingPID.target = SWING_IN;
-	//startTask(swingPID);
-	//extendMogo();
-	//wait1Msec(1000);
-	//intakeMogo();
-
-	//SensorValue[claw] = 1;
-	//wait1Msec(1000);
-	//SensorValue[claw] = 0;
-	//wait1Msec(1000);
-
-	//for(int i = 0; i< 50; i++){
-	//	SensorValue[claw] = 0;
-	//	wait1Msec(250);
-	//	SensorValue[claw] = 1;
-	//	wait1Msec(250);
-	//}
-
-	while ("Kent is driving")
-	{
-		if("we haven't won yet"){
+	while ("Kent is driving"){
+		if("we haven't won yet")
 			smackVcat();
-			//--------------------------------------------------------------------------------
-			// Drive
-			//--------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------
+		// Drive
+		//--------------------------------------------------------------------------------
 
-			// tank drive
-			//motor[driveL] = 127;
-			//motor[driveR] = 127;
-			//motor[driveL] = vexRT[Ch3];
-			//motor[driveR] = vexRT[Ch2];
+		// tank drive
+		motor[driveL] = vexRT[Ch3];
+		motor[driveR] = vexRT[Ch2];
 
-			//--------------------------------------------------------------------------------
-			// Lift
-			//--------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------
+		// Swing
+		//--------------------------------------------------------------------------------
 
-			// up on 5U
-			if(vexRT[Btn5U]){
-				armPID.enabled = false;
-				setLift(127);
-				wasHereBefore = false;
-			}
-			// down on 5D
-			else if(vexRT[Btn5D]){
-				armPID.enabled = false;
-				setLift(-127);
-				wasHereBefore = false;
-			}
-			else{
-        // clear timer once immediately after button release
-				if(!wasHereBefore){
-					clearTimer(T1);
-					wasHereBefore = true;
-					DaBaDeeDaBaDai = true; // set up to turn on pid later
-				}
-
-				// set armPID target to current sensorValue only once after the desired time passes
-				if(DaBaDeeDaBaDai && time1[T1] > 500){
-					armPID.target = SensorValue[armPotL];
-					armPID.enabled = true;
-					DaBaDeeDaBaDai = false;
-				}
-			}
-
-			//--------------------------------------------------------------------------------
-			// Swing
-			//--------------------------------------------------------------------------------
-
-			// up on 8U
-			if(vexRT[Btn8U]){
-				//make swing in button
-				//swingPID.target = SWING_IN;
+		//TODO: L for manual, R for 90
+		// if manual control is selected
+		if(bSwingManual){
+			swingPID.enabled = false;
+			// swing in on 8D
+			if(vexRT[Btn8D]){
 				motor[swing] = 127;
 			}
-			// down on 8D
-			else if(vexRT[Btn8D]){
-				//make swing out button
-				//swingPID.target = SWING_OUT;
+			// swing out on 8U
+			else if(vexRT[Btn8U]){
 				motor[swing] = -127;
 			}
 			else{
-				//remove this
-				//motor[swing] = 0;
+				motor[swing] = 0;
 			}
-
-			//--------------------------------------------------------------------------------
-			// Claw
-			//--------------------------------------------------------------------------------
-
-			// close on 6U
-			if(vexRT[Btn6U]){
-				SensorValue[claw] = 1;
+		}
+		// otherwise use PID control
+		else{
+			swingPID.enabled = true;
+			// in on 8D
+			if(vexRT[Btn8D]){
+				swingPID.target = SWING_IN;
 			}
-			// open on 6D
-			else if(vexRT[Btn6D]){
-				SensorValue[claw] = 0;
+			// out on 8U
+			else if(vexRT[Btn8U]){
+				swingPID.target = SWING_OUT;
 			}
+		}
 
-			//--------------------------------------------------------------------------------
-			// Mogo
-			//--------------------------------------------------------------------------------
+		//--------------------------------------------------------------------------------
+		// Claw
+		//--------------------------------------------------------------------------------
 
-			// in on 7U
-			if(vexRT[Btn7U]){
+		// close on 6U
+		if(vexRT[Btn6U]){
+			SensorValue[claw] = CLAW_CLOSE;
+		}
+		// open on 6D
+		else if(vexRT[Btn6D]){
+			SensorValue[claw] = CLAW_OPEN;
+		}
+
+		//--------------------------------------------------------------------------------
+		// Mogo
+		//--------------------------------------------------------------------------------
+
+		// if arm is below a certain height, dont use mogo
+		if( ((SensorValue[armPotL] + scalePotRToL(SensorValue[armPotR])) / 2) > ARM_BLOCK_MOGO){
+			// in on 7D
+			if(vexRT[Btn7D]){
 				motor[mogo] = 127;
 			}
-			//out on 7D
-			else if(vexRT[Btn7D]){
+			//out on 7U
+			else if(vexRT[Btn7U]){
 				motor[mogo] = -127;
 			}
 			else{
 				motor[mogo] = 0;
 			}
-
-			wait1Msec(10);
 		}
+		else{
+			motor[mogo] = 0;
+		}
+
+		wait1Msec(10);
 
 	}//END while()
 }//END usercontrol()
