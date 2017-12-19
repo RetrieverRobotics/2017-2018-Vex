@@ -57,27 +57,29 @@ void initPIDVars(){
 	gyroPID.speedThreshold = 0.045; // no more than .045 degree per millisecond or 45 degrees per second
 	gyroPID.target = SensorValue[gyro];
 
-	armPID.Kp = 0.4; 			// P
-	armPID.Ki = 0.0002; // I
-	armPID.Kd = 30;//7; 				// D
+	armPID.Kp = .6; 			// P
+	armPID.Ki = 0.0009; // I
+	armPID.Kd = 50;//30;//7; 				// D
 	armPID.enabled = true;
 	armPID.debug = false;
 	armPID.integralLimit = 50;
 	armPID.integralActiveZone = 127./armPID.Kp;
 	armPID.loopTime = 10; // ms
-	armPID.errorThreshold = 10;
-	armPID.speedThreshold = 7;
+	armPID.errorThreshold = 50;
+	armPID.speedThreshold = 0.1;//7;
+	armPID.deadband = 15;
 
-	armCrossCouplePID.Kp = .2;//.1;//.1 			// P
-	armCrossCouplePID.Ki = 0;//0.0005;//0.000060; 	// I
-	armCrossCouplePID.Kd = 10;//20;//40; 				// D
+	armCrossCouplePID.Kp = .1;//.1;//.1 			// P
+	armCrossCouplePID.Ki = 0;//0.0001;//0.000060; 	// I
+	armCrossCouplePID.Kd = 10;//10;//20;//40; 				// D
 	armCrossCouplePID.enabled = true;
-	armCrossCouplePID.debug = false;
+	armCrossCouplePID.debug = true;
 	armCrossCouplePID.integralLimit = 40;
-	armCrossCouplePID.integralActiveZone = 40./armCrossCouplePID.Kp;
+	armCrossCouplePID.integralActiveZone = 20./armCrossCouplePID.Kp;
 	armCrossCouplePID.loopTime = 10; // ms
 	armCrossCouplePID.errorThreshold = 50;
 	armCrossCouplePID.speedThreshold = 10;
+	armCrossCouplePID.deadband = 15;
 
 	swingPID.Kp = .2; // P
 	swingPID.Ki = 0.0001; // I
@@ -89,4 +91,5 @@ void initPIDVars(){
 	swingPID.loopTime = 10; // ms
 	swingPID.errorThreshold = 50;
 	swingPID.speedThreshold = 10;
+	swingPID.deadband = 10;
 }

@@ -186,6 +186,9 @@ void updatePIDVar(PIDStruct *PIDVar){
 	else{
 		PIDVar->output = 0;
 	}
+	if(abs(PIDVar->output) <= PIDVar->deadband){
+		PIDVar->output = 0;
+	}
 }
 
 // wait until position close to target and velocity close to  0
@@ -197,13 +200,15 @@ void waitForPID(PIDStruct PIDVar){
 		wait1Msec(PIDVar.loopTime);
 
 		error = PIDVar.target - PIDVar.input;
-		//writeDebugStream("%f\t", error);
-		//writeDebugStream("%f\n", (PIDVar.input-inputLast) / PIDVar.loopTime);
+		writeDebugStream("%f\t", error);
+		writeDebugStream("%f\n", (PIDVar.input-inputLast) / PIDVar.loopTime);
 
 		//if pos within desired range of target
 		if(fabs(error) < PIDVar.errorThreshold){
 			// if the speed is close to 0
 			if(fabs((PIDVar.input-inputLast) / PIDVar.loopTime) < PIDVar.speedThreshold){
+				//100Msec wait for good measure
+				wait1Msec(100);
 				return; // exit loop
 			}
 		}
@@ -216,7 +221,7 @@ void waitForPID(PIDStruct PIDVar){
 // operates on the average of right and left for distance.
 // uses raw gyro to maintain rotation
 task drivePIDTask(){
-	int lastGyro = SensorValue[gyro];
+	float lastGyro = SensorValue[gyro];
 
 	while(true){
     // average of left and right for average distance travelled.
@@ -270,6 +275,8 @@ task drivePIDTask(){
 // cross coupling to keep heights the same
 // set height with armPID.target
 task armPIDTask(){
+	armCrossCouplePID.target = 0;
+
 	while(true){
 		// average the 2 pots for height
 		armPID.input = (SensorValue[armPotL] + scalePotRToL(SensorValue[armPotR])) / 2;
@@ -294,8 +301,10 @@ task armPIDTask(){
 // takes input from controller to allow for usercontrol
 task usrCtrlArmPID(){
 	int setPow = 0;
+	float inputLast = 0;
 	bool bPrevPressed = false;
 	bool bSetArmHeight = false;
+	armCrossCouplePID.target = 0;
 	clearTimer(T2);
 
 	while(true){
@@ -306,31 +315,40 @@ task usrCtrlArmPID(){
 
 		if(vexRT[Btn5U]){
 			armPID.enabled = false;
+			armCrossCouplePID.enabled = false;
 			setPow = 127;
 			bPrevPressed = true;
 		}
 		// down on 5D
 		else if(vexRT[Btn5D]){
 			armPID.enabled = false;
+			armCrossCouplePID.enabled = false;
 			setPow = -127;
 			bPrevPressed = true;
 		}
 		else{
-      // clear timer once immediately after button release
-			if(bPrevPressed){
-				clearTimer(T2);
-				setPow = 0;
-				bPrevPressed = false;
-				bSetArmHeight = true; // set up to turn on pid later
-			}
+			setPow = 0;
+			//only turn on PIDS if the arm is up
+			if(armPID.input > ARM_BLOCK_MOGO){
+				// clear timer once immediately after button release
+				if(bPrevPressed){
+					clearTimer(T2);
+					bSetArmHeight = true;
+					bPrevPressed = false;
+					//bSetArmHeight = true; // set up to turn on pid later
+				}
 
-			//TODO: make if velocity not close to zero
+				//TODO: make if velocity not close to zero
 
-			// set armPID target to current sensorValue only once after the desired time passes
-			if(bSetArmHeight && time1[T2] > 500){
-				armPID.target = armPID.input;
-				armPID.enabled = true;
-				bSetArmHeight = false;
+				// set armPID target to current sensorValue only once after the desired time passes
+
+				// Record arm height after either speed reaches 0 or .5 sec passes, whichever comes first
+				if(bSetArmHeight && ((fabs((armPID.input-inputLast) / armPID.loopTime) < .05) || time1[T2] > 500)){
+					armPID.target = armPID.input;
+					armPID.enabled = true;
+					armCrossCouplePID.enabled = true;
+					bSetArmHeight = false;
+				}
 			}
 		}
 
@@ -343,6 +361,7 @@ task usrCtrlArmPID(){
 		motor[liftTr] = setPow + lim127(armPID.output) - lim127(armCrossCouplePID.output);
 		motor[liftBr] = setPow + lim127(armPID.output) - lim127(armCrossCouplePID.output);
 
+		inputLast = armPID.input;
 		wait1Msec(armPID.loopTime);
 	}
 }

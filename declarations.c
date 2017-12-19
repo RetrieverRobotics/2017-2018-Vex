@@ -25,6 +25,7 @@ typedef struct PIDStruct{
   float previousError;
   float integral;
   int 	output;
+  int 	deadband;
   float input;
   float errorThreshold;
   float speedThreshold;

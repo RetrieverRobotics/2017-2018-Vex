@@ -138,3 +138,47 @@ ARM:
   lower bar is 6" off ground
   highest:
   59" off the ground
+
+TIME BASED:
+  else{
+  			setPow = 0;
+        // clear timer once immediately after button release
+  			if(bPrevPressed){
+  				clearTimer(T2);
+  				bSetArmHeight = true;
+  				bPrevPressed = false;
+  				//bSetArmHeight = true; // set up to turn on pid later
+  			}
+
+  			//TODO: make if velocity not close to zero
+
+  			// set armPID target to current sensorValue only once after the desired time passes
+  			if(bSetArmHeight && time1[T2] > 500){
+  				armPID.target = armPID.input;
+  				armPID.enabled = true;
+  				armCrossCouplePID.enabled = true;
+  				bSetArmHeight = false;
+  			}
+  		}
+
+SPEED BASED:
+      else{
+			setPow = 0;
+      // clear timer once immediately after button release
+			if(bPrevPressed && fabs((armPID.input-inputLast) / armPID.loopTime) < .05){
+				armPID.target = armPID.input;
+				armPID.enabled = true;
+				armCrossCouplePID.enabled = true;
+				bPrevPressed = false;
+				//bSetArmHeight = true; // set up to turn on pid later
+			}
+
+			//TODO: make if velocity not close to zero
+
+			// set armPID target to current sensorValue only once after the desired time passes
+			//if(bSetArmHeight && time1[T2] > 500){
+			//	armPID.target = armPID.input;
+			//	armPID.enabled = true;
+			//	bSetArmHeight = false;
+			//}
+		}

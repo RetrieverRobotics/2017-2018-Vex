@@ -201,24 +201,39 @@ task usercontrol(){
 	//gyroPID.target = -900;
 	//startTask(drivePIDTask);
 	//startTask(autonomous);
+
+	//armPID.target = 2000;//(SensorValue[armPotL] + scalePotRToL(SensorValue[armPotR])) / 2;
+	//startTask(armPIDTask);
+	//waitForPID(armPID);
 	//while(true){ wait1Msec(1000); } // for testing code above here
 
 	clearTimer(T1);
 	bool bSwingManual = false;
+	bool bSwingToggle = true;
 	nMotorEncoder[driveL] = 0;
 	nMotorEncoder[driveR] = 0;
+	string displayString;
 
 	// everything for the lift in usrctrl is handled in this task
 	armPID.target = (SensorValue[armPotL] + scalePotRToL(SensorValue[armPotR])) / 2;
 	startTask(usrCtrlArmPID);
 
 	swingPID.target = SensorValue[swingPot];
-	//startTask(swingPIDTask);
+	startTask(swingPIDTask);
 
 
 	while ("Kent is driving"){
 		if("we haven't won yet")
 			smackVcat();
+
+		clearLCDLine(0);
+		clearLCDLine(1);
+		//displayLCDCenteredString(0, nAvgBatteryLevel);
+		sprintf(displayString, "Main: %2.2fV", nAvgBatteryLevel/1000.);
+		displayLCDCenteredString(0, displayString);
+		sprintf(displayString, "Backup: %2.2fV", BackupBatteryLevel/1000.);
+		displayLCDCenteredString(1, displayString);
+
 		//--------------------------------------------------------------------------------
 		// Drive
 		//--------------------------------------------------------------------------------
@@ -231,7 +246,17 @@ task usercontrol(){
 		// Swing
 		//--------------------------------------------------------------------------------
 
-		//TODO: L for manual, R for 90
+		//switch between manual and PID for swing on 8L
+		if(vexRT[Btn8L]){
+			if(bSwingToggle){
+				bSwingManual = !bSwingManual;
+				bSwingToggle = false;
+			}
+		}
+		else{
+			bSwingManual = true;
+		}
+
 		// if manual control is selected
 		if(bSwingManual){
 			swingPID.enabled = false;
@@ -257,6 +282,10 @@ task usercontrol(){
 			// out on 8U
 			else if(vexRT[Btn8U]){
 				swingPID.target = SWING_OUT;
+			}
+			// 90 on 8R
+			else if(vexRT[Btn8R]){
+				swingPID.target = SWING_90;
 			}
 		}
 
