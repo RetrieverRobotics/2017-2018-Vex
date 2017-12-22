@@ -12,8 +12,7 @@
 
 // converts values of right pot scaled to left pot
 float scalePotRToL(float rArmPot){
-	return 1.1407*SensorValue[armPotR] - 398.251;
-	//1.5
+	return 1.15*SensorValue[armPotR] - 409;
 }
 
 float getArmHeight(){
@@ -175,6 +174,16 @@ task coordinateMonitoring(){
 	}//END while(true)
 }//END coordinateMonitoring
 
+// tank drive with slew and deadbands to help with overheating
+task driveSlew(){
+	while(true){
+		leftDrive 	= slew(vexRT[Ch3], 	leftDrive,  1);
+		rightDrive 	= slew(vexRT[Ch2], rightDrive, 	1);
+		tankDrive(leftDrive, rightDrive);
+		wait1Msec(DRIVE_SLEW_TIME);
+	}
+}
+
 //----------------------------------------------------------------------------
 // PID tasks and functions
 //----------------------------------------------------------------------------
@@ -200,6 +209,9 @@ void updatePIDVar(PIDStruct *PIDVar){
 		derivative = PIDVar->Kd * (error - PIDVar->previousError) / PIDVar->loopTime; // D
 
 		PIDVar->output = round(proportional + PIDVar->integral + derivative);
+		// deadband
+		PIDVar->output = abs(PIDVar->output) < PIDVar->deadband ? 0 : PIDVar->output;
+
 		PIDVar->previousError = error;
 
 		if(PIDVar->debug){
@@ -208,9 +220,6 @@ void updatePIDVar(PIDStruct *PIDVar){
 	}
 	// if disabled set output to 0
 	else{
-		PIDVar->output = 0;
-	}
-	if(abs(PIDVar->output) <= PIDVar->deadband){
 		PIDVar->output = 0;
 	}
 }
