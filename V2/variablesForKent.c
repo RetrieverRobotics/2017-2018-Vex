@@ -5,8 +5,6 @@
 ////////////////////////////////////////////////////////////////
 
 // etc constants
-typedef float duck;
-duck sploof = 7;
 #define sploof
 
 //uncommenting this will turn off PID control of the arm in usercontrol
@@ -33,6 +31,7 @@ duck sploof = 7;
 #define MOGO_SECONDARY_WAIT_TIME 100
 
 #define DRIVE_DEADBAND 10 // amount of power where drive wont move
+#define DRIVE_SLEW_TIME 7 // update period for drive slew rate
 #define DRIVE_TICKS_PER_INCH 28
 // 392 * (1/pi*D)
 

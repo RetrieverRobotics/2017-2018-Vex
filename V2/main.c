@@ -212,16 +212,17 @@ task usercontrol(){
 	SensorValue[driveREnc] = 0;
 	bool bSwingManual = true;
 	bool bSwingToggle = true;
-	int leftDrive, rightDrive;
 	string displayString;
 
 	armPID.target = getArmHeight() / 2;
 	// everything for the lift in usrctrl is handled in this task
 	startTask(usrCtrlArmPID);
 
+	// everything for the drive in usrctrl handled in this task.
+	startTask(driveSlew);
+
 	swingPID.target = SensorValue[swingPot];
 	startTask(swingPIDTask);
-
 
 	while ("Kent is driving"){
 		if("we haven't won yet")
@@ -234,15 +235,6 @@ task usercontrol(){
 		displayLCDCenteredString(0, displayString);
 		sprintf(displayString, "Backup: %2.2fV", BackupBatteryLevel/1000.);
 		displayLCDCenteredString(1, displayString);
-
-		//--------------------------------------------------------------------------------
-		// Drive
-		//--------------------------------------------------------------------------------
-
-		// tank drive with slew and deadbands to help with overheating
-		leftDrive 	= slew(vexRT[Ch3], 	leftDrive, 	2);
-		rightDrive 	= slew(vexRT[Ch2], rightDrive, 	2);
-		tankDrive(leftDrive, rightDrive);
 
 		//--------------------------------------------------------------------------------
 		// Swing
