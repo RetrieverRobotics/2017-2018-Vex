@@ -19,24 +19,24 @@
 #define Y_COORD 1
 
 typedef struct PIDStruct{
-  bool debug;
-  bool enabled;
-  float target;
-  float previousError;
-  float integral;
-  int 	output;
-  int 	deadband;
-  float input;
-  float errorThreshold;
-  float speedThreshold;
+	bool debug;
+	bool enabled;
+	float target;
+	float previousError;
+	float integral;
+	int 	output;
+	int 	deadband;
+	float input;
+	float errorThreshold;
+	float speedThreshold;
 
-  float Kp;
-  float Ki;
-  float Kd;
-  float integralLimit;
-  float integralActiveZone;
+	float Kp;
+	float Ki;
+	float Kd;
+	float integralLimit;
+	float integralActiveZone;
 
-  int 	loopTime;
+	int 	loopTime;
 
 }PIDStruct;
 

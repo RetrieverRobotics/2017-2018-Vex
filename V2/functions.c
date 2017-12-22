@@ -4,25 +4,42 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+#pragma systemFile // get rid of unused function warnings
+
 //----------------------------------------------------------------------------
 // Helper functions
 //----------------------------------------------------------------------------
 
 // converts values of right pot scaled to left pot
 float scalePotRToL(float rArmPot){
-	return (1.1407*SensorValue[armPotR] - 398.251);
+	return 1.1407*SensorValue[armPotR] - 398.251;
+	//1.5
+}
+
+float getArmHeight(){
+	return (SensorValue[armPotL] + scalePotRToL(SensorValue[armPotR])) / 2;
 }
 
 float getHeading(){
-	return ((SensorValue[gyro] / 10) + startingRotationOffset);
+	return (SensorValue[gyro] / 10) + startingRotationOffset;
 }
 
 float degToGyro(float degrees){
-	return ((degrees - startingRotationOffset) * 10);
+	return (degrees - startingRotationOffset) * 10;
+}
+
+int slew (int value, int lastValue,  int slewRate) {
+	if(abs(value - lastValue) > slewRate) {
+		if(value > lastValue)
+			return lastValue + slewRate;
+		else
+			return lastValue - slewRate;
+	}
+	return value;
 }
 
 //rotates x, y coordinates into new system offset by theta
-float *rotateCoords(float xCoord,float  yCoord,float  theta){
+float *rotateCoords(float xCoord, float yCoord, float theta){
 	float returnCoords[2];
 
 	returnCoords[X_COORD] = xCoord * cos(theta) + yCoord * sin(theta);
@@ -36,10 +53,9 @@ int lim127(int power){
 }
 
 void setLift(int setPow){
-	motor[liftTl] = setPow;
-	motor[liftTr] = setPow;
-	motor[liftBl] = setPow;
-	motor[liftBr] = setPow;
+	motor[liftTL] = setPow;
+	motor[liftBL] = setPow;
+	motor[liftR]	= setPow;
 }
 
 void smackVcat(){}
@@ -47,7 +63,7 @@ void smackVcat(){}
 void drivePIDsOn(bool on){
 	if(on){
 		// turn drive PIDS back on set to where we are currently
-		drivePID.target = (nMotorEncoder[driveL] + nMotorEncoder[driveR]) / 2;
+		drivePID.target = (SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
 
 		drivePID.enabled = true;
 	}
@@ -59,6 +75,14 @@ void drivePIDsOn(bool on){
 //----------------------------------------------------------------------------
 // Movement functions
 //----------------------------------------------------------------------------
+
+void tankDrive(int lPow, int rPow){
+	// account for drive deadbands and set power
+	motor[driveBL] = abs(lPow) < DRIVE_DEADBAND ? 0 : lPow;
+	motor[driveFL] = abs(lPow) < DRIVE_DEADBAND ? 0 : lPow;
+
+	motor[driveR]  = abs(rPow) < DRIVE_DEADBAND ? 0 : lPow;
+}
 
 void stackCone(int currStackHeight){
 
@@ -88,7 +112,7 @@ void driveIncremental(float distance){
 	distance = distance * DRIVE_TICKS_PER_INCH;
 
 	//add distance to current position
-	drivePID.target = ((nMotorEncoder[driveL] + nMotorEncoder[driveR]) / 2) + distance;
+	drivePID.target = ((SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2) + distance;
 }
 
 //unnecessary?
@@ -131,15 +155,15 @@ task coordinateMonitoring(){
 
 	while(true){
 		rotation = getHeading();
-		leftEnc  = nMotorEncoder[driveL];
-		rightEnc = nMotorEncoder[driveR];
+		leftEnc  = SensorValue[driveLEnc];
+		rightEnc = SensorValue[driveREnc];
 
 		deltaLeft  = leftEnc 	- previousLeft;
 		deltaRight = rightEnc - previousRight;
 
 		aveDist = (deltaLeft + deltaRight) / 2; // average distance covered
 
-		//integrate position
+		// integrate position
 
 		globalXPos += aveDist * cosDegrees(rotation);
 		globalYPos += aveDist * sinDegrees(rotation);
@@ -225,7 +249,7 @@ task drivePIDTask(){
 
 	while(true){
     // average of left and right for average distance travelled.
-		drivePID.input = (nMotorEncoder[driveL] + nMotorEncoder[driveR]) / 2;
+		drivePID.input = (SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
 		gyroPID.input = SensorValue[gyro];
 
 		// account for rollover
@@ -240,8 +264,10 @@ task drivePIDTask(){
 
 		// combine PID outputs and limit each pid output to 127
 		// so they have equal influence on the motors
-		motor[driveL] = lim127(drivePID.output) - lim127(gyroPID.output);
-		motor[driveR] = lim127(drivePID.output) + lim127(gyroPID.output);
+		tankDrive(
+			lim127(drivePID.output) - lim127(gyroPID.output),
+			lim127(drivePID.output) + lim127(gyroPID.output)
+		);
 
 		lastGyro = SensorValue[gyro];
 
@@ -286,11 +312,10 @@ task armPIDTask(){
 		updatePIDVar(&armPID);
 		updatePIDVar(&armCrossCouplePID);
 
-		motor[liftTl] = lim127(armPID.output) + lim127(armCrossCouplePID.output);
-		motor[liftBl] = lim127(armPID.output) + lim127(armCrossCouplePID.output);
+		motor[liftTL] = lim127(armPID.output) + lim127(armCrossCouplePID.output);
+		motor[liftBL] = lim127(armPID.output) + lim127(armCrossCouplePID.output);
 
-		motor[liftTr] = lim127(armPID.output) - lim127(armCrossCouplePID.output);
-		motor[liftBr] = lim127(armPID.output) - lim127(armCrossCouplePID.output);
+		motor[liftR] 	= lim127(armPID.output) - lim127(armCrossCouplePID.output);
 
 		wait1Msec(armPID.loopTime);
 	}
@@ -333,9 +358,7 @@ task usrCtrlArmPID(){
 				// clear timer once immediately after button release
 				if(bPrevPressed){
 					clearTimer(T2);
-					bSetArmHeight = true;
-					bPrevPressed = false;
-					//bSetArmHeight = true; // set up to turn on pid later
+					bSetArmHeight = true; // set up to turn on pid later
 				}
 
 				//TODO: make if velocity not close to zero
@@ -350,16 +373,19 @@ task usrCtrlArmPID(){
 					bSetArmHeight = false;
 				}
 			}
+
+			bPrevPressed = false;
 		}
 
+		#ifndef USERCONTROL_ARM_PID_OFF
 		updatePIDVar(&armPID);
 		updatePIDVar(&armCrossCouplePID);
+		#endif
 
-		motor[liftTl] = setPow + lim127(armPID.output) + lim127(armCrossCouplePID.output);
-		motor[liftBl] = setPow + lim127(armPID.output) + lim127(armCrossCouplePID.output);
+		motor[liftTL] = setPow + lim127(armPID.output) + lim127(armCrossCouplePID.output);
+		motor[liftBL] = setPow + lim127(armPID.output) + lim127(armCrossCouplePID.output);
 
-		motor[liftTr] = setPow + lim127(armPID.output) - lim127(armCrossCouplePID.output);
-		motor[liftBr] = setPow + lim127(armPID.output) - lim127(armCrossCouplePID.output);
+		motor[liftR] 	= setPow + lim127(armPID.output) - lim127(armCrossCouplePID.output);
 
 		inputLast = armPID.input;
 		wait1Msec(armPID.loopTime);
@@ -376,3 +402,7 @@ task swingPIDTask(){
 		wait1Msec(swingPID.loopTime);
 	}
 }
+
+#ifdef sploof
+#warning "sploof mode activated"
+#endif

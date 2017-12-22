@@ -35,7 +35,7 @@
 
 GYRO:
 CCW positive
-0 starting offset is facing positive Y
+90 starting offset is facing positive Y
 heading: trig style i.e. straight ahead is 90
 
 FIELD:

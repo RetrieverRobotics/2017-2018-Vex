@@ -7,6 +7,7 @@
 // etc constants
 typedef float duck;
 duck sploof = 7;
+#define sploof
 
 #define COORDINATE_MONITORING_PERIOD 5 // ms
 
@@ -64,7 +65,7 @@ void initPIDVars(){
 	armPID.debug = false;
 	armPID.integralLimit = 50;
 	armPID.integralActiveZone = 127./armPID.Kp;
-	armPID.loopTime = 10; // ms
+	armPID.loopTime = 50; // ms
 	armPID.errorThreshold = 50;
 	armPID.speedThreshold = 0.1;//7;
 	armPID.deadband = 15;
@@ -76,7 +77,7 @@ void initPIDVars(){
 	armCrossCouplePID.debug = true;
 	armCrossCouplePID.integralLimit = 40;
 	armCrossCouplePID.integralActiveZone = 20./armCrossCouplePID.Kp;
-	armCrossCouplePID.loopTime = 10; // ms
+	armCrossCouplePID.loopTime = 50; // ms
 	armCrossCouplePID.errorThreshold = 50;
 	armCrossCouplePID.speedThreshold = 10;
 	armCrossCouplePID.deadband = 15;
