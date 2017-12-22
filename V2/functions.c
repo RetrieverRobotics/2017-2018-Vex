@@ -176,11 +176,8 @@ task coordinateMonitoring(){
 
 // tank drive with slew and deadbands to help with overheating
 task driveSlew(){
-<<<<<<< HEAD
 	int leftDrive;
 	int rightDrive;
-=======
->>>>>>> 11fea7a28570f2c556c12a2685044684d8c9310b
 	while(true){
 		leftDrive 	= slew(vexRT[Ch3], 	leftDrive,  1);
 		rightDrive 	= slew(vexRT[Ch2], rightDrive, 	1);
