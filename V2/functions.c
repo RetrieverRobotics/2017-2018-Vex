@@ -15,6 +15,7 @@ float scalePotRToL(float rArmPot){
 	return 1.15*SensorValue[armPotR] - 409;
 }
 
+// average the L&R pots for arm height
 float getArmHeight(){
 	return (SensorValue[armPotL] + scalePotRToL(SensorValue[armPotR])) / 2;
 }
@@ -340,12 +341,12 @@ task usrCtrlArmPID(){
 	float inputLast = 0;
 	bool bPrevPressed = false;
 	bool bSetArmHeight = false;
+	float deltaHeight, lastDeltaHeight;
 	armCrossCouplePID.target = 0;
 	clearTimer(T2);
 
 	while(true){
-		// average the 2 pots for height
-		armPID.input = (SensorValue[armPotL] + scalePotRToL(SensorValue[armPotR])) / 2;
+		armPID.input = getArmHeight();
 		// cross couple input is the difference between arm heights
 		armCrossCouplePID.input = SensorValue[armPotL] - scalePotRToL(SensorValue[armPotR]);
 
@@ -370,19 +371,20 @@ task usrCtrlArmPID(){
 				if(bPrevPressed){
 					clearTimer(T2);
 					bSetArmHeight = true; // set up to turn on pid later
+					lastDeltaHeight = armPID.input-inputLast;
 				}
 
-				//TODO: make if velocity not close to zero
+				deltaHeight = armPID.input-inputLast;
 
-				// set armPID target to current sensorValue only once after the desired time passes
-
-				// Record arm height after either speed reaches 0 or .5 sec passes, whichever comes first
-				if(bSetArmHeight && ((fabs((armPID.input-inputLast) / armPID.loopTime) < .05) || time1[T2] > 500)){
+				// look for local extrema of the height function and record position there
+				// timeout after 500 ms
+				if( bSetArmHeight && (sgn(deltaHeight)!=sgn(lastDeltaHeight) || deltaHeight==0 || time1[T2]>500) ){
 					armPID.target = armPID.input;
 					armPID.enabled = true;
 					armCrossCouplePID.enabled = true;
 					bSetArmHeight = false;
 				}
+				lastDeltaHeight = deltaHeight;
 			}
 
 			bPrevPressed = false;

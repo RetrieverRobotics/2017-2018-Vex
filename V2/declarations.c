@@ -11,6 +11,7 @@
 
 #define DEFAULT 0
 #define BLUE_PRELOAD 1
+#define RED_PRELOAD 2
 
 #define CLAW_OPEN 0
 #define CLAW_CLOSE 1

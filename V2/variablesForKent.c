@@ -19,7 +19,7 @@
 
 #define ARM_SCHMEDIUM 1300
 #define ARM_PRELOAD_HEIGHT 1300
-#define ARM_BLOCK_MOGO 1100
+#define ARM_BLOCK_MOGO 1200
 #define ARM_TICKS_PER_INCH 38
 
 #define SWING_IN 3400
@@ -57,7 +57,7 @@ void initPIDVars(){
 	gyroPID.integralLimit = 127;
 	gyroPID.integralActiveZone = 127./gyroPID.Kp;
 	gyroPID.loopTime = drivePID.loopTime;//50; // ms
-	gyroPID.errorThreshold = 50; // 5 degree of error
+	gyroPID.errorThreshold = 20; // 2 degree of error
 	gyroPID.speedThreshold = 0.045; // no more than .045 degree per millisecond or 45 degrees per second
 	gyroPID.target = SensorValue[gyro];
 
@@ -80,7 +80,7 @@ void initPIDVars(){
 	armCrossCouplePID.debug = true;
 	armCrossCouplePID.integralLimit = 40;
 	armCrossCouplePID.integralActiveZone = 20./armCrossCouplePID.Kp;
-	armCrossCouplePID.loopTime = 50; // ms
+	armCrossCouplePID.loopTime = armPID.loopTime; // ms
 	armCrossCouplePID.errorThreshold = 50;
 	armCrossCouplePID.speedThreshold = 10;
 	armCrossCouplePID.deadband = 15;

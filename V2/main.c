@@ -192,7 +192,7 @@ task autonomous(){
 task usercontrol(){
 	writeDebugStreamLine("usrctrl");
 
-	//armPID.target = 2000;//getArmHeight() / 2;
+	//armPID.target = 2000;//getArmHeight();
 	//startTask(usrCtrlArmPID);
 
 	//driveIncremental(12);
@@ -202,7 +202,7 @@ task usercontrol(){
 	//startTask(drivePIDTask);
 	//startTask(autonomous);
 
-	//armPID.target = 2000;//getArmHeight() / 2;
+	//armPID.target = 2000;//getArmHeight();
 	//startTask(armPIDTask);
 	//waitForPID(armPID);
 	//while(true){ wait1Msec(1000); } // for testing code above here
@@ -214,7 +214,7 @@ task usercontrol(){
 	bool bSwingToggle = true;
 	string displayString;
 
-	armPID.target = getArmHeight() / 2;
+	armPID.target = getArmHeight();
 	// everything for the lift in usrctrl is handled in this task
 	startTask(usrCtrlArmPID);
 
