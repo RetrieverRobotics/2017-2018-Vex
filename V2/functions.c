@@ -3,7 +3,6 @@
 // Functions for Retriever Robotics 2017-2018 In The Zone
 //
 //////////////////////////////////////////////////////////////////////////
-
 #pragma systemFile // get rid of unused function warnings
 
 //----------------------------------------------------------------------------
@@ -76,18 +75,6 @@ void drivePIDsOn(bool on){
 // Movement functions
 //----------------------------------------------------------------------------
 
-void tankDrive(int lPow, int rPow){
-	// account for drive deadbands and set power
-	motor[driveBL] = abs(lPow) < DRIVE_DEADBAND ? 0 : lPow;
-	motor[driveFL] = abs(lPow) < DRIVE_DEADBAND ? 0 : lPow;
-
-	motor[driveR]  = abs(rPow) < DRIVE_DEADBAND ? 0 : lPow;
-}
-
-void stackCone(int currStackHeight){
-
-}
-
 void intakeMogo(){
 	motor[mogo] = 127; // positive for in
 	wait1Msec(MOGO_INTAKE_TIME);
@@ -102,43 +89,64 @@ void extendMogo(){
 	motor[mogo] = 0;
 }
 
+void stackCone(int currStackHeight){
+
+}
+
+void tankDrive(int lPow, int rPow){
+	// account for drive deadbands and set power
+	motor[driveBL] = abs(lPow) < DRIVE_DEADBAND ? 0 : lPow;
+	motor[driveFL] = abs(lPow) < DRIVE_DEADBAND ? 0 : lPow;
+
+	motor[driveR]  = abs(rPow) < DRIVE_DEADBAND ? 0 : lPow;
+}
+
+void tardDrive(int left, int right, int waitTime){
+	drivePIDsOn(false);
+	tankDrive(left,right);
+	wait1Msec(waitTime);
+	tankDrive(0,0);
+	drivePIDsOn(true);
+}
+
 // drives forward distance inches using drivePID
 void driveIncremental(float distance){
+	driveMode = POINT_TURN;
 	// TODO: check if drive PID started, if not start now and end it after
 	// if getTaskPriority(drivePIDTask) > 0:
 	// 		then itsProbablyRunning
 
 	//convert inches to drive ticks
-	distance = distance * DRIVE_TICKS_PER_INCH;
+	distance = distance * DRIVE_TPI;
 
 	//add distance to current position
 	drivePID.target = ((SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2) + distance;
 }
 
-//unnecessary?
-void turnCounterClockwise(float degrees){
-	//turn off distance PIDS so they dont resist
-	// drivePIDsOn(false);
-
-	gyroPID.target += degToGyro(degrees);
-
-	waitForPID(gyroPID);
-
-	// turn drive PIDS back on
-	// drivePIDsOn(true);
+// counterclockwise swing turn using left side
+void swingTurnLeft(float degrees){
+	driveMode = SWING_LEFT;
+	drivePID.target = SensorValue[driveREnc];
+	gyroPID.target 	= degToGyro(degrees);
 }
 
-//unnecessary?
-void turnAbsolute(float degrees){
-	//turn off distance PIDS so they dont resist
-	// drivePIDsOn(false);
+// counterclockwise swing turn using right side
+void swingTurnRight(float degrees){
+	driveMode = SWING_RIGHT;
+	drivePID.target = SensorValue[driveLEnc];
+	gyroPID.target 	= degToGyro(degrees);
+}
 
+// counterclockwise point turn using absolute gyro position
+void pointTurn(float degrees){
+	driveMode = POINT_TURN;
 	gyroPID.target = degToGyro(degrees);
+}
 
-	waitForPID(gyroPID);
-
-	// turn drive PIDS back on
-	// drivePIDsOn(true);
+// counterclockwise incremental turn
+void turnCounterClockwise(float degrees){
+	driveMode = POINT_TURN;
+	gyroPID.target = SensorValue[gyro] + degToGyro(degrees);
 }
 
 // not currently used
@@ -258,31 +266,45 @@ void waitForPID(PIDStruct PIDVar){
 // uses raw gyro to maintain rotation
 task drivePIDTask(){
 	float lastGyro = SensorValue[gyro];
+	int 	offset = 0;
+	int gyroDelta;
 
 	while(true){
-    // average of left and right for average distance travelled.
-		drivePID.input = (SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
-		gyroPID.input = SensorValue[gyro];
+		// decide which encoders to use for input based on turning mode
+		if			(driveMode==SWING_LEFT)  drivePID.input = SensorValue[driveREnc];
+		else if (driveMode==SWING_RIGHT) drivePID.input = SensorValue[driveLEnc];
+		else 		drivePID.input = (SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
+		gyroPID.input = SensorValue[gyro] + offset;
 
-		// account for rollover
-		//if(gyroPID.input - lastGyro > 1800)
-		//	gyroPID.input -= 3600;
-		//if(gyroPID.input - lastGyro < 1800)
-		//	gyroPID.input += 3600;
-		//if gyro rolls over, it goes to zero, but going back past zero goes back to 3600 instead of negative
+		// account for gyro rollover
+		gyroDelta = gyroPID.input - lastGyro;
+		if(gyroDelta > 1800){
+			gyroPID.input -= offset; // get rid of old offset
+			offset -= 3600;
+			gyroPID.input += offset; // add back new offset
+		}
+		else if(gyroDelta < -1800){
+			gyroPID.input -= offset; // get rid of old offset
+			offset += 3600;
+			gyroPID.input += offset; // add back new offset
+		}
 
 		updatePIDVar(&drivePID);
 		updatePIDVar(&gyroPID);
 
-		// combine PID outputs and limit each pid output to 127
-		// so they have equal influence on the motors
-		tankDrive(
-			lim127(drivePID.output) - lim127(gyroPID.output),
-			lim127(drivePID.output) + lim127(gyroPID.output)
-		);
+		if(driveMode==SWING_LEFT)
+			tankDrive( lim127(gyroPID.output), lim127(drivePID.output) );
+		else if(driveMode==SWING_RIGHT)
+			tankDrive( lim127(drivePID.output), lim127(gyroPID.output) );
+		else{
+			// combine PID outputs and limit each pid output to 127 so they have equal influence on the motors
+			tankDrive(
+				lim127(drivePID.output) - lim127(gyroPID.output),
+				lim127(drivePID.output) + lim127(gyroPID.output)
+			);
+		}
 
 		lastGyro = SensorValue[gyro];
-
 		wait1Msec(drivePID.loopTime);
 	}
 }
@@ -291,7 +313,7 @@ task drivePIDTask(){
 // 	int heading = getHeading();
 //
 // 	// gyro target = find angle to target
-// 	// globalDrivePID.target = 			 * DRIVE_TICKS_PER_INCH;
+// 	// globalDrivePID.target = 			 * DRIVE_TPI;
 //
 //
 // }

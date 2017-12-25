@@ -22,10 +22,6 @@
 #pragma platform(VEX2)
 #pragma competitionControl(Competition)
 
-#pragma debuggerWindows("debugStream");
-#pragma debuggerWindows("vexCompetitionControl");
-#pragma debuggerWindows("VexLCD");
-
 //Main competition background code...do not modify!
 #include "Vex_Competition_Includes.c"
 //#include "vex.c"
@@ -97,95 +93,121 @@ void pre_auton(){
 // AUTONOMOUS
 ///////////////////////////////////////////////////////////////////////////////////
 
+//skills; red side facing mogo although it might not matter
 task autonomous(){
-	writeDebugStreamLine("auton");
-	//zero encoders
-	SensorValue[driveREnc] = 0;
-	SensorValue[driveLEnc]	= 0;
+	writeDebugStreamLine("auton - skills");
+
+	int oldDrive;
+
 	clearTimer(T1);
+	SensorValue[driveREnc] = 0;//zero encoders
+	SensorValue[driveLEnc] = 0;
+	startingRotationOffset = 0; // facing positive x towards mogo
 
-	// Blue preloads auton
-	if(true){//autonSelection == BLUE_PRELOAD){//make separate function or file
-		startingRotationOffset = 0; // facing positive x towards mogo
-		SensorValue[claw] = CLAW_CLOSE;
-		armPID.target = ARM_SCHMEDIUM;
-		startTask(armPIDTask);
-		gyroPID.target = 0;
-		startTask(drivePIDTask);
-		swingPID.target = SWING_IN;
-		startTask(swingPIDTask);
+	SensorValue[claw] = CLAW_CLOSE;
+	armPID.target 		= ARM_SCHMEDIUM;
+	gyroPID.target 		= 0;
+	swingPID.target 	= SWING_IN;
+	startTask(armPIDTask);
+	startTask(drivePIDTask);
+	startTask(swingPIDTask);
 
-		//raise arm and put out mobile goal thing all while driving forward
-		//arm already rising
-		driveIncremental(48); // forward 48 inches
-		wait1Msec(300);
-		extendMogo();
+	// mogo 1
+	// drive to 1st mogo
+	driveIncremental(48);
+	wait1Msec(300);
+	extendMogo();
+	waitForPID(drivePID);
+	// grab 1st mogo and drop it off
+	intakemogo();
+	driveIncremental(-48); // drive backwards towards start
+	waitForPID(drivePID);
+	swingTurnRight(-135);
+	waitForPID(gyroPID);
+	// slam reset on the pipe
+	tardDrive(127,127,1000);
+	extendMogo();
+	// tardDrive(-127,-127,300);
+	driveIncremental(-4); // drive back enough to release mogo
+	waitForPID(drivePID);
+	intakeMogo();
 
-		waitForPID(drivePID);
+	// mogo 2
+	driveIncremental(-24); // cross pipe
+	waitForPID(drivePID);
+	swingTurnRight(45); // swing turn 180 degrees towards next mogo
+	extendMogo();
+	waitForPID(gyroPID);
+	driveIncremental(24);
+	waitForPID(drivePID);
+	intakeMogo(); // pick up next mogo
+	// turn around and drop off
+	pointTurn(-135);
+	waitForPID(gyroPID);
+	driveIncremental(36);
+	extendmogo();
+	driveIncremental(-5);
+	waitForPID(drivePID);
+	intakeMogo();
 
-		//once at destination, pick up mobile goal
-		intakeMogo();
-
-		//drive back to loading station (line sensor?) while dropping preload
-		driveIncremental(-12); // backward 12 inches
-		//armPID.target = STARTING_HEIGHT; // lower arm to place cone
-
-		waitForPID(drivePID);
-		waitForPID(armPID);
-
-		// drop cone
-		SensorValue[claw] = CLAW_OPEN;
-
-		//turn 90 towards preloader
-		pointTurn(-90);
-		//arm to loading height and drive forward
-		armPID.target = ARM_PRELOAD_HEIGHT;
-		swingPID.target = SWING_90;
-		waitForPID(gyroPID);
-
-		// turn drive PIDs off and give a basic constant power to slam wall
-		drivePIDsOn(false);
-		tankDrive(127, 127);
-		wait1Msec(700);
-		drivePIDsOn(true);
-
-		//drive back 6 inches?
-
-		//swing to cone loading height, claw, swing to drop height, release claw
-		// do the first few runs until arm differential is needed
-		for(int i = 0; i < 2; i++){
-			swingPID.target = SWING_OUT;
-			waitForPID(swingPID);
-			wait1Msec(200); // insert reasonable wait time for humans to place cone
-			SensorValue[claw] = CLAW_CLOSE;
-
-			swingPID.target = SWING_IN;
-			waitForPID(swingPID);
-			SensorValue[claw] = CLAW_OPEN;
-		}
+  // mogo 3
+	pointTurn(45); // face next mogo
+	extendMogo();
+	waitForPID(gyroPID);
+	oldDrive = drivePID.input;
+	driveIncremental(140); // go all the way across the field
+	// wait for mogo halfway
+	while(DRIVE_TPI*(drivePID.input-oldDrive) <  80) wait1Msec(drivePID.loopTime);
+	intakeMogo();
+	waitForPID(drivePID);
 
 
-		// repeat 13x plus 1 extra for a total of 14; add the arm += Cone_Differential
-		for(int i = 0; i < 13; i++){
-			swingPID.target = SWING_OUT;
-			armPID.target = ARM_PRELOAD_HEIGHT;
-			waitForPID(swingPID);
-			waitForPID(armPID);
-			wait1Msec(200); // insert reasonable wait time for humans to place cone
-			SensorValue[claw] = CLAW_CLOSE;
+	/* bad
+	driveIncremental(-24);
+	waitForPID(drivePID);
+	swingTurnRight(-135);
+	waitForPID(gyroPID);
+	// slam reset on the pipe
+	tardDrive(127,127,1000);
+	extendMogo();
+	driveIncremental(-4); // drive back enough to release mogo
+	waitForPID(drivePID);
+	intakeMogo();
 
-			// TODO: make function that converts 2.5 inches to arm pot ticks
-			armPID.target = ARM_PRELOAD_HEIGHT + (2.5 * i); // add 2.5 inches each go
-			// wait until arm a specific distance from target
-			//while(fabs(armPID.target - armPID.input) < SWING_ACTIVATE_ON_ARM_VAL);
-			swingPID.target = SWING_IN;
-			waitForPID(swingPID);
-			waitForPID(armPID);
-			SensorValue[claw] = CLAW_OPEN;
-		}
 
-		//drive back and finesse some points
-	}
+	// mogo 3
+	driveIncremental(-24); // cross pipe
+	waitForPID(drivePID);
+	swingTurnLeft(-315); // swing turn 180 degrees towards next mogo
+	extendMogo();
+	waitForPID(gyroPID);
+	driveIncremental(24);
+	waitForPID(drivePID);
+	intakeMogo();
+
+	//back up and drop off
+	driveIncremental(-24);
+	waitForPID(drivePID);
+	swingTurnLeft(-135);
+	waitForPID(gyroPID);
+	// slam reset on the pipe
+	tardDrive(127,127,1000);
+	extendMogo();
+	driveIncremental(-4); // drive back enough to release mogo
+	waitForPID(drivePID);
+	intakeMogo();
+
+  // mogo 4
+	driveIncremental(-24); // cross pipe
+	waitForPID(drivePID);
+	swingTurnLeft(-315); // swing turn 180 degrees towards next mogo
+	extendMogo();
+	waitForPID(gyroPID);
+	driveIncremental(24);
+	waitForPID(drivePID);
+	intakeMogo();
+	*/
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////

@@ -3,6 +3,7 @@
 // Variables for anyone to modify for tuning
 //
 ////////////////////////////////////////////////////////////////
+#pragma systemFile
 
 // etc constants
 #define sploof
@@ -32,7 +33,7 @@
 
 #define DRIVE_DEADBAND 10 // amount of power where drive wont move
 #define DRIVE_SLEW_TIME 7 // update period for drive slew rate
-#define DRIVE_TICKS_PER_INCH 28
+#define DRIVE_TPI 28
 // 392 * (1/pi*D)
 
 // PID tuning variables

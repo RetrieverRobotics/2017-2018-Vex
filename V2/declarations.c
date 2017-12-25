@@ -3,6 +3,7 @@
 // Global variables and declarations for functions
 //
 //////////////////////////////////////////////////
+#pragma systemFile
 
 // define statements that shouldn't need to be altered
 #define LEFT_LCD 1
@@ -18,6 +19,10 @@
 
 #define X_COORD 0
 #define Y_COORD 1
+
+#define SWING_LEFT -1
+#define POINT_TURN 0
+#define SWING_RIGHT 1
 
 typedef struct PIDStruct{
 	bool debug;
@@ -41,16 +46,13 @@ typedef struct PIDStruct{
 
 }PIDStruct;
 
-PIDStruct drivePID;
-PIDStruct gyroPID;
-PIDStruct armPID;
-PIDStruct armCrossCouplePID;
-PIDStruct swingPID;
+PIDStruct drivePID, gyroPID, armPID, armCrossCouplePID, swingPID;
 
 int autonSelection = DEFAULT;
 float globalXPos = 0;
 float globalYPos = 0;
 float startingRotationOffset = 90; // 90 is facing positive y (trig style)
+short driveMode = POINT_TURN;
 
 
 void setLift(int setPow);

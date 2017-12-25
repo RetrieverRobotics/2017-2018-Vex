@@ -37,6 +37,7 @@ GYRO:
 CCW positive
 90 starting offset is facing positive Y
 heading: trig style i.e. straight ahead is 90
+if gyro rolls over, it goes to zero, but going back past zero goes back to 3600 instead of negative
 
 FIELD:
 Positive Y: away from operators
@@ -50,31 +51,6 @@ Working tuning for test setup:
 Potentiometers:
 range of motion roughly 265 degrees, output of 0-4095. ~15.45 ticks per degree
 
-Lift pot testing:
-
-Bottom:
-L: 1190
-R: 1350
-
-Top:
-L: 2890
-R: 2950
-
-Change:
-dL: 1700
-dR: 1600
-
-R - 2950 = .9412(L-2890)
-
-R = .9412L + 230
-
-.9412L = R - 230
-
-L = 1.0625R - 244
-
-L - 2890 = 1.0625(R - 2950)
-L = m*R - m*2950 + 2890
-
 /////////////////////////////////
 // INTEGRATED ENCODERS
 /////////////////////////////////
@@ -82,103 +58,8 @@ L = m*R - m*2950 + 2890
 - Measures 392 ticks per revolution of the output shaft in High Speed Configuration
 - Measures 261.333 ticks per revolution of the output shaft in Turbo Gear Configuration
 
-
-
-gyroPID.Kp = .7; // P
-	gyroPID.Ki = .0015; // I
-	gyroPID.Kd = 40; // D
-  80./kp
-  @ 10 ms loop
-
-
-  gyroPID.Kp = 1.2; // P
-	gyroPID.Ki = .003; // I
-	gyroPID.Kd = 40; // D
-
-
-  gyroPID.Kp = 1.2; // P
-	gyroPID.Ki = 0.003;//.003; // I
-	gyroPID.Kd = 70;//40; // D
-  @20 ms
-
-
-  gyroPID.Kp = .8; // P
-	gyroPID.Ki = .005; // I
-	gyroPID.Kd = 10; // D
-  @50 ms
-
-  GOOD:
-  gyroPID.Kp = 1; // P
-	gyroPID.Ki = .002; // I
-	gyroPID.Kd = 80; // D
-  @50
-
-  driveLPID.Kp = 1.8; 		// P
-	driveLPID.Ki = 0.0025; // I
-	driveLPID.Kd = 50; 			// D
-  @10
-
-  GOOD:
-  driveLPID.Kp = 1.2; 		// P
-	driveLPID.Ki = .002;//0.002; // I
-	driveLPID.Kd = 90;
-  @50
-
-  GOOD CONBO:
-  driveLPID.Kp = .75; 		// P
-	driveLPID.Ki = .0005;//0.002; // I
-	driveLPID.Kd = 70;//80;
-  gyroPID.Kp = 1; // P
-	gyroPID.Ki = .002; // I
-	gyroPID.Kd = 80; // D
-  @50
-
 ARM:
   lowest:
   lower bar is 6" off ground
   highest:
   59" off the ground
-
-TIME BASED:
-  else{
-  			setPow = 0;
-        // clear timer once immediately after button release
-  			if(bPrevPressed){
-  				clearTimer(T2);
-  				bSetArmHeight = true;
-  				bPrevPressed = false;
-  				//bSetArmHeight = true; // set up to turn on pid later
-  			}
-
-  			//TODO: make if velocity not close to zero
-
-  			// set armPID target to current sensorValue only once after the desired time passes
-  			if(bSetArmHeight && time1[T2] > 500){
-  				armPID.target = armPID.input;
-  				armPID.enabled = true;
-  				armCrossCouplePID.enabled = true;
-  				bSetArmHeight = false;
-  			}
-  		}
-
-SPEED BASED:
-      else{
-			setPow = 0;
-      // clear timer once immediately after button release
-			if(bPrevPressed && fabs((armPID.input-inputLast) / armPID.loopTime) < .05){
-				armPID.target = armPID.input;
-				armPID.enabled = true;
-				armCrossCouplePID.enabled = true;
-				bPrevPressed = false;
-				//bSetArmHeight = true; // set up to turn on pid later
-			}
-
-			//TODO: make if velocity not close to zero
-
-			// set armPID target to current sensorValue only once after the desired time passes
-			//if(bSetArmHeight && time1[T2] > 500){
-			//	armPID.target = armPID.input;
-			//	armPID.enabled = true;
-			//	bSetArmHeight = false;
-			//}
-		}
