@@ -77,6 +77,7 @@ task main()
 	// Master CPU will not let competition start until powered on for at least 2-seconds
 	clearLCDLine(0);
 	clearLCDLine(1);
+  bLCDBacklight = true;
 	displayLCDCenteredString(0, "LIL SHAQ");
 	displayLCDCenteredString(1, "STARTING UP");
 	wait1Msec(2000);

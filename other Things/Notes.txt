@@ -63,3 +63,23 @@ ARM:
   lower bar is 6" off ground
   highest:
   59" off the ground
+
+Pot testing:
+  Bottom:
+  L: 966
+  R: 1196
+
+  Top:
+  L: 2985
+  R: 2966
+
+  dL: 2019
+  dR: 1770
+
+
+
+  value of left in terms of right
+  equation converting values of right pot scaled to left pot:
+  right: independent(x)
+  left: dependent(y)
+  L = 1.1407*R - 398.251

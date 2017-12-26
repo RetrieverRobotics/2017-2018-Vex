@@ -22,6 +22,7 @@
 #define ARM_PRELOAD_HEIGHT 1300
 #define ARM_BLOCK_MOGO 1200
 #define ARM_TICKS_PER_INCH 38
+#define ARM_DEADBAND 10
 
 #define SWING_IN 3400
 #define SWING_OUT 550
@@ -33,7 +34,7 @@
 
 #define DRIVE_DEADBAND 10 // amount of power where drive wont move
 #define DRIVE_SLEW_TIME 7 // update period for drive slew rate
-#define DRIVE_TPI 28
+#define DRIVE_TPI 22.75 // 28
 // 392 * (1/pi*D)
 
 // PID tuning variables
@@ -93,7 +94,7 @@ void initPIDVars(){
 	swingPID.debug = false;
 	swingPID.integralLimit = 50;
 	swingPID.integralActiveZone = 127./swingPID.Kp;
-	swingPID.loopTime = 10; // ms
+	swingPID.loopTime = 10;//20; // ms
 	swingPID.errorThreshold = 50;
 	swingPID.speedThreshold = 10;
 	swingPID.deadband = 10;

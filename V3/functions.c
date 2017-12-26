@@ -56,6 +56,19 @@ void setLift(int setPow){
 	motor[liftR]	= setPow;
 }
 
+void tankDrive(int lPow, int rPow){
+	// account for drive deadbands
+	lPow = abs(lPow) < DRIVE_DEADBAND ? 0 : lPow;
+	rPow = abs(rPow) < DRIVE_DEADBAND ? 0 : rPow;
+
+	// account for drive deadbands and set power
+	motor[driveL1] = lPow;
+	motor[driveL2] = lPow;
+
+	motor[driveR1]  = rPow;
+	motor[driveR2]  = rPow;
+}
+
 void smackVcat(){}
 
 void drivePIDsOn(bool on){
@@ -90,19 +103,6 @@ void extendMogo(){
 
 void stackCone(int currStackHeight){
 
-}
-
-void tankDrive(int lPow, int rPow){
-	// account for drive deadbands
-	lPow = abs(lPow) < DRIVE_DEADBAND ? 0 : lPow;
-	rPow = abs(rPow) < DRIVE_DEADBAND ? 0 : lPow;
-
-	// account for drive deadbands and set power
-	motor[driveL1] = lPow;
-	motor[driveL2] = lPow;
-
-	motor[driveR1]  = rPow;
-	motor[driveR2]  = rPow;
 }
 
 void tardDrive(int left, int right, int waitTime){
@@ -361,7 +361,75 @@ task armPIDTask(){
 // average of right and left arm pot used
 // cross coupling to keep heights the same
 // takes input from controller to allow for usercontrol
-task usrCtrlArmPID(){
+task usrCtrl1ArmPID(){
+	int setPow = 0;
+	float inputLast = 0;
+	bool bPrevPressed = false;
+	bool bSetArmHeight = false;
+	float deltaHeight, lastDeltaHeight;
+	armCrossCouplePID.target = 0;
+	clearTimer(T2);
+
+	while(true){
+		armPID.input = getArmHeight();
+		// cross couple input is the difference between arm heights
+		armCrossCouplePID.input = SensorValue[armPotL] - scalePotRToL(SensorValue[armPotR]);
+
+		if(vexRT[Btn5U]){
+			armPID.enabled = false;
+			armCrossCouplePID.enabled = false;
+			setPow = 127;
+			bPrevPressed = true;
+		}
+		// down on 5D
+		else if(vexRT[Btn5D]){
+			armPID.enabled = false;
+			armCrossCouplePID.enabled = false;
+			setPow = -127;
+			bPrevPressed = true;
+		}
+		else{
+			setPow = 0;
+			//only turn on PIDS if the arm is up
+			if(armPID.input > ARM_BLOCK_MOGO){
+				// clear timer once immediately after button release
+				if(bPrevPressed){
+					clearTimer(T2);
+					bSetArmHeight = true; // set up to turn on pid later
+					lastDeltaHeight = armPID.input-inputLast;
+				}
+
+				deltaHeight = armPID.input-inputLast;
+
+				// look for local extrema of the height function and record position there
+				// timeout after 500 ms
+				if( bSetArmHeight && (sgn(deltaHeight)!=sgn(lastDeltaHeight) || deltaHeight==0 || time1[T2]>500) ){
+					armPID.target = armPID.input;
+					armPID.enabled = true;
+					armCrossCouplePID.enabled = true;
+					bSetArmHeight = false;
+				}
+				lastDeltaHeight = deltaHeight;
+			}
+
+			bPrevPressed = false;
+		}
+
+		#ifndef USERCONTROL_ARM_PID_OFF
+		updatePIDVar(&armPID);
+		updatePIDVar(&armCrossCouplePID);
+		#endif
+
+		motor[liftL] = setPow + lim127(armPID.output) + lim127(armCrossCouplePID.output);
+
+		motor[liftR] 	= setPow + lim127(armPID.output) - lim127(armCrossCouplePID.output);
+
+		inputLast = armPID.input;
+		wait1Msec(armPID.loopTime);
+	}
+}
+
+task usrCtrl2ArmPID(){
 	int setPow = 0;
 	float inputLast = 0;
 	bool bPrevPressed = false;
