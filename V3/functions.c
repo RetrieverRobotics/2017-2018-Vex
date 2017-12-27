@@ -51,9 +51,17 @@ int lim127(int power){
 	return(abs(power) > 127 ? sgn(power) * 127 : power);
 }
 
-void setLift(int setPow){
+void setLiftL(int setPow){
 	motor[liftL] = setPow;
-	motor[liftR]	= setPow;
+}
+
+void setLiftR(int setPow){
+	motor[liftR] = setPow;
+}
+
+void setLift(int setPow){
+	setLiftL(setPow);
+	setLiftR(setPow);
 }
 
 void tankDrive(int lPow, int rPow){
@@ -69,8 +77,6 @@ void tankDrive(int lPow, int rPow){
 	motor[driveR2]  = rPow;
 }
 
-void smackVcat(){}
-
 void drivePIDsOn(bool on){
 	if(on){
 		// turn drive PIDS back on set to where we are currently
@@ -82,6 +88,8 @@ void drivePIDsOn(bool on){
 		drivePID.enabled = false;
 	}
 }
+
+void smackVcat(){}
 
 //----------------------------------------------------------------------------
 // Movement functions
@@ -106,6 +114,16 @@ void stackCone(int currStackHeight){
 }
 
 void tardDrive(int left, int right, int waitTime){
+	driveMode = TARD;
+	drivePIDsOn(false);
+	tankDrive(left,right);
+	wait1Msec(waitTime);
+	tankDrive(0,0);
+	drivePIDsOn(true);
+}
+
+void tardDriveActiveRot(int left, int right, int waitTime){
+	driveMode = TARD_ACTIVE_ROT;
 	drivePIDsOn(false);
 	tankDrive(left,right);
 	wait1Msec(waitTime);
@@ -270,14 +288,19 @@ void waitForPID(PIDStruct PIDVar){
 // uses raw gyro to maintain rotation
 task drivePIDTask(){
 	float lastGyro = SensorValue[gyro];
-	int 	offset = 0;
+	static int offset = 0;
 	int gyroDelta;
 
 	while(true){
 		// decide which encoders to use for input based on turning mode
-		if			(driveMode==SWING_LEFT)  drivePID.input = SensorValue[driveREnc];
-		else if (driveMode==SWING_RIGHT) drivePID.input = SensorValue[driveLEnc];
-		else 		drivePID.input = (SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
+		if(driveMode == SWING_LEFT)
+			drivePID.input = SensorValue[driveREnc];
+		else if(driveMode == SWING_RIGHT)
+			drivePID.input = SensorValue[driveLEnc];
+		else if(driveMode == POINT_TURN)
+			drivePID.input = (SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
+		// no input for tard modes
+
 		gyroPID.input = SensorValue[gyro] + offset;
 
 		// account for gyro rollover
@@ -296,17 +319,21 @@ task drivePIDTask(){
 		updatePIDVar(&drivePID);
 		updatePIDVar(&gyroPID);
 
-		if(driveMode==SWING_LEFT)
-			tankDrive( lim127(gyroPID.output), lim127(drivePID.output) );
-		else if(driveMode==SWING_RIGHT)
+		if(driveMode == SWING_LEFT)
+			tankDrive( -lim127(gyroPID.output), lim127(drivePID.output) );
+		else if(driveMode == SWING_RIGHT)
 			tankDrive( lim127(drivePID.output), lim127(gyroPID.output) );
-		else{
+		else if(driveMode == POINT_TURN){
 			// combine PID outputs and limit each pid output to 127 so they have equal influence on the motors
 			tankDrive(
 				lim127(drivePID.output) - lim127(gyroPID.output),
 				lim127(drivePID.output) + lim127(gyroPID.output)
 			);
 		}
+		else if(driveMode == TARD_ACTIVE_ROT)
+			tankDrive( -lim127(gyroPID.output), lim127(gyroPID.output) );
+		// dont do anything on tard mode
+
 
 		lastGyro = SensorValue[gyro];
 		wait1Msec(drivePID.loopTime);
@@ -350,9 +377,9 @@ task armPIDTask(){
 		updatePIDVar(&armPID);
 		updatePIDVar(&armCrossCouplePID);
 
-		motor[liftL] = lim127(armPID.output) + lim127(armCrossCouplePID.output);
+		setLiftL( lim127(armPID.output) + lim127(armCrossCouplePID.output) );
 
-		motor[liftR] 	= lim127(armPID.output) - lim127(armCrossCouplePID.output);
+		setLiftR( lim127(armPID.output) - lim127(armCrossCouplePID.output) );
 
 		wait1Msec(armPID.loopTime);
 	}
@@ -420,9 +447,9 @@ task usrCtrl1ArmPID(){
 		updatePIDVar(&armCrossCouplePID);
 		#endif
 
-		motor[liftL] = setPow + lim127(armPID.output) + lim127(armCrossCouplePID.output);
+		setLiftL( setPow + lim127(armPID.output) + lim127(armCrossCouplePID.output) );
 
-		motor[liftR] 	= setPow + lim127(armPID.output) - lim127(armCrossCouplePID.output);
+		setLiftR( setPow + lim127(armPID.output) - lim127(armCrossCouplePID.output) );
 
 		inputLast = armPID.input;
 		wait1Msec(armPID.loopTime);
@@ -488,9 +515,9 @@ task usrCtrl2ArmPID(){
 		updatePIDVar(&armCrossCouplePID);
 		#endif
 
-		motor[liftL] = setPow + lim127(armPID.output) + lim127(armCrossCouplePID.output);
+		setLiftL( setPow + lim127(armPID.output) + lim127(armCrossCouplePID.output) );
 
-		motor[liftR] 	= setPow + lim127(armPID.output) - lim127(armCrossCouplePID.output);
+		setLiftR( setPow + lim127(armPID.output) - lim127(armCrossCouplePID.output) );
 
 		inputLast = armPID.input;
 		wait1Msec(armPID.loopTime);

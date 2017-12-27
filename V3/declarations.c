@@ -3,7 +3,7 @@
 // Global variables and declarations for functions
 //
 //////////////////////////////////////////////////
-#pragma systemFile
+//#pragma systemFile
 
 // define statements that shouldn't need to be altered
 #define LEFT_LCD 1
@@ -23,6 +23,8 @@
 #define SWING_LEFT -1
 #define POINT_TURN 0
 #define SWING_RIGHT 1
+#define TARD 2
+#define TARD_ACTIVE_ROT 3
 
 typedef struct PIDStruct{
 	bool debug;

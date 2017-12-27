@@ -82,6 +82,7 @@ task main()
 	displayLCDCenteredString(1, "STARTING UP");
 	wait1Msec(2000);
 	clearLCDLine(1);
+  bLCDBacklight = false;
 
 	// Call pre_auton function where the user can initialize sensors and variables
 	pre_auton();
