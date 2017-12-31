@@ -63,20 +63,12 @@ task autonomous(){
 task usercontrol(){
 	writeDebugStreamLine("usrctrl");
 
-	//armPID.target = 2000;//getArmHeight();
-	//startTask(usrCtrlArmPID1);
+	// check if second controller is connected
+	if(nVexRCReceiveState & vrXmit2){
+		#include "usercontrol-2Controller.c"
+	}
+	else{
+		#include "usercontrol-singleController.c"
+	}
 
-	//driveIncremental(12);
-	//drivePID.target = 300;
-	//gyroPID.target = 0;
-	//gyroPID.target = -900;
-	//startTask(drivePIDTask);
-	//startTask(autonomous);
-
-	//armPID.target = 2000;//getArmHeight();
-	//startTask(armPIDTask);
-	//waitForPID(armPID);
-	//while(true){ wait1Msec(1000); } // for testing code above here
-
-	#include "usercontrol-singleController.c"
 }//END usercontrol()

@@ -13,7 +13,7 @@ string displayString;
 
 armPID.target = getArmHeight();
 // everything for the lift in usrctrl is handled in this task
-startTask(usrCtrl1ArmPID);
+startTask(usrCtrlArmPID1);
 
 // everything for the drive in usrctrl handled in this task.
 startTask(driveSlew);

@@ -409,6 +409,7 @@ task usrCtrlArmPID1(){
 		// cross couple input is the difference between arm heights
 		armCrossCouplePID.input = SensorValue[armPotL] - scalePotRToL(SensorValue[armPotR]);
 
+		// up on 5U
 		if(vexRT[Btn5U]){
 			armPID.enabled = false;
 			armCrossCouplePID.enabled = false;

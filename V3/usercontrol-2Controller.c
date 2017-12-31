@@ -13,7 +13,7 @@ string displayString;
 
 armPID.target = getArmHeight();
 // everything for the lift in usrctrl is handled in this task
-startTask(usrCtrl2ArmPID);
+startTask(usrCtrlArmPID2);
 
 // everything for the drive in usrctrl handled in this task.
 startTask(driveSlew);
@@ -37,8 +37,8 @@ while ("Kent is driving"){
   // Swing
   //--------------------------------------------------------------------------------
 
-  //switch between manual and PID for swing on 8L
-  if(vexRT[Btn8L]){
+  //switch between manual and PID for swing on 7L
+  if(vexRT[Btn7LXmtr2]){
     if(bSwingToggle){
       bSwingManual = !bSwingManual;
       bSwingToggle = false;
@@ -51,12 +51,12 @@ while ("Kent is driving"){
   // if manual control is selected
   if(bSwingManual){
     swingPID.enabled = false;
-    // swing in on 8D
-    if(vexRT[Btn8D]){
+    // swing in on 7D
+    if(vexRT[Btn7DXmtr2]){
       motor[swing] = 127;
     }
-    // swing out on 8U
-    else if(vexRT[Btn8U]){
+    // swing out on 7U
+    else if(vexRT[Btn7UXmtr2]){
       motor[swing] = -127;
     }
     else{
@@ -66,16 +66,17 @@ while ("Kent is driving"){
   // otherwise use PID control
   else{
     swingPID.enabled = true;
-    // in on 8D
-    if(vexRT[Btn8D]){
+    // in on 7D
+    if(vexRT[Btn7DXmtr2]){
       swingPID.target = SWING_IN;
     }
-    // out on 8U
-    else if(vexRT[Btn8U]){
+    // out on 7U
+    else if(vexRT[Btn7UXmtr2]){
+      SensorValue[claw] = CLAW_OPEN;
       swingPID.target = SWING_OUT;
     }
-    // 90 on 8R
-    else if(vexRT[Btn8R]){
+    // 90 on 7R
+    else if(vexRT[Btn7RXmtr2]){
       swingPID.target = SWING_90;
     }
   }
@@ -100,11 +101,11 @@ while ("Kent is driving"){
   // if arm is below a certain height, dont use mogo
   if( getArmHeight() > ARM_BLOCK_MOGO ){
     // in on 7D
-    if(vexRT[Btn7D]){
+    if(vexRT[Btn5D]){
       motor[mogo] = 127;
     }
     //out on 7U
-    else if(vexRT[Btn7U]){
+    else if(vexRT[Btn5U]){
       motor[mogo] = -127;
     }
     else{
@@ -115,6 +116,13 @@ while ("Kent is driving"){
     motor[mogo] = 0;
   }
 
-  wait1Msec(20);
+  //--------------------------------------------------------------------------------
+  // Macro buttons
+  //--------------------------------------------------------------------------------
 
+  // floor height
+  // release and go up then back to floor height after tard down
+  // loader height
+
+  wait1Msec(20);
 }//END while()
