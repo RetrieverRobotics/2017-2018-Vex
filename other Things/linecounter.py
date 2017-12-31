@@ -11,6 +11,6 @@ def main():
         total += len(lines)
         file.close()
 
-    print(total)
+    print(total, "lines")
 
 main()
