@@ -106,11 +106,15 @@ void extendMogo() {
 	motor[mogo] = 0;
 }
 
-void stackCone(int currStackHeight) {
+// void stackCone(int currStackHeight) {
+//
+// }
 
+void placeStack(){
+	
 }
 
-void armHeight(int height){
+void setArmHeight(int height){
 	armMode = ARM_PID_CONTROL;
 	armPID.target = height;
 }
@@ -120,7 +124,10 @@ void tardLift(int setPow = 0) {
 	setLift(setPow);
 }
 
-// void tardLiftStraight()
+void tardLiftStraight(int setPow = 0){
+	armMode = ARM_TARD_ACTIVE_CENTERING;
+	armPID.target = setPow;
+}
 
 void tardDrive(int left, int right) {
 	driveMode = TARD;
@@ -258,11 +265,12 @@ void updatePIDVar(PIDStruct *PIDVar) {
 }
 
 // wait until position close to target and velocity close to  0
-void waitForPID(PIDStruct PIDVar) {
+// checkspeed default true
+void waitForPID(PIDStruct PIDVar, bool checkSpeed) {
 	float error;
 	float inputLast = PIDVar.input;
 
-	while(true) {
+	while (true) {
 		wait1Msec(PIDVar.loopTime);
 
 		error = PIDVar.target - PIDVar.input;
@@ -273,12 +281,14 @@ void waitForPID(PIDStruct PIDVar) {
 		#endif
 
 		//if pos within desired range of target
-		if(fabs(error) < PIDVar.errorThreshold) {
+		if (fabs(error) < PIDVar.errorThreshold) {
 			// if the speed is close to 0
-			if(fabs((PIDVar.input-inputLast) / PIDVar.loopTime) < PIDVar.speedThreshold) {
-				//100Msec wait for good measure
-				// wait1Msec(100);
-				return; // exit loop
+			if (checkSpeed) {
+				if (fabs((PIDVar.input-inputLast) / PIDVar.loopTime) < PIDVar.speedThreshold) {
+					//100Msec wait for good measure
+					// wait1Msec(100);
+					return; // exit loop
+				}
 			}
 		}
 
@@ -323,10 +333,10 @@ task drivePIDTask() {
 		updatePIDVar(&gyroPID);
 
 		if(driveMode == POINT_TURN) {
-			// combine PID outputs and limit each pid output to 127 so they have equal influence on the motors
+			// combine PID outputs and lim127 so the gyro has more influence
 			tankDrive(
-				lim127(drivePID.output) - lim127(gyroPID.output),
-				lim127(drivePID.output) + lim127(gyroPID.output)
+				lim127(lim127(drivePID.output) - gyroPID.output),
+				lim127(lim127(drivePID.output) + gyroPID.output)
 			);
 		}
 		else if (driveMode == SWING_LEFT) {
@@ -376,12 +386,14 @@ task armPIDTask() {
 		#endif
 
 		if (armMode == ARM_PID_CONTROL) {
+			// arm cross couple can compensate no more than 127
 			setLiftL( lim127(armPID.output) + lim127(armCrossCouplePID.output) );
 			setLiftR( lim127(armPID.output) - lim127(armCrossCouplePID.output) );
 		}
 		else if (armMode == ARM_TARD_ACTIVE_CENTERING){
-			setLiftL( lim127(armPID.target + armCrossCouplePID.output) );
-			setLiftR( lim127(armPID.target - armCrossCouplePID.output) );
+			// arm cross couple can compensate no more than 127
+			setLiftL( lim127(armPID.target) + lim127(armCrossCouplePID.output) );
+			setLiftR( lim127(armPID.target) - lim127(armCrossCouplePID.output) );
 		}
 
 		wait1Msec(armPID.loopTime);

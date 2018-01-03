@@ -80,7 +80,7 @@ while (true) {
 
       if (!bArmHeightRecorded && bFlagRecordArm) {
         // record height and turn armPID on with cross couple
-        armHeight(currArmHeight);
+        setArmHeight(currArmHeight);
         bArmHeightRecorded = true;
       }
       lastDeltaHeight = deltaHeight;

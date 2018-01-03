@@ -42,7 +42,7 @@ while (true) {
   // Lift
   //--------------------------------------------------------------------------------
 
-  // right joystick y axis on slave controller controlls lift
+  // right joystick y axis on slave controller controls lift
   armSetPow = vexRT[Ch2Xmtr2];
   // hold position inside deabands
   if (armSetPow < ARM_DEADBAND) {
@@ -73,7 +73,7 @@ while (true) {
 
       if (!bArmHeightRecorded && bFlagRecordArm) {
         // record height and turn armPID on with cross couple
-        armHeight(currArmHeight);
+        setArmHeight(currArmHeight);
         bArmHeightRecorded = true;
       }
       lastDeltaHeight = deltaHeight;

@@ -60,5 +60,5 @@ short armMode = ARM_PID_CONTROL;
 
 
 void setLift(int setPow);
-void waitForPID(PIDStruct PIDVar);
+void waitForPID(PIDStruct PIDVar, bool checkSpeed = true);
 task armPIDTask();

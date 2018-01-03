@@ -45,7 +45,7 @@ if(true){//autonSelection == BLUE_PRELOAD){//make separate function or file
   pointTurn(-90);
   //arm to loading height and drive forward
   swingPID.target = SWING_90;
-  armHeight(ARM_PRELOAD_HEIGHT);
+  setArmHeight(ARM_PRELOAD_HEIGHT);
   waitForPID(gyroPID);
 
   // tard on the wall
@@ -53,35 +53,36 @@ if(true){//autonSelection == BLUE_PRELOAD){//make separate function or file
 	wait1Msec(700);
 	tardDrive();
 
+  // swing out
+  swingPID.target = SWING_OUT;
   //drive back 6 inches?
+  waitForPID(swingPID);
 
-  // swing to cone loading height, claw, swing to drop height, release claw
+  // swing to cone loading height, grab, swing to drop height, release
   // do the first few runs until arm differential is needed
   for(int i = 0; i < 2; i++){
-    swingPID.target = SWING_OUT;
-    waitForPID(swingPID);
     wait1Msec(AUTON_RELOAD_TIME);
     SensorValue[claw] = CLAW_CLOSE;
 
     swingPID.target = SWING_IN;
     waitForPID(swingPID);
     SensorValue[claw] = CLAW_OPEN;
+    wait1Msec(CLAW_OPEN_TIME);
+    swingPID.target = SWING_OUT;
+    waitForPID(swingPID);
   }
 
 
-  // repeat 13x plus 1 extra for a total of 14; add the arm += Cone_Differential
-  for(int i = 0; i < 13; i++){
-    // add 2.5 inches each go
-    newHeight = ARM_PRELOAD_HEIGHT + (ARM_TICKS_PER_INCH * INCHES_PER_CONE * i);
-
-    armHeight(ARM_PRELOAD_HEIGHT);
-    waitForPID(swingPID);
-    waitForPID(armPID);
+  // repeat 13x plus 1 extra for a total of 14
+  for(int i = 0; i < AUTON_STACK_COUNT; i++){
     wait1Msec(AUTON_RELOAD_TIME);
     SensorValue[claw] = CLAW_CLOSE;
 
-    armHeight(newHeight);
+    // add 2.5 inches each go
+    newHeight = ARM_PRELOAD_HEIGHT + (ARM_TICKS_PER_INCH * INCHES_PER_CONE * i);
+    setArmHeight(newHeight);
     // wait until arm a specific distance from target
+    // while the error of the arm is bigger than SWING_ACTIVATION_DIST
     while(fabs(armPID.target - getArmHeight()) > SWING_ACTIVATION_DIST)
       wait1Msec(10);
 
@@ -93,14 +94,36 @@ if(true){//autonSelection == BLUE_PRELOAD){//make separate function or file
     wait1Msec(100);
     tardLift();
 
+    // stop here on the last one
+    if(i == AUTON_STACK_COUNT)
+      break;
+
     SensorValue[claw] = CLAW_OPEN;
-    wait1Msec(200);
-    armHeight(newHeight + SWING_CLEAR_CONE); // clear the cone
+    wait1Msec(CLAW_OPEN_TIME);
+    setArmHeight(newHeight + ARM_CLEAR_CONE); // clear the cone
     swingPID.target = SWING_OUT;
 
     // wait for swing to clear cone
-    //while
+    while (SensorValue[swingPot] > SWING_CLEAR_CONE)
+      wait1Msec(10);
+
+    setArmHeight(ARM_PRELOAD_HEIGHT);
+    waitForPID(swingPID);
+    waitForPID(armPID);
   }
 
   //drive back and finesse some points
+  pointTurn(-203);
+  driveIncremental(54);
+  pointTurn(-135);
+  // tard on the pipe
+	tardDrive(127);
+	wait1Msec(1000);
+	tardDrive();
+	extendMogo();
+	// tardDrive(-60,-60,300);
+	driveIncremental(-4); // drive back enough to release mogo
+	waitForPID(drivePID);
+	// intakeMogo();
+
 }

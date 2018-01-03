@@ -13,6 +13,9 @@
 // #define DEBUG_PID_WAIT_FUNC
 
 #define AUTON_RELOAD_TIME 0 // ms waited for human placement of preload cones
+// number of times to stack preloads in auton
+// there are 13 preloads
+#define AUTON_STACK_COUNT 13
 #define INCHES_PER_CONE 2.5 // inches added with each cone
 
 #define COORDINATE_MONITORING_PERIOD 5 // ms
@@ -23,6 +26,9 @@
 #define ARM_TICKS_PER_INCH 38
 #define ARM_DEADBAND 10
 #define ARM_STARTING_HEIGHT 1000
+// distance the arm must go up for the swing to clear the cone
+// in armPot ticks
+#define ARM_CLEAR_CONE 300//?
 
 #define SWING_IN 3400
 #define SWING_OUT 550
@@ -30,9 +36,11 @@
 // the max distance away from the armPID target that the swing should turn on
 // in armPot ticks
 #define SWING_ACTIVATION_DIST 500//?
-// distance the arm must go up for the swing to clear the cone
-// in armPot ticks
-#define SWING_CLEAR_CONE 300//?
+// swing position where it has completely cleared the cone
+// in swingPot ticks
+#define SWING_CLEAR_CONE 1900//?
+
+#define CLAW_OPEN_TIME 200//? // the time in ms for the claw to open
 
 #define MOGO_EXTEND_TIME 700
 #define MOGO_INTAKE_TIME 900

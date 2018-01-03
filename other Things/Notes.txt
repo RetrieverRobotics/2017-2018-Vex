@@ -84,3 +84,6 @@ Pot testing:
   right: independent(x)
   left: dependent(y)
   L = 1.1407*R - 398.251
+
+MOTORS:
+  positive value red to red spins CW? facing from the back
