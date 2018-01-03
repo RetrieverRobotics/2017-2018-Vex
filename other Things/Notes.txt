@@ -36,6 +36,7 @@
 GYRO:
 CCW positive
 90 starting offset is facing positive Y
+  positive y is facing away from ally drivers
 heading: trig style i.e. straight ahead is 90
 if gyro rolls over, it goes to zero, but going back past zero goes back to 3600 instead of negative
 

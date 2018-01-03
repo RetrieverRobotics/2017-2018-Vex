@@ -84,6 +84,8 @@ task main()
 	clearLCDLine(1);
   bLCDBacklight = false;
 
+  TVexReceiverState lastSlaveStatus = nVexRCReceiveState & vrXmit2;
+
 	// Call pre_auton function where the user can initialize sensors and variables
 	pre_auton();
 
@@ -106,9 +108,9 @@ task main()
 				if(count++ == 3) {
 					displayStatusAndTime();
 					count = 0;
-					}
+				}
 			}
-	  }
+	 }
 
 		// The robot has become enabled
 		// Reset status timer
@@ -145,6 +147,12 @@ task main()
 			// of a new competition run
 			while (!bIfiAutonomousMode && !bIfiRobotDisabled)
 			{
+        if ((nVexRCReceiveState & vrXmit2) != lastSlaveStatus){
+          // restart usercontrol
+          stopTask(usercontrol);
+          startTask(usercontrol);
+        }
+
 				if (nVexRCReceiveState == vrNoXmiters) // the transmitters are powered off!!
 					allMotorsOff();
 				wait1Msec(25);
@@ -155,7 +163,9 @@ task main()
 			  allTasksStop();
 			}
 		}
-	}
+
+    lastSlaveStatus = nVexRCReceiveState & vrXmit2;
+	}//END while
 
 	// This code will never run
 	// it stops the compiler from creating warnings about the placeholder functions
@@ -163,7 +173,7 @@ task main()
 	if(false) {
 		UserControlCodePlaceholderForTesting();
 		AutonomousCodePlaceholderForTesting();
-		}
+	}
 }
 
 /*---------------------------------------------------------------------------*/
