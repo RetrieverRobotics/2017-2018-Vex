@@ -117,7 +117,7 @@ while (true) {
     else if (vexRT[Btn8U]) {
       motor[swing] = -127;
     }
-    else{
+    else {
       motor[swing] = 0;
     }
   }
