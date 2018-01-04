@@ -113,7 +113,8 @@ while (true) {
       motor[swing] = -127;
     }
     else {
-      motor[swing] = 0;
+      // swing on Ch3Xmtr2
+      motor[swing] = vexRT[Ch3Xmtr2];
     }
   }
   // otherwise use PID control
