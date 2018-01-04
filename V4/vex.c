@@ -142,6 +142,7 @@ task main()
 		{
 			// Start the usercontrol task
 			startTask(usercontrol);
+      lastSlaveStatus = nVexRCReceiveState & vrXmit2;
 
 			// Here we repeat loop waiting for user control to end and (optionally) start
 			// of a new competition run
@@ -155,6 +156,8 @@ task main()
 
 				if (nVexRCReceiveState == vrNoXmiters) // the transmitters are powered off!!
 					allMotorsOff();
+
+        lastSlaveStatus = nVexRCReceiveState & vrXmit2;
 				wait1Msec(25);
 		  }
 			allMotorsOff();
@@ -164,7 +167,6 @@ task main()
 			}
 		}
 
-    lastSlaveStatus = nVexRCReceiveState & vrXmit2;
 	}//END while
 
 	// This code will never run

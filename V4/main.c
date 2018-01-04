@@ -60,14 +60,12 @@ task usercontrol(){
 	// } // for testing code above here
 
 	// check if second controller is connected
-	// if (nVexRCReceiveState & vrXmit2) {
-	//   #include "usercontrol-2Controller.c"
-	// }
-	// else {
-	//   #include "usercontrol-singleController.c"
-	// }
-
-  #include "usercontrol-singleController.c"
+	if (nVexRCReceiveState & vrXmit2) {
+	  #include "usercontrol-2Controller.c"
+	}
+	else {
+	  #include "usercontrol-singleController.c"
+	}
 
 	if("we haven't won yet")
 	  smackVcat();
