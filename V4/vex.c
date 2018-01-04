@@ -148,7 +148,7 @@ task main()
 			// of a new competition run
 			while (!bIfiAutonomousMode && !bIfiRobotDisabled)
 			{
-        if ((nVexRCReceiveState & vrXmit2) != lastSlaveStatus){
+        if ((nVexRCReceiveState & vrXmit2) != lastSlaveStatus) {
           // restart usercontrol
           stopTask(usercontrol);
           startTask(usercontrol);
