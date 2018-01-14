@@ -11,6 +11,7 @@
 
 //Main competition background code...do not modify!
 // #include "Vex_Competition_Includes.c"
+#warning "skills"
 #include "vex.c"
 #include "declarations.c"
 #include "variablesForKent.c"

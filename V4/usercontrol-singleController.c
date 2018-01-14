@@ -21,11 +21,11 @@ int    lastArmHeight = 0;
 float  deltaHeight = 0;
 float  lastDeltaHeight = 0;
 // everything for the drive in usrctrl is handled in this task.
-startTask(driveSlew);
 swingPID.target = SensorValue[swingPot];
-startTask(swingPIDTask);
 armPID.target = getArmHeight();
-startTask(armPIDTask);
+startTask(driveSlew);
+startTask(swingPIDTask);
+// startTask(armPIDTask);
 
 
 while (true) {

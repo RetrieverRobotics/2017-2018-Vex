@@ -12,6 +12,7 @@
 #define DEFAULT 0 // for auton selection
 #define BLUE_PRELOAD 1
 #define RED_PRELOAD 2
+#define NUM_AUTONS 3
 
 #define CLAW_OPEN 0
 #define CLAW_CLOSE 1

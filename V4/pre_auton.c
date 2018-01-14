@@ -9,8 +9,7 @@ clearLCDLine(1);
 displayLCDCenteredString(0, "yeet");
 bLCDBacklight = true;
 short nLCDButtons_last = 0;
-const int numAutons = 3;
-string selectionString[numAutons] = {"Default", "Blue Preloads", "Red Preloads"};
+string autonSelectionString[NUM_AUTONS] = {"Default", "Blue Preloads", "Red Preloads"};
 
 // only run if a button is pushed to prevent hanging up in a reset
 if(nLCDButtons > 0){
@@ -24,9 +23,9 @@ if(nLCDButtons > 0){
     if			(nLCDButtons == RIGHT_LCD && nLCDButtons_last != RIGHT_LCD)	autonSelection++;
     else if	(nLCDButtons == LEFT_LCD 	&& nLCDButtons_last != LEFT_LCD)	autonSelection--;
 
-    if			(autonSelection >= numAutons) autonSelection = numAutons - 1;
-    else if (autonSelection < 0) 					autonSelection = 0;
-    displayLCDCenteredString(1,selectionString[autonSelection]); // display the selected zone
+    if			(autonSelection >= NUM_AUTONS) autonSelection = NUM_AUTONS - 1;
+    else if (autonSelection < 0) 					 autonSelection = 0;
+    displayLCDCenteredString(1, autonSelectionString[autonSelection]); // display the selected zone
 
     nLCDButtons_last = nLCDButtons;
     wait1Msec(10);

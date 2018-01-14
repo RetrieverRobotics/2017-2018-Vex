@@ -11,6 +11,7 @@
 
 //Main competition background code...do not modify!
 // #include "Vex_Competition_Includes.c"
+#warning "main"
 #include "vex.c"
 #include "declarations.c"
 #include "variablesForKent.c"
@@ -53,9 +54,18 @@ task autonomous(){
 task usercontrol(){
 	writeDebugStreamLine("usrctrl");
 
+	//motor[liftR] = 60;
+	//motor[driveR2] = 60;
+	//pointTurn(180);
+	//startTask(drivePIDTask);
+
+	//swingPID.target = SWING_90;
+	//startTask(swingPIDTask);
+
+	//while(true){wait1Msec(1000);}
 	// while(true){
-	// 	motor[driveL1] = 69;
-	// 	writeDebugStreamLine("%i", vexRT[Ch3]);
+	//// 	motor[driveL1] = 69;
+	//// 	writeDebugStreamLine("%i", vexRT[Ch3]);
 	// 	wait1Msec(10);
 	// } // for testing code above here
 

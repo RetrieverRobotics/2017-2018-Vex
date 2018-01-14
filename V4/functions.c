@@ -79,7 +79,7 @@ void tankDrive(int lPow, int rPow) {
 }
 
 void resetDrive() {
-	drivePID.target = (SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
+	drivePID.target = (-SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
 }
 
 void resetGyro() {
@@ -111,7 +111,7 @@ void extendMogo() {
 // }
 
 void placeStack(){
-	
+
 }
 
 void setArmHeight(int height){
@@ -309,9 +309,9 @@ task drivePIDTask() {
 		if(driveMode == SWING_LEFT)
 			drivePID.input = SensorValue[driveREnc];
 		else if(driveMode == SWING_RIGHT)
-			drivePID.input = SensorValue[driveLEnc];
+			drivePID.input = -SensorValue[driveLEnc];
 		else if(driveMode == POINT_TURN)
-			drivePID.input = (SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
+			drivePID.input = (-SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
 		// no input for tard modes
 
 		gyroPID.input = SensorValue[gyro] + offset;
@@ -331,6 +331,7 @@ task drivePIDTask() {
 
 		updatePIDVar(&drivePID);
 		updatePIDVar(&gyroPID);
+		// gyroPID.output = 0;
 
 		if(driveMode == POINT_TURN) {
 			// combine PID outputs and lim127 so the gyro has more influence

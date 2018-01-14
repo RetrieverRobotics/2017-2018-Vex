@@ -28,7 +28,7 @@
 // in armPot ticks
 #define ARM_CLEAR_CONE 300//?
 
-#define SWING_IN 3400
+#define SWING_IN 3060
 #define SWING_OUT 550
 #define SWING_90 1900//?
 // the max distance away from the armPID target that the swing should turn on
@@ -45,12 +45,12 @@
 #define MOGO_SECONDARY_WAIT_TIME 100
 
 #define DRIVE_DEADBAND 10 // amount of power where drive wont move
-#define DRIVE_SLEW_TIME 7 // update period for drive slew rate
-#define DRIVE_TPI 22.75 // 28
+#define DRIVE_SLEW_TIME 1 // update period for drive slew rate
+#define DRIVE_TPI 34.5 // 28
 // 392 * (1/pi*D)
 
 // PID tuning variables
-void initPIDVars(){
+void initPIDVars() {
 	drivePID.kP = .75; 		// P
 	drivePID.kI = .0005;//0.002; // I
 	drivePID.kD = 50;//80;
@@ -62,13 +62,13 @@ void initPIDVars(){
 	drivePID.errorThreshold = 20;
 	drivePID.speedThreshold = 0.4;
 
-	gyroPID.kP = 1; // P
-	gyroPID.kI = .002; // I
-	gyroPID.kD = 80; // D
+	gyroPID.kP = .5; // P
+	gyroPID.kI = 0.0009;//.002; // I
+	gyroPID.kD = 65;//80; // D
 	gyroPID.enabled = true;
 	gyroPID.debug = false;
 	gyroPID.integralLimit = 127;
-	gyroPID.integralActiveZone = 127./gyroPID.kP;
+	gyroPID.integralActiveZone = 60./gyroPID.kP;
 	gyroPID.loopTime = drivePID.loopTime;//50; // ms
 	gyroPID.errorThreshold = 20; // 2 degree of error
 	gyroPID.speedThreshold = 0.045; // no more than .045 degree per millisecond or 45 degrees per second
@@ -98,14 +98,14 @@ void initPIDVars(){
 	armCrossCouplePID.speedThreshold = 10;
 	armCrossCouplePID.deadband = 15;
 
-	swingPID.kP = .2; // P
-	swingPID.kI = 0.0001; // I
-	swingPID.kD = 10; // D
+	swingPID.kP = .1; // P
+	swingPID.kI = 0.0002;//0.0002; // I
+	swingPID.kD = 5; // D
 	swingPID.enabled = true;
-	swingPID.debug = false;
+	swingPID.debug = true;
 	swingPID.integralLimit = 127;
-	swingPID.integralActiveZone = 127./swingPID.kP;
-	swingPID.loopTime = 10;//20; // ms
+	swingPID.integralActiveZone = 60./swingPID.kP;
+	swingPID.loopTime = 30;//20; // ms
 	swingPID.errorThreshold = 50;
 	swingPID.speedThreshold = 10;
 	swingPID.deadband = 10;
