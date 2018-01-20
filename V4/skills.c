@@ -174,6 +174,7 @@ task autonomous(){
 	driveIncremental(-5);
 	waitForPID(drivePID);
 	intakeMogo();
+	
 	stopTask(displayTime);
 
 }

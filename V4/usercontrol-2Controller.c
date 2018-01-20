@@ -20,10 +20,10 @@ int    lastArmHeight = 0;
 float  deltaHeight = 0;
 float  lastDeltaHeight = 0;
 // everything for the drive in usrctrl handled in this task.
-startTask(driveSlew);
 swingPID.target = SensorValue[swingPot];
-startTask(swingPIDTask);
 armPID.target = getArmHeight();
+startTask(driveSlew);
+startTask(swingPIDTask);
 startTask(armPIDTask);
 
 
@@ -45,9 +45,9 @@ while (true) {
   // right joystick y axis on slave controller controls lift
   armSetPow = vexRT[Ch2Xmtr2];
   // hold position inside deabands
-  if (armSetPow < ARM_DEADBAND) {
+  if (fabs(armSetPow) < ARM_DEADBAND) {
     if (bPrevPressed)
-      tardLift(0);
+      tardLiftStraight(0);
     // only turn on PIDs if the arm is up
     if (currArmHeight > ARM_BLOCK_MOGO) {
       // clear timer once immediately after button release
@@ -73,7 +73,7 @@ while (true) {
 
       if (!bArmHeightRecorded && bFlagRecordArm) {
         // record height and turn armPID on with cross couple
-        setArmHeight(currArmHeight);
+        // setArmHeight(currArmHeight);
         bArmHeightRecorded = true;
       }
       lastDeltaHeight = deltaHeight;
@@ -82,7 +82,7 @@ while (true) {
     bPrevPressed = false;
   }
   else {
-    tardLift(armSetPow);
+    tardLiftStraight(armSetPow);
     bPrevPressed = true;
   }
 

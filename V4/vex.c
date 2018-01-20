@@ -150,8 +150,19 @@ task main()
 			{
         if ((nVexRCReceiveState & vrXmit2) != lastSlaveStatus) {
           // restart usercontrol
-          stopTask(usercontrol);
-          startTask(usercontrol);
+          writeDebugStreamLine("switching controller layout");
+          // allMotorsOff();
+          // wait1Msec(500);
+          // allTasksStop();
+          // wait1Msec(500);
+          // stopTask(usercontrol);
+          // wait1Msec(500);
+          // allMotorsOff();
+          // wait1Msec(500);
+          // stopTask(usercontrol);
+          // pre_auton();
+          // startTask(usercontrol);
+          // break;
         }
 
 				if (nVexRCReceiveState == vrNoXmiters) // the transmitters are powered off!!

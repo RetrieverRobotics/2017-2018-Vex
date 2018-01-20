@@ -11,7 +11,7 @@
 
 // converts values of right pot scaled to left pot
 float scalePotRToL(float rArmPot) {
-	return 1.15*SensorValue[armPotR] - 409;
+	return .9584 * SensorValue[armPotR] - 18;
 }
 
 // average the L&R pots for arm height
@@ -78,8 +78,16 @@ void tankDrive(int lPow, int rPow) {
 	motor[driveR2]  = rPow;
 }
 
+int getLDriveEnc(){
+	return -SensorValue[driveLEnc];
+}
+
+int getRDriveEnc(){
+	return SensorValue[driveREnc];
+}
+
 void resetDrive() {
-	drivePID.target = (-SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
+	drivePID.target = (getLDriveEnc() + getRDriveEnc()) / 2;
 }
 
 void resetGyro() {
@@ -161,7 +169,7 @@ void driveIncremental(float distance, bool incremental = true) {
 void swingTurnLeft(float degrees, bool incremental = false) {
 	driveMode = SWING_LEFT;
 
-	drivePID.target = SensorValue[driveREnc];
+	drivePID.target = getRDriveEnc();
 	if (incremental) {
 		resetGyro();
 		gyroPID.target += degToGyro(degrees);
@@ -175,7 +183,7 @@ void swingTurnLeft(float degrees, bool incremental = false) {
 void swingTurnRight(float degrees, bool incremental = false) {
 	driveMode = SWING_RIGHT;
 
-	drivePID.target = SensorValue[driveLEnc];
+	drivePID.target = getLDriveEnc();
 	if (incremental) {
 		resetGyro();
 		gyroPID.target += degToGyro(degrees);
@@ -276,13 +284,14 @@ void waitForPID(PIDStruct PIDVar, bool checkSpeed) {
 		error = PIDVar.target - PIDVar.input;
 
 		#ifdef DEBUG_PID_WAIT_FUNC
-			writeDebugStream("%f\t", error);
-			writeDebugStream("%f\n", (PIDVar.input-inputLast) / PIDVar.loopTime);
+		writeDebugStream("%f\t", error);
+		writeDebugStream("%f\n", (PIDVar.input-inputLast) / PIDVar.loopTime);
 		#endif
 
-		//if pos within desired range of target
+		//if position within desired range of target
 		if (fabs(error) < PIDVar.errorThreshold) {
 			// if the speed is close to 0
+			#ifdef WAIT_FOR_PID_CHECK_SPEED
 			if (checkSpeed) {
 				if (fabs((PIDVar.input-inputLast) / PIDVar.loopTime) < PIDVar.speedThreshold) {
 					//100Msec wait for good measure
@@ -290,6 +299,9 @@ void waitForPID(PIDStruct PIDVar, bool checkSpeed) {
 					return; // exit loop
 				}
 			}
+			#else
+			return;
+			#endif
 		}
 
 		inputLast = PIDVar.input;
@@ -307,11 +319,11 @@ task drivePIDTask() {
 	while(true) {
 		// decide which encoders to use for input based on turning mode
 		if(driveMode == SWING_LEFT)
-			drivePID.input = SensorValue[driveREnc];
+			drivePID.input = getRDriveEnc();
 		else if(driveMode == SWING_RIGHT)
-			drivePID.input = -SensorValue[driveLEnc];
+			drivePID.input = getLDriveEnc();
 		else if(driveMode == POINT_TURN)
-			drivePID.input = (-SensorValue[driveLEnc] + SensorValue[driveREnc]) / 2;
+			drivePID.input = (getLDriveEnc() + getRDriveEnc()) / 2;
 		// no input for tard modes
 
 		gyroPID.input = SensorValue[gyro] + offset;

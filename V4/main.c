@@ -44,7 +44,9 @@ void pre_auton(){
 task autonomous(){
 	writeDebugStreamLine("auton");
 
+	startTask(displayTime);
 	#include "auton.c"
+	stopTask(displayTime);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////

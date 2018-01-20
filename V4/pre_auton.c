@@ -33,7 +33,7 @@ if(nLCDButtons > 0){
 
   clearLCDLine(0);
   clearLCDLine(1);
-  //Reconfigure Analog Port 8 as a Gyro sensor and allow time for ROBOTC to calibrate it
+  //Reconfigure gyro Analog Port as a Gyro sensor and allow time for ROBOTC to calibrate it
   displayLCDCenteredString(0,"Init Calibration");
   displayLCDCenteredString(1,"Do not move bot");
   wait1Msec(1000);

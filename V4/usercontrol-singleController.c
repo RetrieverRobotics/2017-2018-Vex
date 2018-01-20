@@ -25,7 +25,7 @@ swingPID.target = SensorValue[swingPot];
 armPID.target = getArmHeight();
 startTask(driveSlew);
 startTask(swingPIDTask);
-// startTask(armPIDTask);
+startTask(armPIDTask);
 
 
 while (true) {
@@ -45,17 +45,17 @@ while (true) {
 
   // up on 5U
   if (vexRT[Btn5U]) {
-    tardLift(127);
+    tardLiftStraight(127);
     bPrevPressed = true;
   }
   // down on 5D
   else if (vexRT[Btn5D]) {
-    tardLift(-127);
+    tardLiftStraight(-127);
     bPrevPressed = true;
   }
   else {
     if (bPrevPressed)
-      tardLift(0);
+      tardLiftStraight(0);
 
     // only turn on PIDS if the arm is up
     if (currArmHeight > ARM_BLOCK_MOGO) {
@@ -82,7 +82,8 @@ while (true) {
 
       if (!bArmHeightRecorded && bFlagRecordArm) {
         // record height and turn armPID on with cross couple
-        setArmHeight(currArmHeight);
+        // writeDebugStreamLine("armset");
+        // setArmHeight(currArmHeight);
         bArmHeightRecorded = true;
       }
       lastDeltaHeight = deltaHeight;

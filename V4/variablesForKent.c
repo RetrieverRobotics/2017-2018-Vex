@@ -8,9 +8,12 @@
 #define sploof
 
 // uncommenting this will turn off PID control of the arm in usercontrol
-#define ARM_CENTERING_OFF
+// #define ARM_CENTERING_OFF
 // uncommenting this will output debug information for the waitForPID function
 // #define DEBUG_PID_WAIT_FUNC
+// if this is defined then the waitForPID() function will wait until the speed
+// aswell as the error are close to zero
+#define WAIT_FOR_PID_CHECK_SPEED
 
 #define AUTON_RELOAD_TIME 0 // ms waited for human placement of preload cones
 // number of times to stack preloads in auton
@@ -59,7 +62,7 @@ void initPIDVars() {
 	drivePID.integralLimit = 127;
 	drivePID.integralActiveZone = 127./drivePID.kP;
 	drivePID.loopTime = 50; // ms
-	drivePID.errorThreshold = 20;
+	drivePID.errorThreshold = 50;
 	drivePID.speedThreshold = 0.4;
 
 	gyroPID.kP = .5; // P
@@ -81,18 +84,18 @@ void initPIDVars() {
 	armPID.debug = false;
 	armPID.integralLimit = 127;
 	armPID.integralActiveZone = 127./armPID.kP;
-	armPID.loopTime = 50; // ms
+	armPID.loopTime = 30; // ms
 	armPID.errorThreshold = 50;
 	armPID.speedThreshold = 0.1;//7;
 	armPID.deadband = 15;
 
-	armCrossCouplePID.kP = .1;//.1;//.1 			// P
-	armCrossCouplePID.kI = 0;//0.0001;//0.000060; 	// I
-	armCrossCouplePID.kD = 10;//10;//20;//40; 				// D
+	armCrossCouplePID.kP = .4;//.1;//.1 			// P
+	armCrossCouplePID.kI = .0001;//0.0001;//0.000060; 	// I
+	armCrossCouplePID.kD = 25;//10;//20;//40; 				// D
 	armCrossCouplePID.enabled = true;
 	armCrossCouplePID.debug = false;
-	armCrossCouplePID.integralLimit = 40;
-	armCrossCouplePID.integralActiveZone = 20./armCrossCouplePID.kP;
+	armCrossCouplePID.integralLimit = 127;
+	armCrossCouplePID.integralActiveZone = 40./armCrossCouplePID.kP;
 	armCrossCouplePID.loopTime = armPID.loopTime; // ms
 	armCrossCouplePID.errorThreshold = 50;
 	armCrossCouplePID.speedThreshold = 10;
@@ -102,7 +105,7 @@ void initPIDVars() {
 	swingPID.kI = 0.0002;//0.0002; // I
 	swingPID.kD = 5; // D
 	swingPID.enabled = true;
-	swingPID.debug = true;
+	swingPID.debug = false;
 	swingPID.integralLimit = 127;
 	swingPID.integralActiveZone = 60./swingPID.kP;
 	swingPID.loopTime = 30;//20; // ms
