@@ -19,7 +19,7 @@ float getArmHeight() {
 	return (SensorValue[armPotL] + scalePotRToL(SensorValue[armPotR])) / 2;
 }
 
-// returns current heading in degrees
+// returns robot heading in degrees
 float getHeading() {
 	return (SensorValue[gyro] / 10) + startingRotationOffset;
 }
@@ -413,7 +413,7 @@ task armPIDTask() {
 	}
 }
 
-//yeetsauce
+// yeetsauce
 task swingPIDTask() {
 	while (true) {
 		if (swingPID.enabled) {

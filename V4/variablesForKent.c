@@ -21,8 +21,8 @@
 #define AUTON_STACK_COUNT 13
 #define INCHES_PER_CONE 2.5 // inches added with each cone
 
-#define ARM_SCHMEDIUM 1300
-#define ARM_PRELOAD_HEIGHT 1300
+#define ARM_SCHMEDIUM 500//?
+#define ARM_PRELOAD_HEIGHT 500//?
 #define ARM_BLOCK_MOGO 0 // 1200
 #define ARM_TICKS_PER_INCH 38
 #define ARM_DEADBAND 10

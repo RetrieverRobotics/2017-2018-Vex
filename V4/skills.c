@@ -174,7 +174,7 @@ task autonomous(){
 	driveIncremental(-5);
 	waitForPID(drivePID);
 	intakeMogo();
-	
+
 	stopTask(displayTime);
 
 }
@@ -191,7 +191,7 @@ task usercontrol(){
 	  #include "usercontrol-2Controller.c"
 	}
 	else {
-	  #include "usercontrol-singleController.c"
+	  #include "usercontrol-skills-singleController.c"
 	}
 
 }//END usercontrol()
