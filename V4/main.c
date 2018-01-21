@@ -64,6 +64,7 @@ task usercontrol(){
 	//swingPID.target = SWING_90;
 	//startTask(swingPIDTask);
 
+	//motor[liftL] = 60;
 	//while(true){wait1Msec(1000);}
 	// while(true){
 	//// 	motor[driveL1] = 69;

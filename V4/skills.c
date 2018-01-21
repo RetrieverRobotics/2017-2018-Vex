@@ -26,7 +26,7 @@ void pre_auton(){
 	bDisplayCompetitionStatusOnLcd = false;
 	bStopTasksBetweenModes = true;
 	clearDebugStream();
-	startTask(autonomous);
+	//startTask(autonomous);
 
 	#include "pre_auton.c"
 }//END pre_auton
@@ -38,6 +38,26 @@ void pre_auton(){
 // skills - blue side facing mogo
 task autonomous(){
 	writeDebugStreamLine("auton - skills");
+
+	startTask(armPIDTask);
+   setArmHeight(ARM_SCHMEDIUM);
+wait1Msec(1000);
+
+	extendMogo();
+	tankDrive(127,127);
+	wait1Msec(1000);
+	tankDrive(0,0);
+	intakeMogo();
+	wait1Msec(500);
+	tankDrive(-127, 127);
+	wait1Msec(1700);
+	tankDrive(127,127);
+	wait1Msec(3000);
+	extendMogo();
+	tankDrive(-60, -60);
+
+
+	while(true){wait1Msec(1000);}
 
 	clearTimer(T1);
 	startTask(displayTime);

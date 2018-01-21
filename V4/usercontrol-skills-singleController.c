@@ -13,7 +13,7 @@ SensorValue[driveREnc] = 0;
 string displayString;
 static bool bSwingManual = true;
 bool   bSwingToggle = true;
-bool   bPrevPressed = false;
+bool   bJustPressed = false;
 bool   bArmHeightRecorded = false;
 bool   bFlagRecordArm = false;
 bool   liftMacroSet = true;
@@ -28,7 +28,7 @@ startTask(driveSlew);
 startTask(swingPIDTask);
 startTask(armPIDTask);
 
-setArmHeight(ARM_SCHMEDIUM);
+// setArmHeight(ARM_SCHMEDIUM);
 while (true) {
   // Display battery level
   clearLCDLine(0);
@@ -60,27 +60,28 @@ while (true) {
     // up on 5U
     if (vexRT[Btn7U]) {
       tardLiftStraight(127);
-      bPrevPressed = true;
+      bJustPressed = true;
     }
     // down on 5D
     else if (vexRT[Btn7D]) {
       tardLiftStraight(-127);
-      bPrevPressed = true;
+      bJustPressed = true;
     }
     else {
-      if (!bArmHeightRecorded || bPrevPressed)
+      if (!bArmHeightRecorded || bJustPressed)
         tardLiftStraight(0);
 
       // only turn on PIDS if the arm is up
       if (currArmHeight > ARM_BLOCK_MOGO) {
         // clear timer once immediately after button release
-        if (bPrevPressed) {
+        if (bJustPressed) {
           clearTimer(T2);
           bArmHeightRecorded = false; // set up to turn on pid later
         }
 
         // look for local extrema of the height function and record position there
         bFlagRecordArm = false;
+        // if (!bJustPressed) {
         if (sgn(deltaHeight) != sgn(lastDeltaHeight))
           bFlagRecordArm = true;
         if (deltaHeight == 0)
@@ -97,7 +98,7 @@ while (true) {
         }
       }
 
-      bPrevPressed = false;
+      bJustPressed = false;
     }
   }
 
@@ -168,11 +169,11 @@ while (true) {
   // if arm is below a certain height, dont use mogo
   if (currArmHeight > ARM_BLOCK_MOGO) {
     // in on 7D
-    if (vexRT[Btn5D]) {
+    if (vexRT[Btn5U]) {
       motor[mogo] = 127;
     }
     //out on 7U
-    else if (vexRT[Btn5U]) {
+    else if (vexRT[Btn5D]) {
       motor[mogo] = -127;
     }
     else {
