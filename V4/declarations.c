@@ -14,9 +14,6 @@
 #define RED_PRELOAD 2
 #define NUM_AUTONS 3
 
-#define CLAW_OPEN 0
-#define CLAW_CLOSE 1
-
 #define X_COORD 0
 #define Y_COORD 1
 

@@ -4,6 +4,7 @@
 #pragma config(Sensor, in4,    mogoPot,        sensorPotentiometer)
 #pragma config(Sensor, in5,    swingPot,       sensorPotentiometer)
 #pragma config(Sensor, in6,    armPotL,        sensorPotentiometer)
+#pragma config(Sensor, in7,    batt2Status,    sensorAnalog)
 #pragma config(Sensor, dgtl1,  claw,           sensorDigitalOut)
 #pragma config(Sensor, dgtl2,  sonar,          sensorSONAR_inch)
 #pragma config(Sensor, I2C_1,  driveLEnc,      sensorQuadEncoderOnI2CPort,    , AutoAssign )

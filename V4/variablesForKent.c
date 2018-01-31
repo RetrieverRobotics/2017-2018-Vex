@@ -8,7 +8,7 @@
 #define sploof
 
 // uncommenting this will turn off PID control of the arm in usercontrol
-// #define ARM_CENTERING_OFF
+#define ARM_CENTERING_OFF
 // uncommenting this will output debug information for the waitForPID function
 // #define DEBUG_PID_WAIT_FUNC
 // if this is defined then the waitForPID() function will wait until the speed
@@ -26,7 +26,7 @@
 #define ARM_BLOCK_MOGO 0 // 1200
 #define ARM_TICKS_PER_INCH 38
 #define ARM_DEADBAND 10
-#define ARM_STARTING_HEIGHT 1000
+#define ARM_STARTING_HEIGHT 100//?
 // distance the arm must go up for the swing to clear the cone
 // in armPot ticks
 #define ARM_CLEAR_CONE 300//?
@@ -42,13 +42,16 @@
 #define SWING_CLEAR_CONE 1900//?
 
 #define CLAW_OPEN_TIME 200//? // the time in ms for the claw to open
+#define CLAW_OPEN 0
+#define CLAW_CLOSE 1
 
 #define MOGO_EXTEND_TIME 700
 #define MOGO_INTAKE_TIME 900
 #define MOGO_SECONDARY_WAIT_TIME 100
 
 #define DRIVE_DEADBAND 10 // amount of power where drive wont move
-#define DRIVE_SLEW_TIME 1 // update period for drive slew rate
+#define DRIVE_SLEW_TIME 15 // update period for drive slew rate
+#define DRIVE_SLEW_RATE 15 // maximum motor power change allowed per DRIVE_SLEW_TIME ms
 #define DRIVE_TPI 34.5 // 28
 // 392 * (1/pi*D)
 

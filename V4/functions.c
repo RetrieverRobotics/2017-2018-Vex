@@ -11,7 +11,8 @@
 
 // converts values of right pot scaled to left pot
 float scalePotRToL(float rArmPot) {
-	return .9584 * SensorValue[armPotR] - 18;
+	return .9193 * SensorValue[armPotR] - 15;
+	// return .9584 * SensorValue[armPotR] - 18;
 }
 
 // average the L&R pots for arm height
@@ -212,8 +213,8 @@ task driveSlew() {
 	int rightDrive = 0;
 	while(true) {
 		// writeDebugStreamLine("%i", leftDrive);
-		leftDrive 	= slew(vexRT[Ch3], 	leftDrive,  1);
-		rightDrive 	= slew(vexRT[Ch2], rightDrive, 	1);
+		leftDrive 	= slew(vexRT[Ch3], 	leftDrive,  DRIVE_SLEW_RATE);
+		rightDrive 	= slew(vexRT[Ch2], rightDrive, 	DRIVE_SLEW_RATE);
 		tankDrive(leftDrive, rightDrive);
 		wait1Msec(DRIVE_SLEW_TIME);
 	}

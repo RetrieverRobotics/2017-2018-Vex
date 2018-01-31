@@ -46,8 +46,11 @@ if(nLCDButtons > 0){
   SensorScale[gyro] = 138.5;//138.85;//138;
   clearLCDLine(0);
   clearLCDLine(1);
-}//end buttons > 0
 
-initPIDVars();
-displayLCDCenteredString(0,"RReady");
-bLCDBacklight = false;
+  initPIDVars();
+  displayLCDCenteredString(0,"RReady");
+  bLCDBacklight = false;
+}//end buttons > 0
+else {
+  displayLCDCenteredString(0,"No Auton Selected");
+}

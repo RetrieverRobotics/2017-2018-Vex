@@ -11,7 +11,7 @@ clearTimer(T2);
 SensorValue[driveLEnc] = 0;
 SensorValue[driveREnc] = 0;
 string displayString;
-static bool bSwingManual = true;
+bool   bSwingManual = true;
 bool   bSwingToggle = true;
 bool   bPrevPressed = false;
 bool   bArmHeightRecorded = true;

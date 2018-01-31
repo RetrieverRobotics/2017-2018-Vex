@@ -9,19 +9,19 @@ clearTimer(T2);
 SensorValue[driveLEnc] = 0;
 SensorValue[driveREnc] = 0;
 string displayString;
-static bool bSwingManual = true;
+bool   bSwingManual = true;
 bool   bSwingToggle = true;
-bool   bPrevPressed = false;
-bool   bArmHeightRecorded = true;
+bool   bArmJustUsed = false;
+bool   bArmHeightRecorded = false;
 bool   bFlagRecordArm = false;
 int    armSetPow = 0;
-int    currArmHeight = 0;
-int    lastArmHeight = 0;
+int    currArmHeight = getArmHeight();
+int    lastArmHeight = currArmHeight;
 float  deltaHeight = 0;
 float  lastDeltaHeight = 0;
 // everything for the drive in usrctrl handled in this task.
 swingPID.target = SensorValue[swingPot];
-armPID.target = getArmHeight();
+tardLiftStraight(0);
 startTask(driveSlew);
 startTask(swingPIDTask);
 startTask(armPIDTask);
@@ -37,6 +37,7 @@ while (true) {
   displayLCDCenteredString(1, displayString);
 
   currArmHeight = getArmHeight();
+  deltaHeight = currArmHeight - lastArmHeight;
 
   //--------------------------------------------------------------------------------
   // Lift
@@ -46,44 +47,40 @@ while (true) {
   armSetPow = vexRT[Ch2Xmtr2];
   // hold position inside deabands
   if (fabs(armSetPow) < ARM_DEADBAND) {
-    if (bPrevPressed)
+    // clear timer once immediately after button release
+    if (bArmJustUsed) {
+      clearTimer(T2);
+      bArmHeightRecorded = false; // set up to turn on pid later
       tardLiftStraight(0);
-    // only turn on PIDs if the arm is up
-    if (currArmHeight > ARM_BLOCK_MOGO) {
-      // clear timer once immediately after button release
-      if (bPrevPressed) {
-        clearTimer(T2);
-        bArmHeightRecorded = false; // set up to turn on pid later
-        lastDeltaHeight = currArmHeight - lastArmHeight;
-        deltaHeight = lastDeltaHeight;
-      }
-      else {
-        deltaHeight = currArmHeight - lastArmHeight;
-      }
-
-      // look for local extrema of the height function and record position there
-      bFlagRecordArm = false;
-      if (sgn(deltaHeight) != sgn(lastDeltaHeight))
-        bFlagRecordArm = true;
-      if (deltaHeight == 0)
-        bFlagRecordArm = true;
-      // timeout after 500 ms
-      if (time1[T2] > 500)
-        bFlagRecordArm = true;
-
-      if (!bArmHeightRecorded && bFlagRecordArm) {
-        // record height and turn armPID on with cross couple
-        // setArmHeight(currArmHeight);
-        bArmHeightRecorded = true;
-      }
-      lastDeltaHeight = deltaHeight;
     }
 
-    bPrevPressed = false;
+    // check conditions to set arm height
+    bFlagRecordArm = false;
+    // enable conditions
+    // look for local extrema of the height function and record position there
+    if (sgn(deltaHeight) != sgn(lastDeltaHeight))
+      bFlagRecordArm = true;
+    if (deltaHeight == 0)
+      bFlagRecordArm = true;
+    // timeout after 500 ms
+    if (time1[T2] > 500)
+      bFlagRecordArm = true;
+
+    // disable conditions
+    // only turn on PIDs if the arm is up
+    if (currArmHeight > ARM_BLOCK_MOGO)
+      bFlagRecordArm = false;
+
+    if (!bArmHeightRecorded && bFlagRecordArm) {
+      // setArmHeight(currArmHeight);
+      bArmHeightRecorded = true;
+    }
+
+    bArmJustUsed = false;
   }
   else {
     tardLiftStraight(armSetPow);
-    bPrevPressed = true;
+    bArmJustUsed = true;
   }
 
   //--------------------------------------------------------------------------------
@@ -179,5 +176,7 @@ while (true) {
   // loader height
 
   lastArmHeight = currArmHeight;
+  lastDeltaHeight = deltaHeight;
+
   wait1Msec(20);
 }

@@ -34,7 +34,7 @@ void pre_auton(){
 	// sprintf(displayString, "%i\n%i\n%i", vrDisabled, vrAutonomousMode, vrCompetitionSwitch);
 	// writeDebugStreamLine(displayString);
 
-	#include "pre_auton.c"
+#include "pre_auton.c"
 }//END pre_auton
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -45,7 +45,7 @@ task autonomous(){
 	writeDebugStreamLine("auton");
 
 	startTask(displayTime);
-	#include "auton.c"
+#include "auton.c"
 	stopTask(displayTime);
 }
 
@@ -65,6 +65,12 @@ task usercontrol(){
 	//startTask(swingPIDTask);
 
 	//motor[liftL] = 60;
+	//while(true){
+	//	SensorValue[claw] = 1;
+	//	wait1Msec(500);
+	//	SensorValue[claw] = 0;
+	//	wait1Msec(500);
+	//}
 	//while(true){wait1Msec(1000);}
 	// while(true){
 	//// 	motor[driveL1] = 69;
@@ -74,13 +80,13 @@ task usercontrol(){
 
 	// check if second controller is connected
 	if (nVexRCReceiveState & vrXmit2) {
-	  #include "usercontrol-2Controller.c"
+#include "usercontrol-2Controller.c"
 	}
 	else {
-	  #include "usercontrol-singleController.c"
+#include "usercontrol-skills-singleController.c"
 	}
 
 	if("we haven't won yet")
-	  smackVcat();
+		smackVcat();
 
 }//END usercontrol()
