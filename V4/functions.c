@@ -420,7 +420,7 @@ task swingPIDTask() {
 		if (swingPID.enabled) {
 			swingPID.input = SensorValue[swingPot];
 			updatePIDVar(&swingPID);
-			motor[swing] = swingPID.output;
+			motor[swing] = -swingPID.output;
 		}
 
 		wait1Msec(swingPID.loopTime);

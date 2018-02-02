@@ -1,8 +1,7 @@
 ////////////////////////////////////////////////////////
 //
-// Usercontrol with a single controller
-// gives basic control enough to maneuver the robot.
-// Not intended for competition use.
+// Usercontrol with a single controller.
+// For skills.
 //
 ////////////////////////////////////////////////////////
 
@@ -13,21 +12,24 @@ SensorValue[driveREnc] = 0;
 string displayString;
 bool   bSwingManual = true;
 bool   bSwingToggle = true;
-bool   bPrevPressed = false;
-bool   bArmHeightRecorded = true;
+bool   bArmJustUsed = false;
+bool   bArmHeightRecorded = false;
 bool   bFlagRecordArm = false;
-int    currArmHeight = 0;
-int    lastArmHeight = 0;
+bool   liftMacroSet = false;
+int    currArmHeight = getArmHeight();
+int    lastArmHeight = currArmHeight;
 float  deltaHeight = 0;
 float  lastDeltaHeight = 0;
 // everything for the drive in usrctrl is handled in this task.
 swingPID.target = SensorValue[swingPot];
-armPID.target = getArmHeight();
+tardLiftStraight(0);
 startTask(driveSlew);
 startTask(swingPIDTask);
 startTask(armPIDTask);
 
+bLCDBacklight = false;
 
+// setArmHeight(ARM_SCHMEDIUM);
 while (true) {
   // Display battery level
   clearLCDLine(0);
@@ -38,40 +40,48 @@ while (true) {
   displayLCDCenteredString(1, displayString);
 
   currArmHeight = getArmHeight();
+  deltaHeight = currArmHeight - lastArmHeight;
 
   //--------------------------------------------------------------------------------
   // Lift
   //--------------------------------------------------------------------------------
 
-  // up on 5U
-  if (vexRT[Btn5U]) {
-    tardLiftStraight(127);
-    bPrevPressed = true;
+  // this btn starts a lift macro to raise to schmedium height
+  if (vexRT[Btn7L]){
+    setArmHeight(ARM_SCHMEDIUM);
+    liftMacroSet = true;
   }
-  // down on 5D
-  else if (vexRT[Btn5D]) {
-    tardLiftStraight(-127);
-    bPrevPressed = true;
-  }
-  else {
-    if (bPrevPressed)
+  // unset macros on these btns
+  else if (vexRT[Btn7U] || vexRT[Btn7D]) {
+    if (liftMacroSet) {
       tardLiftStraight(0);
+      liftMacroSet = false;
+    }
+  }
 
-    // only turn on PIDS if the arm is up
-    if (currArmHeight > ARM_BLOCK_MOGO) {
+  if (!liftMacroSet) {
+    // up on 5U
+    if (vexRT[Btn7U]) {
+      tardLiftStraight(127);
+      bArmJustUsed = true;
+    }
+    // down on 5D
+    else if (vexRT[Btn7D]) {
+      tardLiftStraight(-127);
+      bArmJustUsed = true;
+    }
+    else {
       // clear timer once immediately after button release
-      if (bPrevPressed) {
+      if (bArmJustUsed) {
         clearTimer(T2);
         bArmHeightRecorded = false; // set up to turn on pid later
-        lastDeltaHeight = currArmHeight - lastArmHeight;
-        deltaHeight = lastDeltaHeight;
-      }
-      else {
-        deltaHeight = currArmHeight - lastArmHeight;
+        tardLiftStraight(0);
       }
 
-      // look for local extrema of the height function and record position there
+      // check conditions to set arm height
       bFlagRecordArm = false;
+      // enable conditions
+      // look for local extrema of the height function and record position there
       if (sgn(deltaHeight) != sgn(lastDeltaHeight))
         bFlagRecordArm = true;
       if (deltaHeight == 0)
@@ -80,17 +90,19 @@ while (true) {
       if (time1[T2] > 500)
         bFlagRecordArm = true;
 
+      // disable conditions
+      // only turn on PIDs if the arm is up
+      if (currArmHeight < ARM_BLOCK_MOGO)
+        bFlagRecordArm = false;
+
       if (!bArmHeightRecorded && bFlagRecordArm) {
-        // record height and turn armPID on with cross couple
-        // writeDebugStreamLine("armset");
         // setArmHeight(currArmHeight);
         bArmHeightRecorded = true;
       }
-      lastDeltaHeight = deltaHeight;
-    }
 
-    bPrevPressed = false;
-  }
+      bArmJustUsed = false;
+    }
+  }//END liftMacroSet
 
   //--------------------------------------------------------------------------------
   // Swing
@@ -159,11 +171,11 @@ while (true) {
   // if arm is below a certain height, dont use mogo
   if (currArmHeight > ARM_BLOCK_MOGO) {
     // in on 7D
-    if (vexRT[Btn7D]) {
+    if (vexRT[Btn5U]) {
       motor[mogo] = 127;
     }
     //out on 7U
-    else if (vexRT[Btn7U]) {
+    else if (vexRT[Btn5D]) {
       motor[mogo] = -127;
     }
     else {
@@ -175,5 +187,7 @@ while (true) {
   }
 
   lastArmHeight = currArmHeight;
+  lastDeltaHeight = deltaHeight;
+
   wait1Msec(20);
 }

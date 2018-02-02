@@ -64,6 +64,9 @@ task usercontrol(){
 	//swingPID.target = SWING_90;
 	//startTask(swingPIDTask);
 
+	//setArmHeight(500);
+	//startTask(armPIDTask);
+
 	//motor[liftL] = 60;
 	//while(true){
 	//	SensorValue[claw] = 1;
@@ -71,6 +74,16 @@ task usercontrol(){
 	//	SensorValue[claw] = 0;
 	//	wait1Msec(500);
 	//}
+
+	//while(true) {
+	//	SensorValue[claw] = 1;
+	//	wait1Msec(200);
+	//	SensorValue[claw] = 0;
+	//	wait1Msec(200);
+
+	//}
+
+	//motor[liftL] = 127;
 	//while(true){wait1Msec(1000);}
 	// while(true){
 	//// 	motor[driveL1] = 69;
@@ -80,10 +93,10 @@ task usercontrol(){
 
 	// check if second controller is connected
 	if (nVexRCReceiveState & vrXmit2) {
-#include "usercontrol-2Controller.c"
+		#include "usercontrol-2Controller.c"
 	}
 	else {
-#include "usercontrol-skills-singleController.c"
+		#include "usercontrol-singleController.c"
 	}
 
 	if("we haven't won yet")

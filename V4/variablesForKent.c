@@ -8,7 +8,7 @@
 #define sploof
 
 // uncommenting this will turn off PID control of the arm in usercontrol
-#define ARM_CENTERING_OFF
+// #define ARM_CENTERING_OFF
 // uncommenting this will output debug information for the waitForPID function
 // #define DEBUG_PID_WAIT_FUNC
 // if this is defined then the waitForPID() function will wait until the speed
@@ -31,8 +31,8 @@
 // in armPot ticks
 #define ARM_CLEAR_CONE 300//?
 
-#define SWING_IN 3060
-#define SWING_OUT 550
+#define SWING_IN 4000
+#define SWING_OUT 1400
 #define SWING_90 1900//?
 // the max distance away from the armPID target that the swing should turn on
 // in armPot ticks
@@ -49,7 +49,7 @@
 #define MOGO_INTAKE_TIME 900
 #define MOGO_SECONDARY_WAIT_TIME 100
 
-#define DRIVE_DEADBAND 10 // amount of power where drive wont move
+#define DRIVE_DEADBAND 15 // amount of power where drive wont move
 #define DRIVE_SLEW_TIME 15 // update period for drive slew rate
 #define DRIVE_SLEW_RATE 15 // maximum motor power change allowed per DRIVE_SLEW_TIME ms
 #define DRIVE_TPI 34.5 // 28
@@ -92,11 +92,11 @@ void initPIDVars() {
 	armPID.speedThreshold = 0.1;//7;
 	armPID.deadband = 15;
 
-	armCrossCouplePID.kP = .4;//.1;//.1 			// P
-	armCrossCouplePID.kI = .0001;//0.0001;//0.000060; 	// I
-	armCrossCouplePID.kD = 25;//10;//20;//40; 				// D
+	armCrossCouplePID.kP = .3;//.1;//.1 			// P
+	armCrossCouplePID.kI = 0;//0.0001;//0.000060; 	// I
+	armCrossCouplePID.kD = 10;//10;//20;//40; 				// D
 	armCrossCouplePID.enabled = true;
-	armCrossCouplePID.debug = false;
+	armCrossCouplePID.debug = true;
 	armCrossCouplePID.integralLimit = 127;
 	armCrossCouplePID.integralActiveZone = 40./armCrossCouplePID.kP;
 	armCrossCouplePID.loopTime = armPID.loopTime; // ms
@@ -108,7 +108,7 @@ void initPIDVars() {
 	swingPID.kI = 0.0002;//0.0002; // I
 	swingPID.kD = 5; // D
 	swingPID.enabled = true;
-	swingPID.debug = false;
+	swingPID.debug = true;
 	swingPID.integralLimit = 127;
 	swingPID.integralActiveZone = 60./swingPID.kP;
 	swingPID.loopTime = 30;//20; // ms

@@ -26,6 +26,7 @@ startTask(driveSlew);
 startTask(swingPIDTask);
 startTask(armPIDTask);
 
+bLCDBacklight = false;
 
 while (true) {
   // Display battery level

@@ -47,10 +47,10 @@ if(nLCDButtons > 0){
   clearLCDLine(0);
   clearLCDLine(1);
 
-  initPIDVars();
   displayLCDCenteredString(0,"RReady");
   bLCDBacklight = false;
 }//end buttons > 0
 else {
   displayLCDCenteredString(0,"No Auton Selected");
 }
+initPIDVars();
