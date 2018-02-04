@@ -11,7 +11,7 @@
 
 // converts values of right pot scaled to left pot
 float scalePotRToL(float rArmPot) {
-	return .9193 * SensorValue[armPotR] - 15;
+	return .9193 * SensorValue[armPotR] - 30;
 	// return .9584 * SensorValue[armPotR] - 18;
 }
 
@@ -248,13 +248,15 @@ void updatePIDVar(PIDStruct *PIDVar) {
 		error = PIDVar->target - PIDVar->input;
 
 		proportional = PIDVar->kP * error; // P
-		if(fabs(error) <= PIDVar->integralActiveZone) { // Active zone for I
+		// Check active zone for I
+		if (fabs(error) <= PIDVar->integralActiveZone) {
 			PIDVar->integral += PIDVar->kI * error * PIDVar->loopTime; // I
 			if(fabs(PIDVar->integral) >= PIDVar->integralLimit) // limit I
 				PIDVar->integral = sgn(PIDVar->integral) * PIDVar->integralLimit;
 		}
-		else
+		else {
 			PIDVar->integral = 0;
+		}
 		derivative = PIDVar->kD * (error - PIDVar->previousError) / PIDVar->loopTime; // D
 
 		PIDVar->output = round(proportional + PIDVar->integral + derivative);
@@ -297,11 +299,14 @@ void waitForPID(PIDStruct PIDVar, bool checkSpeed) {
 				if (fabs((PIDVar.input-inputLast) / PIDVar.loopTime) < PIDVar.speedThreshold) {
 					//100Msec wait for good measure
 					// wait1Msec(100);
-					return; // exit loop
+					break; // exit loop
 				}
 			}
+			else {
+				break;
+			}
 			#else
-			return;
+			break;
 			#endif
 		}
 
@@ -316,6 +321,8 @@ task drivePIDTask() {
 	float lastGyro = SensorValue[gyro];
 	static int offset; // for gyro rollover
 	int gyroDelta;
+	updatePIDVar(&drivePID);
+	updatePIDVar(&gyroPID);
 
 	while(true) {
 		// decide which encoders to use for input based on turning mode
@@ -385,6 +392,10 @@ task drivePIDTask() {
 // set height with armPID.target
 task armPIDTask() {
 	armCrossCouplePID.target = 0;
+	armPID.input = getArmHeight();
+	armCrossCouplePID.input = SensorValue[armPotL] - scalePotRToL(SensorValue[armPotR]);
+	updatePIDVar(&armPID);
+	updatePIDVar(&armCrossCouplePID);
 
 	while(true) {
 		// average the 2 pots for height
@@ -416,6 +427,9 @@ task armPIDTask() {
 
 // yeetsauce
 task swingPIDTask() {
+	swingPID.input = SensorValue[swingPot];
+	updatePIDVar(&swingPID);
+
 	while (true) {
 		if (swingPID.enabled) {
 			swingPID.input = SensorValue[swingPot];

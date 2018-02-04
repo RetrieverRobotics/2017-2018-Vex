@@ -82,21 +82,18 @@ while (true) {
       bFlagRecordArm = false;
       // enable conditions
       // look for local extrema of the height function and record position there
-      if (sgn(deltaHeight) != sgn(lastDeltaHeight))
-        bFlagRecordArm = true;
-      if (deltaHeight == 0)
-        bFlagRecordArm = true;
+      // if (sgn(deltaHeight) != sgn(lastDeltaHeight)) bFlagRecordArm = true;
+      // if (deltaHeight == 0) bFlagRecordArm = true;
+      if (vexRT[Btn7R]) bFlagRecordArm = true;
       // timeout after 500 ms
-      if (time1[T2] > 500)
-        bFlagRecordArm = true;
+      // if (time1[T2] > 500) bFlagRecordArm = true;
 
       // disable conditions
       // only turn on PIDs if the arm is up
-      if (currArmHeight < ARM_BLOCK_MOGO)
-        bFlagRecordArm = false;
+      if (currArmHeight < ARM_BLOCK_MOGO) bFlagRecordArm = false;
 
       if (!bArmHeightRecorded && bFlagRecordArm) {
-        // setArmHeight(currArmHeight);
+        setArmHeight(currArmHeight);
         bArmHeightRecorded = true;
       }
 

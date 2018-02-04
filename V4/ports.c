@@ -6,7 +6,7 @@
 #pragma config(Sensor, in6,    armPotL,        sensorPotentiometer)
 #pragma config(Sensor, in7,    batt2Status,    sensorAnalog)
 #pragma config(Sensor, dgtl1,  claw,           sensorDigitalOut)
-#pragma config(Sensor, dgtl2,  sonar,          sensorSONAR_inch)
+#pragma config(Sensor, dgtl2,  mogoFlip,       sensorDigitalOut)
 #pragma config(Sensor, I2C_1,  driveLEnc,      sensorQuadEncoderOnI2CPort,    , AutoAssign )
 #pragma config(Sensor, I2C_2,  driveREnc,      sensorQuadEncoderOnI2CPort,    , AutoAssign )
 #pragma config(Motor,  port2,           swing,         tmotorVex393HighSpeed_MC29, openLoop)

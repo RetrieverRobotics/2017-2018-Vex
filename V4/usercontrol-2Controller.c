@@ -59,21 +59,18 @@ while (true) {
     bFlagRecordArm = false;
     // enable conditions
     // look for local extrema of the height function and record position there
-    if (sgn(deltaHeight) != sgn(lastDeltaHeight))
-      bFlagRecordArm = true;
-    if (deltaHeight == 0)
-      bFlagRecordArm = true;
+    // if (sgn(deltaHeight) != sgn(lastDeltaHeight)) bFlagRecordArm = true;
+    // if (deltaHeight == 0) bFlagRecordArm = true;
+    if (vexRT[Btn8RXmtr2]) bFlagRecordArm = true;
     // timeout after 500 ms
-    if (time1[T2] > 500)
-      bFlagRecordArm = true;
+    // if (time1[T2] > 500) bFlagRecordArm = true;
 
     // disable conditions
     // only turn on PIDs if the arm is up
-    if (currArmHeight > ARM_BLOCK_MOGO)
-      bFlagRecordArm = false;
+    if (currArmHeight < ARM_BLOCK_MOGO) bFlagRecordArm = false;
 
     if (!bArmHeightRecorded && bFlagRecordArm) {
-      // setArmHeight(currArmHeight);
+      setArmHeight(currArmHeight);
       bArmHeightRecorded = true;
     }
 
@@ -138,11 +135,11 @@ while (true) {
   //--------------------------------------------------------------------------------
 
   // close on 6U
-  if (vexRT[Btn6U]) {
+  if (vexRT[Btn6U] || vexRT[Btn6UXmtr2]) {
     SensorValue[claw] = CLAW_CLOSE;
   }
   // open on 6D
-  else if (vexRT[Btn6D]) {
+  else if (vexRT[Btn6D] || vexRT[Btn6DXmtr2]) {
     SensorValue[claw] = CLAW_OPEN;
   }
 
@@ -166,6 +163,17 @@ while (true) {
   }
   else {
     motor[mogo] = 0;
+  }
+
+  //--------------------------------------------------------------------------------
+  // Mogo flipper
+  //--------------------------------------------------------------------------------
+
+  if (vexRT[Btn8U]) {
+    SensorValue[mogoFlip] = FLIPPER_IN;
+  }
+  else if (vexRT[Btn8D]) {
+    SensorValue[mogoFlip] = FLIPPER_OUT;
   }
 
   //--------------------------------------------------------------------------------

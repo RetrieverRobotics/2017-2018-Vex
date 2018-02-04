@@ -51,6 +51,7 @@ if(nLCDButtons > 0){
   bLCDBacklight = false;
 }//end buttons > 0
 else {
-  displayLCDCenteredString(0,"No Auton Selected");
+  displayLCDCenteredString(0, "No Auton");
+  displayLCDCenteredString(1, "Selected");
 }
 initPIDVars();
