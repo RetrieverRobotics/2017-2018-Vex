@@ -1,0 +1,89 @@
+// NOTES FOR WIRING:
+//
+// Y's:
+// port | name
+// -------------
+// 2		|	driveL
+// 4A		|	Swing
+// 6C		|	driveR
+// 9		|	mogo
+//
+// -----------DRIVE------------
+// farthest back drive motors are red to red
+// the next drive motors are red to black
+//
+// -----------LIFT------------
+// All wires red to red
+//
+// -----------SWING------------
+// right motor is red to black
+// left motor is red to red
+//
+// -----------MOGO------------
+// right motor is red to black
+// left motor is red to red
+
+
+// PROGRAMMING NOTES:
+// -----------SWING------------
+// positive is up/intake
+//
+// -----------MOGO------------
+// positive is up/intake
+
+// everything up until now is probably wrong
+
+GYRO:
+CCW positive
+90 starting offset is facing positive Y
+  positive y is facing away from ally drivers
+heading: trig style i.e. straight ahead is 90
+if gyro rolls over, it goes to zero, but going back past zero goes back to 3600 instead of negative
+
+FIELD:
+Positive Y: away from operators
+Positive X: to the right of operators
+
+Working tuning for test setup:
+  armPID.Kp = 0.1; 			// P
+	armPID.Ki = 0.000060; // I
+	armPID.Kd = 7; 				// D
+
+Potentiometers:
+range of motion roughly 265 degrees, output of 0-4095. ~15.45 ticks per degree
+
+/////////////////////////////////
+// INTEGRATED ENCODERS
+/////////////////////////////////
+- Measures 627.2 ticks per revolution of the output shaft in High Torque Configuration
+- Measures 392 ticks per revolution of the output shaft in High Speed Configuration
+- Measures 261.333 ticks per revolution of the output shaft in Turbo Gear Configuration
+
+ARM:
+  lowest:
+  lower bar is 6" off ground
+  highest:
+  59" off the ground
+
+Pot testing:
+  Bottom:
+  L: 966
+  R: 1196
+
+  Top:
+  L: 2985
+  R: 2966
+
+  dL: 2019
+  dR: 1770
+
+
+
+  value of left in terms of right
+  equation converting values of right pot scaled to left pot:
+  right: independent(x)
+  left: dependent(y)
+  L = 1.1407*R - 398.251
+
+MOTORS:
+  positive value red to red spins CW? facing from the back
