@@ -539,8 +539,13 @@ else if (autonSelection == BLUE_MOGOS){
 	startTask(drivePIDTask);
 	startTask(swingPIDTask);
 
+  driveIncremental(22);
+  waitForPID(drivePID);
+  pointTurn(-90);
+  waitForPID(gyroPID);
+
   tardDrive(-127);
-  wait1Msec(1500);
+  wait1Msec(1000);
   tardDrive();
 
   SensorValue[mogoFlip] = FLIPPER_OUT;
