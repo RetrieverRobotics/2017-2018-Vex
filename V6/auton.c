@@ -4,554 +4,266 @@
 //
 ////////////////////////////////////////////////////////
 
-//zero encoders
-SensorValue[driveREnc] = 0;
-SensorValue[driveLEnc] = 0;
-clearTimer(T1);
-
-int newHeight = 0;
-
 // Blue preloads auton
-if (autonSelection == BLUE_PRELOAD) {
+if (autonSelection == BLUE_DEFAULT) {
   writeDebugStreamLine("Blue Preloads running");
-  startingRotationOffset = 0;//180; // facing positive x towards mogo
-  SensorValue[claw] = CLAW_CLOSE;
-  setLiftHeight(ARM_SCHMEDIUM);
-	gyroPID.target 		= 0;
-	swingPID.target 	= SWING_IN;
-	startTask(liftPIDTask);
+  motor[rollers] = ROLLERS_HOLD;
+  setLiftHeight(LIFT_SCHMEDIUM);
+  resetDrive();
+  driveIncremental(0);
+  resetGyro();
+  pointTurn(SensorValue[gyro]);
+  startTask(liftPIDTask);
 	startTask(drivePIDTask);
-	startTask(swingPIDTask);
 
-  //raise lift and put out mobile goal thing all while driving forward
-  //lift already rising
   motor[mogo] = -127;
   wait1Msec(400); // 400
-  driveIncremental(35); // forward 36 inches
+  driveIncremental(48);
   extendMogo();
-  // wait1Msec(300);
-  waitForPID(drivePID);
 
-  // driveMode = SLOW_DRIVE;
-  // driveSlow(6);
+  waitForPID(drivePID);
+  // tardDrive(60);
   // wait1Msec(400);
-  tardDriveStraight(100);
-  wait1Msec(200);
-  tardDriveStraight(40);
-  wait1Msec(700);
-  tardDriveStraight();
-  // swingTurnLeft()? tardDrive?
-  // waitForPID(gyroPID);
-  //once at destination, pick up mobile goal
+  // tardDrive(0);
+
+  // writeDebugStreamLine("her77");
   intakeMogo();
+  setLiftHeight(LIFT_FLOOR_HEIGHT);
+  wait1Msec(300);
+  motor[rollers] = ROLLERS_OUT;
+///////////cone2
+  driveIncremental(8);
+  swingOut();
+  motor[swing] = -50;
+  motor[rollers] = ROLLERS_IN;
 
-  //drive back to loading station (line sensor?) while dropping preload
-  // driveIncremental(-7); // backward 12 inches
-  setLiftHeight(ARM_STARTING_HEIGHT); // lower lift to place cone
+  setLiftHeight(LIFT_FLOOR_HEIGHT);
   waitForPID(liftPID);
-  // drop cone
-  SensorValue[claw] = CLAW_OPEN;
-  // waitForPID(drivePID);
+  wait1Msec(500);
+  motor[rollers] = ROLLERS_HOLD;
 
-  //turn 90 towards preloader
-  // swingTurnLeft(270);
-  // wait1Msec(2000);
-  pointTurn(-30);
-  // driveMode = POINT_TURN;
-  // gyroPID.target = degToGyro(-30);
-  resetDrive();
-  // writeDebugStreamLine("%f", drivePID.target)
+  setLiftHeight(LIFT_CONE_2);
+  waitForPID(liftPID);
 
-  // writeDebugStreamLine("here4");
-  // pointTurn(-30);
-  // wait1Msec(2000);
-  // writeDebugStreamLine("here77");
+  swingIn();
+  tardLift(-70);
+  wait1Msec(300);
+  motor[rollers] = ROLLERS_OUT;
+  tardLift(127);
+  wait1Msec(100);
+  setLiftHeight(LIFT_CONE_2);
 
-  waitForPID(gyroPID, 3000);
-  writeDebugStreamLine("here2");
-  // wait1Msec(2000);
-  // waitForPID(gyroPID);
-  // writeDebugStreamLine("here76");
-  // driveIncremental(-6);
-  // writeDebugStreamLine("here1");
-  // wait1Msec(2000);
-  //tardDriveStraight(-100);
-  //wait1Msec(100);
-  //tardDrive(0);
-  driveIncremental(-11);
+/////////////////////////////////////cone 3
+  driveIncremental(8);
+  swingOut();
+  motor[swing] = -50;
+  motor[rollers] = ROLLERS_IN;
+  // wait1Msec(500);
+
+  setLiftHeight(LIFT_FLOOR_HEIGHT);
+  waitForPID(liftPID);
+  wait1Msec(500);
+  motor[rollers] = ROLLERS_HOLD;
+
+  setLiftHeight(LIFT_CONE_3);
+  waitForPID(liftPID);
+
+  swingIn();
+  tardLift(-70);
+  wait1Msec(300);
+  // motor[rollers] = ROLLERS_OUT;
+  tardLift(127);
+  wait1Msec(100);
+  tardLift(0);
+
+  ///////////////////////////////////dropoff
+  driveIncremental(-66);
   waitForPID(drivePID);
-  // writeDebugStreamLine("here");
-  tardDrive(0);
-  // wait1Msec(3000);
-  pointTurn(-90);
-  // wait1Msec(3000);
-  // waitForPID(gyroPID);
+  pointTurn(45);
+  waitForPID(gyroPID);
+  driveIncremental(-28);
+  waitForPID(drivePID);
 
-  //lift to loading height and drive forward
-  swingPID.target = SWING_IN;
-  setLiftHeight(ARM_PRELOAD_HEIGHT);
+  pointTurn(135);
   waitForPID(gyroPID);
 
-  // writeDebugStreamLine("here3");
-  // tard on the wall
-  tardDrive(80);
-	wait1Msec(300);
-  tardDrive(50);
-  wait1Msec(500);
-	tardDrive();
-  wait1Msec(300);
-  resetGyro();
+  setLiftHeight(LIFT_SCHMEDIUM);
+  motor[rollers] = ROLLERS_OUT;
 
-  driveIncremental(-16);
+  tardDrive(127);
+  wait1Msec(400);
+  tardDrive(60);
+  wait1Msec(500);
+  tardDrive(0);
+  extendMogo();
+
+  ///back up
+  driveIncremental(-18);
   waitForPID(drivePID);
+  tardDrive(23);
+  intakeMogo();
+  wait1Msec(200);
+  tardDrive(0);
+  setGyro(135);
 
-  // swing out
-  // swingPID.target = SWING_OUT;
-  // //drive back 6 inches?
-  // waitForPID(swingPID);
+  ////////////////////////////mogo 2
+  driveIncremental(-9);
+  waitForPID(drivePID);
+  pointTurn(45);
+  setLift(LIFT_HIGHER);
+  waitForPID(gyroPID);
 
-  // swing to cone loading height, grab, swing to drop height, release
-  // do the first few runs until lift differential is needed
-  for(int i = 0; i < 1; i++){
-    wait1Msec(AUTON_RELOAD_TIME);
-    SensorValue[claw] = CLAW_CLOSE;
-    wait1Msec(CLAW_CLOSE_TIME);
-
-    swingPID.target = SWING_IN;
-    waitForPID(swingPID, 5000);
-    SensorValue[claw] = CLAW_OPEN;
-    wait1Msec(CLAW_OPEN_TIME);
-    swingPID.target = SWING_OUT;
-    waitForSensor(swing, SWING_OUT, 200, 1000);
-    //wait1Msec(SWING_OUT_TIME);
-  }
-
-
-  // repeat 13x plus 1 extra for a total of 14
-  for(int i = 0; i < AUTON_STACK_COUNT; i++){
-    wait1Msec(AUTON_RELOAD_TIME);
-    SensorValue[claw] = CLAW_CLOSE;
-    wait1Msec(CLAW_CLOSE_TIME);
-
-    // add 2.5 inches each go
-    newHeight = ARM_PRELOAD_HEIGHT + (ARM_TICKS_PER_INCH * INCHES_PER_CONE * i);
-    setLiftHeight(newHeight);
-    // wait until lift a specific distance from target
-    // while the error of the lift is bigger than SWING_ACTIVATION_DIST
-    //waitForSensor(swing,
-    while(fabs(liftPID.target - getLiftHeight()) > SWING_ACTIVATION_DIST)
-      wait1Msec(10);
-
-    swingPID.target = SWING_IN;
-    waitForPID(liftPID);
-    waitForPID(swingPID);
-     //wait1Msec(100);
-    // tard down
-    //tardLift(-60);
-    //wait1Msec(100);
-    //tardLift();
-
-    // stop here on the last one
-    if(i == AUTON_STACK_COUNT-1)
-      break;
-
-    SensorValue[claw] = CLAW_OPEN;
-    wait1Msec(CLAW_OPEN_TIME);
-    setLiftHeight(newHeight + ARM_CLEAR_CONE); // clear the cone
-    waitForPID(liftPID, 2000);
-
-    // wait for swing to clear cone
-    //while (SensorValue[swingPot] < SWING_CLEAR_CONE)
-      //wait1Msec(10);
-
-    swingPID.target = SWING_OUT;
-
-    setLiftHeight(ARM_PRELOAD_HEIGHT);
-    waitForSensor(swing, SWING_OUT, 200, 1000);
-    //wait1Msec(SWING_OUT_TIME);
-    waitForPID(liftPID, 2000);
-    //wait1Msec(100);
-  }
-
-  //drive back and finesse some points
-  pointTurn(-160);
-  resetDrive();
+  driveIncremental(-35);
+  waitForPID(drivePID, 4000);
+  swingTurnRight(0);
   waitForPID(gyroPID, 3000);
-  driveIncremental(12);//15);
-  waitForPID(drivePID, 2000);
-  swingTurnRight(-135);
-  waitForPID(gyroPID, 2000);
-  wait1Msec(500);
-  // swingTurnLeft(315);
 
-  writeDebugStreamLine("hererer");
-  // tardLiftStraight(-20);
-  swingPID.enabled = false;
-  // tardLiftStraight(-10);
-  motor[mogo] = 127;
+  tardDrive(-90);
   wait1Msec(600);
-  motor[swing] = 30;
-	extendMogo();
-  SensorValue[claw] = CLAW_OPEN;
-	motor[swing] = -30;
-	tardLiftStraight(0);
-	wait1Msec(CLAW_OPEN_TIME);
-	motor[swing] = 0;
-
-	// tardDrive(-60,-60,300);
-	driveIncremental(-4); // drive back enough to release mogo
-	waitForPID(drivePID);
-
-  tardDrive(-50);
-  wait1Msec(3000);
   tardDrive(0);
 
+  setGyro(0);
+
+  driveIncremental(2);
+  waitForPID(drivePID);
+  pointTurn(-90);
+  extendMogo();
+  waitForPID(gyroPID);
+
+  driveIncremental(32);
+  waitForPID(drivePID);
+  intakeMogo();
+
+  ///////////cone4
+  driveIncremental(8);
+  swingOut();
+  motor[swing] = -50;
+  motor[rollers] = ROLLERS_IN;
+
+  setLiftHeight(LIFT_FLOOR_HEIGHT);
+  waitForPID(liftPID);
+  wait1Msec(500);
+  motor[rollers] = ROLLERS_HOLD;
+
+  setLiftHeight(LIFT_CONE_2);
+  waitForPID(liftPID);
+
+  swingIn();
+  tardLift(-70);
+  wait1Msec(300);
+  motor[rollers] = ROLLERS_OUT;
+  tardLift(127);
+  wait1Msec(100);
+  setLiftHeight(LIFT_CONE_2);
+
+/////////////////////////////////////cone 5
+  driveIncremental(8);
+  swingOut();
+  motor[swing] = -50;
+  motor[rollers] = ROLLERS_IN;
+  // wait1Msec(500);
+
+  setLiftHeight(LIFT_FLOOR_HEIGHT);
+  waitForPID(liftPID);
+  wait1Msec(500);
+  motor[rollers] = ROLLERS_HOLD;
+
+  setLiftHeight(LIFT_CONE_2);
+  waitForPID(liftPID);
+
+  swingIn();
+  tardLift(-70);
+  wait1Msec(300);
+  // motor[rollers] = ROLLERS_OUT;
+  tardLift(127);
+  wait1Msec(100);
+  tardLift(0);
+
+  ///////////////////////////////////dropoff
+  driveIncremental(-60);
+  waitForPID(drivePID);
+  swingTurnRight(-225);
+  waitForPID(gyroPID);
+
+  setLiftHeight(LIFT_SCHMEDIUM);
+  motor[rollers] = ROLLERS_OUT;
+  tardDrive(26);
+  extendMogo();
+  tardDrive(0);
+
+  //////////////////////////////mogo3
+  driveIncremental(-12);
+  waitForPID(drivePID);
+  swingTurnRight(-315);
+  intakeMogo();
+  waitForPID(gyroPID);
+  driveIncremental(-5);
+  waitForPID(drivePID);
+  swingTurnRight(-395);
+  waitForPID(gyroPID);
+  extendMogo();
+
+  driveIncremental(60);
+  waitForPID(drivePID);
+  driveIncremental(-24);
+  extendMogo();
+  waitForPID(drivePID);
+
+  pointTurn(-370);
+  waitForPID(gyroPID);
+  driveIncremental(12);
+  waitForPID(drivePID);
+  intakeMogo();
+
+  driveIncremental(-28);
+  waitForPID(drivePID);
+  pointTurn(-270);
+  waitForPID(gyroPID);
+
+  driveIncremental(12);
+  waitForPID(drivePID);
+
+  tardDrive(26);
+  extendMogo();
+  wait1Msec(600);
+  tardDrive(0);
+  driveIncremental(-12);
 
 
-  // startingRotationOffset = 0; // facing positive x towards mogo
-  // SensorValue[claw] = CLAW_CLOSE;
-	// setLiftHeight(ARM_SCHMEDIUM);
-	// gyroPID.target 		= 0;
-	// swingPID.target 	= SWING_IN;
-	// startTask(liftPIDTask);
-	// startTask(drivePIDTask);
-	// startTask(swingPIDTask);
-  //
-  // //raise lift and put out mobile goal thing all while driving forward
-  // //lift already rising
-  // extendMogo();
-  // // while(1){}
-  // driveIncremental(36); // forward 48 inches
-  // // wait1Msec(300);
-  // waitForPID(drivePID);
-  // // swingTurnLeft()? tardDrive?
-  // // waitForPID(gyroPID);
-  // //once at destination, pick up mobile goal
-  // intakeMogo();
-  //
-  // //drive back to loading station (line sensor?) while dropping preload
-  // driveIncremental(-12); // backward 12 inches
-  // liftPID.target = ARM_STARTING_HEIGHT; // lower lift to place cone
-  // waitForPID(liftPID);
-  // // drop cone
-  // SensorValue[claw] = CLAW_OPEN;
+  // driveIncremental(-28);
   // waitForPID(drivePID);
   //
-  // //turn 90 towards preloader
-  // pointTurn(-90);
-  // //lift to loading height and drive forward
-  // swingPID.target = SWING_90;
-  // setLiftHeight(ARM_PRELOAD_HEIGHT);
+  // pointTurn(135);
   // waitForPID(gyroPID);
   //
-  // // tard on the wall
+  // setLiftHeight(LIFT_SCHMEDIUM);
+  // motor[rollers] = ROLLERS_OUT;
+  //
   // tardDrive(127);
-	// wait1Msec(700);
-	// tardDrive();
+  // wait1Msec(400);
+  // tardDrive(60);
+  // wait1Msec(500);
+  // tardDrive(0);
+  // extendMogo();
   //
-  // // swing out
-  // swingPID.target = SWING_OUT;
-  // //drive back 6 inches?
-  // waitForPID(swingPID);
-  //
-  // // swing to cone loading height, grab, swing to drop height, release
-  // // do the first few runs until lift differential is needed
-  // for(int i = 0; i < 1; i++){
-  //   wait1Msec(AUTON_RELOAD_TIME);
-  //   SensorValue[claw] = CLAW_CLOSE;
-  //   wait1Msec(CLAW_CLOSE_TIME);
-  //
-  //   swingPID.target = SWING_IN;
-  //   waitForPID(swingPID, 5000);
-  //   SensorValue[claw] = CLAW_OPEN;
-  //   wait1Msec(CLAW_OPEN_TIME);
-  //   swingPID.target = SWING_OUT;
-  //   waitForSensor(swing, SWING_OUT, 200, 1000);
-  //   //wait1Msec(SWING_OUT_TIME);
-  // }
-  //
-  //
-  // // repeat 13x plus 1 extra for a total of 14
-  // for(int i = 0; i < AUTON_STACK_COUNT; i++){
-  //   wait1Msec(AUTON_RELOAD_TIME);
-  //   SensorValue[claw] = CLAW_CLOSE;
-  //   wait1Msec(CLAW_CLOSE_TIME);
-  //
-  //   // add 2.5 inches each go
-  //   newHeight = ARM_PRELOAD_HEIGHT + (ARM_TICKS_PER_INCH * INCHES_PER_CONE * i);
-  //   setLiftHeight(newHeight);
-  //   // wait until lift a specific distance from target
-  //   // while the error of the lift is bigger than SWING_ACTIVATION_DIST
-  //   //waitForSensor(swing,
-  //   while(fabs(liftPID.target - getLiftHeight()) > SWING_ACTIVATION_DIST)
-  //     wait1Msec(10);
-  //
-  //   swingPID.target = SWING_IN;
-  //   waitForPID(liftPID);
-  //   waitForPID(swingPID);
-  //    //wait1Msec(100);
-  //   // tard down
-  //   //tardLift(-60);
-  //   //wait1Msec(100);
-  //   //tardLift();
-  //
-  //   // stop here on the last one
-  //   if(i == AUTON_STACK_COUNT)
-  //     break;
-  //
-  //   SensorValue[claw] = CLAW_OPEN;
-  //   wait1Msec(CLAW_OPEN_TIME);
-  //   setLiftHeight(newHeight + ARM_CLEAR_CONE); // clear the cone
-  //   waitForPID(liftPID, 2000);
-  //
-  //   // wait for swing to clear cone
-  //   //while (SensorValue[swingPot] < SWING_CLEAR_CONE)
-  //     //wait1Msec(10);
-  //
-  //   swingPID.target = SWING_OUT;
-  //
-  //   setLiftHeight(ARM_PRELOAD_HEIGHT);
-  //   waitForSensor(swing, SWING_OUT, 200, 1000);
-  //   //wait1Msec(SWING_OUT_TIME);
-  //   waitForPID(liftPID, 2000);
-  //   //wait1Msec(100);
-  // }
-  //
-  // //drive back and finesse some points
-  // pointTurn(-203);
-  // driveIncremental(54);
-  // pointTurn(-135);
-  // // tard on the pipe
-	// tardDrive(127);
-	// wait1Msec(1000);
-	// tardDrive();
-	// extendMogo();
-	// // tardDrive(-60,-60,300);
-	// driveIncremental(-4); // drive back enough to release mogo
-	// waitForPID(drivePID);
-	// // intakeMogo();
+  // ///back up
+  // driveIncremental(-18);
+  // waitForPID(drivePID);
+  // tardDrive(28);
+  // intakeMogo();
+  // wait1Msec(200);
+  // tardDrive(0);
+  // setGyro(135);
+
+
+  while(1){wait1Msec(1000);}
 
 }
-
 // Red preloads auton
-if (autonSelection == RED_PRELOAD) {
+else if (autonSelection == RED_DEFAULT) {
   writeDebugStreamLine("Red Preloads running");
-  startingRotationOffset = 0;//180; // facing positive x towards mogo
-  SensorValue[claw] = CLAW_CLOSE;
-  setLiftHeight(ARM_SCHMEDIUM);
-	gyroPID.target 		= 0;
-	swingPID.target 	= SWING_IN;
-	startTask(liftPIDTask);
-	startTask(drivePIDTask);
-	startTask(swingPIDTask);
 
-  //raise lift and put out mobile goal thing all while driving forward
-  //lift already rising
-  motor[mogo] = -127;
-  wait1Msec(400); // 400
-  driveIncremental(35); // forward 36 inches
-  extendMogo();
-  // wait1Msec(300);
-  waitForPID(drivePID);
-
-  // driveMode = SLOW_DRIVE;
-  // driveSlow(6);
-  // wait1Msec(400);
-  tardDriveStraight(100);
-  wait1Msec(200);
-  tardDriveStraight(40);
-  wait1Msec(700);
-  tardDriveStraight();
-  // swingTurnLeft()? tardDrive?
-  // waitForPID(gyroPID);
-  //once at destination, pick up mobile goal
-  intakeMogo();
-
-  //drive back to loading station (line sensor?) while dropping preload
-  // driveIncremental(-7); // backward 12 inches
-  setLiftHeight(ARM_STARTING_HEIGHT); // lower lift to place cone
-  waitForPID(liftPID);
-  // drop cone
-  SensorValue[claw] = CLAW_OPEN;
-  // waitForPID(drivePID);
-
-  //turn 90 towards preloader
-  // swingTurnLeft(270);
-  // wait1Msec(2000);
-  pointTurn(30);
-  // driveMode = POINT_TURN;
-  // gyroPID.target = degToGyro(-30);
-  resetDrive();
-  // writeDebugStreamLine("%f", drivePID.target)
-
-  // writeDebugStreamLine("here4");
-  // pointTurn(-30);
-  // wait1Msec(2000);
-  // writeDebugStreamLine("here77");
-
-  waitForPID(gyroPID, 3000);
-  writeDebugStreamLine("here2");
-  // wait1Msec(2000);
-  // waitForPID(gyroPID);
-  // writeDebugStreamLine("here76");
-  // driveIncremental(-6);
-  // writeDebugStreamLine("here1");
-  // wait1Msec(2000);
-  //tardDriveStraight(-100);
-  //wait1Msec(100);
-  //tardDrive(0);
-  driveIncremental(-11);
-  waitForPID(drivePID);
-  // writeDebugStreamLine("here");
-  tardDrive(0);
-  // wait1Msec(3000);
-  pointTurn(90);
-  // wait1Msec(3000);
-  // waitForPID(gyroPID);
-
-  //lift to loading height and drive forward
-  swingPID.target = SWING_IN;
-  setLiftHeight(ARM_PRELOAD_HEIGHT);
-  waitForPID(gyroPID);
-
-  // writeDebugStreamLine("here3");
-  // tard on the wall
-  tardDrive(80);
-	wait1Msec(300);
-  tardDrive(50);
-  wait1Msec(500);
-	tardDrive();
-  wait1Msec(300);
-  resetGyro();
-
-  driveIncremental(-16);
-  waitForPID(drivePID);
-
-  // swing out
-  // swingPID.target = SWING_OUT;
-  // //drive back 6 inches?
-  // waitForPID(swingPID);
-
-  // swing to cone loading height, grab, swing to drop height, release
-  // do the first few runs until lift differential is needed
-  for(int i = 0; i < 1; i++){
-    wait1Msec(AUTON_RELOAD_TIME);
-    SensorValue[claw] = CLAW_CLOSE;
-    wait1Msec(CLAW_CLOSE_TIME);
-
-    swingPID.target = SWING_IN;
-    waitForPID(swingPID, 5000);
-    SensorValue[claw] = CLAW_OPEN;
-    wait1Msec(CLAW_OPEN_TIME);
-    swingPID.target = SWING_OUT;
-    waitForSensor(swing, SWING_OUT, 200, 1000);
-    //wait1Msec(SWING_OUT_TIME);
-  }
-
-
-  // repeat 13x plus 1 extra for a total of 14
-  for(int i = 0; i < AUTON_STACK_COUNT; i++){
-    wait1Msec(AUTON_RELOAD_TIME);
-    SensorValue[claw] = CLAW_CLOSE;
-    wait1Msec(CLAW_CLOSE_TIME);
-
-    // add 2.5 inches each go
-    newHeight = ARM_PRELOAD_HEIGHT + (ARM_TICKS_PER_INCH * INCHES_PER_CONE * i);
-    setLiftHeight(newHeight);
-    // wait until lift a specific distance from target
-    // while the error of the lift is bigger than SWING_ACTIVATION_DIST
-    //waitForSensor(swing,
-    while(fabs(liftPID.target - getLiftHeight()) > SWING_ACTIVATION_DIST)
-      wait1Msec(10);
-
-    swingPID.target = SWING_IN;
-    waitForPID(liftPID);
-    waitForPID(swingPID);
-     //wait1Msec(100);
-    // tard down
-    //tardLift(-60);
-    //wait1Msec(100);
-    //tardLift();
-
-    // stop here on the last one
-    if(i == AUTON_STACK_COUNT-1)
-      break;
-
-    SensorValue[claw] = CLAW_OPEN;
-    wait1Msec(CLAW_OPEN_TIME);
-    setLiftHeight(newHeight + ARM_CLEAR_CONE); // clear the cone
-    waitForPID(liftPID, 2000);
-
-    // wait for swing to clear cone
-    //while (SensorValue[swingPot] < SWING_CLEAR_CONE)
-      //wait1Msec(10);
-
-    swingPID.target = SWING_OUT;
-
-    setLiftHeight(ARM_PRELOAD_HEIGHT);
-    waitForSensor(swing, SWING_OUT, 200, 1000);
-    //wait1Msec(SWING_OUT_TIME);
-    waitForPID(liftPID, 2000);
-    //wait1Msec(100);
-  }
-
-  //drive back and finesse some points
-  pointTurn(160);
-  resetDrive();
-  waitForPID(gyroPID, 3000);
-  driveIncremental(12);//15);
-  waitForPID(drivePID, 2000);
-  swingTurnRight(135);
-  waitForPID(gyroPID, 2000);
-  wait1Msec(500);
-  // swingTurnLeft(315);
-
-  writeDebugStreamLine("hererer");
-  // tardLiftStraight(-20);
-  swingPID.enabled = false;
-  // tardLiftStraight(-10);
-  motor[mogo] = 127;
-  wait1Msec(600);
-  motor[swing] = 30;
-	extendMogo();
-  SensorValue[claw] = CLAW_OPEN;
-	motor[swing] = -30;
-	tardLiftStraight(0);
-	wait1Msec(CLAW_OPEN_TIME);
-	motor[swing] = 0;
-
-	// tardDrive(-60,-60,300);
-	driveIncremental(-4); // drive back enough to release mogo
-	waitForPID(drivePID);
-
-  tardDrive(-50);
-  wait1Msec(3000);
-  tardDrive(0);
 }
 else if (autonSelection == BLUE_MOGOS){
-  startingRotationOffset = 0;//180; // facing positive x towards mogo
-  SensorValue[claw] = CLAW_CLOSE;
-  setLiftHeight(ARM_SCHMEDIUM);
-	gyroPID.target 		= 0;
-	swingPID.target 	= SWING_IN;
-  SensorValue[mogoFlip] = FLIPPER_IN;
-	startTask(liftPIDTask);
-	startTask(drivePIDTask);
-	startTask(swingPIDTask);
-
-  driveIncremental(22);
-  waitForPID(drivePID);
-  pointTurn(-90);
-  waitForPID(gyroPID);
-
-  tardDrive(-127);
-  wait1Msec(1000);
-  tardDrive();
-
-  SensorValue[mogoFlip] = FLIPPER_OUT;
-  wait1Msec(500);
-  tardDrive(127);
-  wait1Msec(1000);
-  tardDrive();
 
 }

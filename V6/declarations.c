@@ -10,8 +10,8 @@
 #define RIGHT_LCD 4
 
 #define DEFAULT 0 // for auton selection
-#define BLUE_PRELOAD 1
-#define RED_PRELOAD 2
+#define BLUE_DEFAULT 1
+#define RED_DEFAULT 2
 #define BLUE_MOGOS 3
 #define RED_MOGOS 4
 #define NUM_AUTONS 5
@@ -26,9 +26,8 @@
 #define TARD_ACTIVE_ROT 4
 #define SLOW_DRIVE 5
 
-#define ARM_PID_CONTROL 0
-#define ARM_TARD 1
-#define ARM_TARD_ACTIVE_CENTERING 2
+#define LIFT_PID_CONTROL 0
+#define LIFT_TARD 1
 
 typedef struct PIDStruct {
 	bool debug;
@@ -58,7 +57,7 @@ PIDStruct drivePID, gyroPID, liftPID, swingPID;
 int autonSelection = DEFAULT;
 float gyroOffset = 0;
 short driveMode = POINT_TURN;
-short liftMode = ARM_PID_CONTROL;
+short liftMode = LIFT_PID_CONTROL;
 int slowDrivePow = 60;
 
 void setLift(int setPow);

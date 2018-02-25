@@ -40,9 +40,7 @@ int lim127(int power, int limit = 127) {
 }
 
 void setLift(int setPow) {
-	motor[liftTL] = setPow;
-	motor[liftTR] = setPow;
-	motor[liftB]  = setPow;
+	motor[lift] = setPow;
 }
 
 void tankDrive(int lPow, int rPow) {
@@ -51,19 +49,21 @@ void tankDrive(int lPow, int rPow) {
 	rPow = abs(rPow) < DRIVE_DEADBAND ? 0 : rPow;
 
 	// account for drive deadbands and set power
-	motor[driveBL] = lPow;
-	motor[driveFL] = lPow;
+	motor[driveLF] 	= lPow;
+	motor[driveLBT] = lPow;
+	motor[driveLBB] = lPow;
 
-	motor[driveBR]  = rPow;
-	motor[driveFR]  = rPow;
+	motor[driveRF]  = rPow;
+	motor[driveRBT] = rPow;
+	motor[driveRBB] = rPow;
 }
 
 int getLDriveEnc(){
-	return nMotorEncoder[driveBL];
+	return nMotorEncoder[driveLBB];
 }
 
 int getRDriveEnc(){
-	return nMotorEncoder[driveBR];
+	return -nMotorEncoder[driveRBB];
 }
 
 void resetDrive() {
@@ -98,13 +98,25 @@ void extendMogo() {
 	motor[mogo] = 0;
 }
 
+void swingIn(){
+	motor[swing] = 127;
+	wait1Msec(SWING_IN_TIME);
+	motor[swing] = SWING_HOLD_POW;
+}
+
+void swingOut(){
+	motor[swing] = -127;
+	wait1Msec(SWING_OUT_TIME);
+	motor[swing] = -SWING_HOLD_POW;
+}
+
 void setLiftHeight(int height){
-	liftMode = ARM_PID_CONTROL;
+	liftMode = LIFT_PID_CONTROL;
 	liftPID.target = height;
 }
 
 void tardLift(int setPow = 0) {
-	liftMode = ARM_TARD;
+	liftMode = LIFT_TARD;
 	setLift(setPow);
 }
 
@@ -188,14 +200,32 @@ void pointTurn(float degrees, bool incremental = false) {
 	}
 }
 
+int polyDrive(float input, float power) {
+	return sgn(input) * pow(fabs(input),power) / pow(127,power-1);
+}
+
 // tank drive with slew and deadbands to help with overheating
 task driveSlew() {
 	int leftDrive = 0;
 	int rightDrive = 0;
 	while(true) {
-		// writeDebugStreamLine("%i", leftDrive);
+		#ifdef POLY_DRIVE
+		leftDrive 	= slew(
+			polyDrive(vexRT[Ch3], POLY_DRIVE_DEGREE),
+			leftDrive,
+			DRIVE_SLEW_RATE
+		);
+		rightDrive 	= slew(
+			polyDrive(vexRT[Ch2], POLY_DRIVE_DEGREE),
+			rightDrive,
+			DRIVE_SLEW_RATE
+		);
+
+		#else
 		leftDrive 	= slew(vexRT[Ch3], 	leftDrive,  DRIVE_SLEW_RATE);
 		rightDrive 	= slew(vexRT[Ch2], rightDrive, 	DRIVE_SLEW_RATE);
+
+		#endif
 		tankDrive(leftDrive, rightDrive);
 		wait1Msec(DRIVE_SLEW_TIME);
 	}
@@ -403,7 +433,7 @@ task liftPIDTask() {
 
 		updatePIDVar(&liftPID);
 
-		if (liftMode == ARM_PID_CONTROL) {
+		if (liftMode == LIFT_PID_CONTROL) {
 			setLift(lim127(liftPID.output));
 		}
 
@@ -413,67 +443,21 @@ task liftPIDTask() {
 
 // yeetsauce
 task swingPIDTask() {
-	#define READINGS 3
-	int pastReadings[READINGS];
-	// int pastReadings[5] = {1,2,3,4,5};
-
-	for (int i =0; i < READINGS;i++) {
-		pastReadings[i] = SensorValue[swingPot];
-	}
-
 	int currSwing = 0;
 
 	swingPID.input = SensorValue[swingPot];
 	updatePIDVar(&swingPID);
 
-
-	///////////////////////////////////////////////////
-
-// 	writeDebugStream("heher777");
-//
-// 	for (int i = 0; i < READINGS-1;i++){
-// 		pastReadings[i] = pastReadings[i+1];
-// 		writeDebugStream("heher%i\t",pastReadings[i]);
-// 	}
-// 	pastReadings[READINGS-1] = SensorValue[swingPot];
-//
-// 	currSwing = 0;
-// 	for (int i = 0; i < READINGS; i++){
-// 		currSwing += pastReadings[i];
-// 	}
-// 	currSwing /= READINGS;
-//
-// while(true){wait1Msec(1000);}
-
-
-	///////////////////////////////////////////////////
-
 	while (true) {
-
-		// for (int i = 0; i < READINGS-1;i++){
-		// 	pastReadings[i] = pastReadings[i+1];
-		// 	// writeDebugStream("%i\t",pastReadings[i]);
-		// }
-		// pastReadings[READINGS-1] = SensorValue[swingPot];
-    //
-		// currSwing = 0;
-		// for (int i = 0; i < READINGS; i++){
-		// 	currSwing += pastReadings[i];
-		// }
-		// currSwing /= READINGS;
-
 		currSwing = SensorValue[swingPot];
 
-		// writeDebugStreamLine("%i",currSwing);
-
-		// writeDebugStreamLine("%i", SensorValue[swingPot]);
 		if (swingPID.enabled) {
 			swingPID.input = currSwing;
 			updatePIDVar(&swingPID);
 			SensorValue[swing] = swingPID.output;
 		}
 
-		wait1Msec(swingPID.loopTime);// - (NUM_READINGS-1)*POLL_TIME);
+		wait1Msec(swingPID.loopTime);
 	}
 }
 

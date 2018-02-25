@@ -41,7 +41,7 @@ task autonomous(){
 
 	startingRotationOffset = 0; // facing positive x towards mogo
   SensorValue[claw] = CLAW_CLOSE;
-  setLiftHeight(ARM_SCHMEDIUM);
+  setLiftHeight(LIFT_SCHMEDIUM);
 	gyroPID.target 		= 0;
 	startTask(liftPIDTask);
 	startTask(drivePIDTask);
@@ -219,7 +219,7 @@ task autonomous(){
 	// startingRotationOffset = 0; // facing positive x towards mogo
   //
 	// SensorValue[claw] = CLAW_CLOSE;
-	// liftPID.target 		= ARM_SCHMEDIUM;
+	// liftPID.target 		= LIFT_SCHMEDIUM;
 	// gyroPID.target 		= 0;
 	// swingPID.target 	= SWING_IN;
 	// startTask(liftPIDTask);
