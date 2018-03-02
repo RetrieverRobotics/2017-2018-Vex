@@ -39,9 +39,9 @@
 #define FLIPPER_OUT 1
 #define FLIPPER_IN 0
 
-#define MOGO_EXTEND_TIME 1200//1100//1000
+#define MOGO_EXTEND_TIME 1000
 #define MOGO_INTAKE_TIME 1000//1500
-#define MOGO_SECONDARY_WAIT_TIME 0//100
+#define MOGO_SECONDARY_WAIT_TIME 100
 
 #define DRIVE_DEADBAND 5 // amount of power where drive wont move
 #define DRIVE_SLEW_TIME 15 // update period for drive slew rate
@@ -87,7 +87,7 @@ void initPIDVars() {
 	liftPID.kI = 0.0005;
 	liftPID.kD = 40;
 	liftPID.enabled = true;
-	liftPID.debug = false;
+	liftPID.debug = true;
 	liftPID.integralLimit = 127;
 	liftPID.integralActiveZone = 60./liftPID.kP;
 	liftPID.loopTime = 50; // ms

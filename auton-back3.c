@@ -116,12 +116,11 @@ if (autonSelection == BLUE_PRIMARY) {
   driveIncremental(-9);
   waitForPID(drivePID);
   pointTurn(45);
-  motor[mogo] = -127;
+  setLiftHeight(LIFT_FLOOR_HEIGHT);
   waitForPID(gyroPID);
 
   driveIncremental(-35);
-  extendMogo();
-  setLiftHeight(LIFT_FLOOR_HEIGHT);
+  tardLift(0);
   waitForPID(drivePID, 4000);
   swingTurnRight(0);
   waitForPID(gyroPID, 3000);
@@ -357,13 +356,12 @@ else if (autonSelection == RED_PRIMARY) {
   ////////////////////////////mogo 2
   driveIncremental(-9);
   waitForPID(drivePID);
-  motor[mogo] = -127;
   pointTurn(-45);
+  setLiftHeight(LIFT_FLOOR_HEIGHT);
   waitForPID(gyroPID);
 
   driveIncremental(-35);
-  extendMogo();
-  setLiftHeight(LIFT_FLOOR_HEIGHT);
+  tardLift(0);
   waitForPID(drivePID, 4000);
   swingTurnLeft(0);
   waitForPID(gyroPID, 3000);
@@ -371,8 +369,6 @@ else if (autonSelection == RED_PRIMARY) {
   tardDrive(-90);
   wait1Msec(600);
   tardDrive(0);
-
-  wait1Msec(300);
 
   setGyro(0);
 
@@ -383,13 +379,13 @@ else if (autonSelection == RED_PRIMARY) {
   extendMogo();
   waitForPID(gyroPID);
 
+  driveIncremental(32);
   extendMogo();
-  driveIncremental(36);
   waitForPID(drivePID);
   intakeMogo();
 
   ///////////cone4
-  driveIncremental(6);
+  driveIncremental(8);
   swingOut();
   motor[swing] = -50;
   motor[rollers] = ROLLERS_IN;
@@ -456,7 +452,7 @@ else if (autonSelection == RED_PRIMARY) {
   waitForPID(drivePID);
   swingTurnLeft(395);
   waitForPID(gyroPID);
-  // extendMogo();
+  extendMogo();
 
   driveIncremental(60);
   waitForPID(drivePID);
@@ -466,23 +462,23 @@ else if (autonSelection == RED_PRIMARY) {
 
   pointTurn(370);
   waitForPID(gyroPID);
-  driveIncremental(24);
+  driveIncremental(12);
   waitForPID(drivePID);
   intakeMogo();
 
-  // driveIncremental(-36);//-28 prev
-  // waitForPID(drivePID, 4000);
-  // pointTurn(-270);
-  // waitForPID(gyroPID);
-  //
-  // driveIncremental(16);
-  // waitForPID(drivePID, 3000);
-  //
-  // tardDrive(26);
-  // extendMogo();
-  // wait1Msec(300);
-  // tardDrive(0);
-  // driveIncremental(-16);
+  driveIncremental(-36);//-28 prev
+  waitForPID(drivePID, 4000);
+  pointTurn(270);
+  waitForPID(gyroPID);
+
+  driveIncremental(16);
+  waitForPID(drivePID, 3000);
+
+  tardDrive(26);
+  extendMogo();
+  wait1Msec(300);
+  tardDrive(0);
+  driveIncremental(-16);
 
 
   while(1){wait1Msec(1000);}
