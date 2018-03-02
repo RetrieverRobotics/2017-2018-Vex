@@ -61,7 +61,7 @@ task autonomous(){
 	//while(true){wait1Msec(1000);}
 	//////////////////////////////////////
 
-	autonSelection = BLUE_PRIMARY;
+	autonSelection = RED_PRIMARY;
 
 	//startTask(displayTime);
 

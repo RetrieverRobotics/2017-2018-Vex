@@ -115,13 +115,15 @@ if (autonSelection == BLUE_PRIMARY) {
   ////////////////////////////mogo 2
   driveIncremental(-9);
   waitForPID(drivePID);
+  // motor[mogo] = -127;
+  // extendMogo();
   pointTurn(45);
-  motor[mogo] = -127;
   waitForPID(gyroPID);
 
   driveIncremental(-35);
   extendMogo();
   setLiftHeight(LIFT_FLOOR_HEIGHT);
+  waitForPID(liftPID);
   waitForPID(drivePID, 4000);
   swingTurnRight(0);
   waitForPID(gyroPID, 3000);
@@ -130,7 +132,7 @@ if (autonSelection == BLUE_PRIMARY) {
   wait1Msec(600);
   tardDrive(0);
 
-  wait1Msec(300);
+  wait1Msec(600);
 
   setGyro(0);
 
@@ -141,8 +143,8 @@ if (autonSelection == BLUE_PRIMARY) {
   extendMogo();
   waitForPID(gyroPID);
 
-  extendMogo();
-  driveIncremental(36);
+  // extendMogo();
+  driveIncremental(37);//36
   waitForPID(drivePID);
   intakeMogo();
 
@@ -169,7 +171,7 @@ if (autonSelection == BLUE_PRIMARY) {
   setLiftHeight(LIFT_CONE_2);
 
 /////////////////////////////////////cone 5
-  driveIncremental(8);
+  driveIncremental(6);
   swingOut();
   motor[swing] = -50;
   motor[rollers] = ROLLERS_IN;
@@ -212,7 +214,7 @@ if (autonSelection == BLUE_PRIMARY) {
   waitForPID(gyroPID);
   driveIncremental(-5);//12?
   waitForPID(drivePID);
-  swingTurnRight(-395);
+  swingTurnRight(-396);
   waitForPID(gyroPID);
   // extendMogo();
 
@@ -357,13 +359,15 @@ else if (autonSelection == RED_PRIMARY) {
   ////////////////////////////mogo 2
   driveIncremental(-9);
   waitForPID(drivePID);
-  motor[mogo] = -127;
+  // motor[mogo] = -127;
+  // extendMogo();
   pointTurn(-45);
   waitForPID(gyroPID);
 
   driveIncremental(-35);
   extendMogo();
   setLiftHeight(LIFT_FLOOR_HEIGHT);
+  waitForPID(liftPID);
   waitForPID(drivePID, 4000);
   swingTurnLeft(0);
   waitForPID(gyroPID, 3000);
@@ -383,8 +387,8 @@ else if (autonSelection == RED_PRIMARY) {
   extendMogo();
   waitForPID(gyroPID);
 
-  extendMogo();
-  driveIncremental(36);
+  // extendMogo();
+  driveIncremental(37);//36
   waitForPID(drivePID);
   intakeMogo();
 
@@ -411,7 +415,7 @@ else if (autonSelection == RED_PRIMARY) {
   setLiftHeight(LIFT_CONE_2);
 
 /////////////////////////////////////cone 5
-  driveIncremental(8);
+  driveIncremental(6);
   swingOut();
   motor[swing] = -50;
   motor[rollers] = ROLLERS_IN;
@@ -452,9 +456,9 @@ else if (autonSelection == RED_PRIMARY) {
   swingTurnLeft(315);
   intakeMogo();
   waitForPID(gyroPID);
-  driveIncremental(-5);//12?
+  driveIncremental(-6);//12?
   waitForPID(drivePID);
-  swingTurnLeft(395);
+  swingTurnLeft(396);
   waitForPID(gyroPID);
   // extendMogo();
 
