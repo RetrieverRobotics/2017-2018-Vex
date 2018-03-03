@@ -18,11 +18,11 @@ float getLiftHeight() {
 
 // returns robot heading in degrees
 float getHeading() {
-	return (SensorValue[gyro] / 10) + gyroOffset;
+	return ((float)(SensorValue[gyro] + gyroOffset) / 10);
 }
 
 float degToGyro(float degrees) {
-	return (degrees - gyroOffset) * 10;
+	return degrees * 10 - gyroOffset;
 }
 
 int slew (int value, int lastValue,  int slewRate)  {
@@ -75,7 +75,7 @@ void resetGyro() {
 }
 
 void setGyro(float angle) {
-	gyroOffset = angle - getHeading();
+	gyroOffset += 10*(angle - getHeading());
 }
 
 void smackVcat() {}
@@ -368,7 +368,7 @@ void updatePIDVar(PIDStruct *PIDVar) {
 // uses raw gyro to maintain rotation
 task drivePIDTask() {
 	float lastGyro = SensorValue[gyro];
-	int offset = 0; // for gyro rollover
+	// int gyroOffset = 0; // for gyro rollover
 	int gyroDelta;
 	updatePIDVar(&drivePID);
 	updatePIDVar(&gyroPID);
@@ -383,22 +383,23 @@ task drivePIDTask() {
 			drivePID.input = (getLDriveEnc() + getRDriveEnc()) / 2;
 		// no input for tard modes
 
-		gyroPID.input = SensorValue[gyro] + offset;
-		// writeDebugStreamLine("%i", gyroPID.input);
+		gyroPID.input = SensorValue[gyro] + gyroOffset;
+
+		writeDebugStreamLine("%i", gyroPID.input);
 
 		// account for gyro rollover
-		gyroDelta = gyroPID.input - lastGyro;
+		gyroDelta = SensorValue[gyro] - lastGyro;
 		if(gyroDelta > 1800) {
 			// writeDebugStreamLine("yeet");
-			gyroPID.input -= offset; // get rid of old offset
-			offset -= 3600;
-			gyroPID.input += offset; // add back new offset
+			gyroPID.input -= gyroOffset; // get rid of old gyroOffset
+			gyroOffset -= 3600;
+			gyroPID.input += gyroOffset; // add back new gyroOffset
 		}
 		else if(gyroDelta < -1800) {
 			// writeDebugStreamLine("Here78");
-			gyroPID.input -= offset; // get rid of old offset
-			offset += 3600;
-			gyroPID.input += offset; // add back new offset
+			gyroPID.input -= gyroOffset; // get rid of old gyroOffset
+			gyroOffset += 3600;
+			gyroPID.input += gyroOffset; // add back new gyroOffset
 		}
 
 		updatePIDVar(&drivePID);
@@ -439,7 +440,7 @@ task drivePIDTask() {
 		}
 		// dont do anything on tard mode
 
-		lastGyro = gyroPID.input;
+		lastGyro = SensorValue[gyro];
 		wait1Msec(drivePID.loopTime);
 	}
 }

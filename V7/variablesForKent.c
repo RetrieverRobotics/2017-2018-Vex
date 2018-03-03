@@ -45,10 +45,10 @@
 
 #define DRIVE_DEADBAND 5 // amount of power where drive wont move
 #define DRIVE_SLEW_TIME 15 // update period for drive slew rate
-#define DRIVE_SLEW_RATE 15 // maximum motor power change allowed per DRIVE_SLEW_TIME ms
+#define DRIVE_SLEW_RATE 127//15 // maximum motor power change allowed per DRIVE_SLEW_TIME ms
 #define DRIVE_TPI 30
 // 392 * (1/pi*D)
-#define POLY_DRIVE // if this is defined, poly drive will be in effect
+// #define POLY_DRIVE // if this is defined, poly drive will be in effect
 #define POLY_DRIVE_DEGREE 1.5//1.5
 
 #define ROLLERS_IN 127
