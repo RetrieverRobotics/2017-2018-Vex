@@ -13,7 +13,7 @@ if (autonSelection == BLUE_PRIMARY) {
   resetDrive();
   driveIncremental(0);
   resetGyro();
-  pointTurn(SensorValue[gyro]);
+  pointTurn(getHeading());
   startTask(liftPIDTask);
 	startTask(drivePIDTask);
 
@@ -257,7 +257,7 @@ else if (autonSelection == RED_PRIMARY) {
   resetDrive();
   driveIncremental(0);
   resetGyro();
-  pointTurn(SensorValue[gyro]);
+  pointTurn(getHeading());
   startTask(liftPIDTask);
 	startTask(drivePIDTask);
 

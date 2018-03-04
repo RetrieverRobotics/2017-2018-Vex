@@ -54,12 +54,14 @@ void pre_auton(){
 task autonomous(){
 	writeDebugStreamLine("auton - skills");
 
+	// initialization
 	motor[rollers] = ROLLERS_HOLD;
   setLiftHeight(LIFT_SCHMEDIUM);
   resetDrive();
   driveIncremental(0);
-  resetGyro();
-  pointTurn(SensorValue[gyro]);
+  // resetGyro();
+	setGyro(0);
+	pointTurn(0);
   startTask(liftPIDTask);
 	startTask(drivePIDTask);
 

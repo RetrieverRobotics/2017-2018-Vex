@@ -22,7 +22,7 @@ float getHeading() {
 }
 
 float degToGyro(float degrees) {
-	return degrees * 10 - gyroOffset;
+	return degrees * 10;// - gyroOffset;
 }
 
 int slew (int value, int lastValue,  int slewRate)  {
@@ -74,8 +74,9 @@ void resetGyro() {
 	gyroPID.target = SensorValue[gyro];
 }
 
+//change gyroOffset such that getHeading() will return angle
 void setGyro(float angle) {
-	gyroOffset += 10*(angle - getHeading());
+	gyroOffset = 10*angle - SensorValue[gyro];
 }
 
 void smackVcat() {}
@@ -197,17 +198,19 @@ void swingTurnRight(float degrees, bool incremental = false) {
 }
 
 // absolute counterclockwise point turn using gyro position
-void pointTurn(float degrees, bool incremental = false) {
+void pointTurn(float degrees) {
 	driveMode = POINT_TURN;
 
 	resetDrive();
-	if (incremental) {
-		resetGyro();
-		gyroPID.target += degToGyro(degrees);
-	}
-	else {
-		gyroPID.target = degToGyro(degrees);
-	}
+	gyroPID.target = degToGyro(degrees);
+}
+
+void pointTurnIncremental(float degrees) {
+	driveMode = POINT_TURN;
+
+	resetDrive();
+	// resetGyro();
+	gyroPID.target += degToGyro(degrees);
 }
 
 int polyDrive(float input, float power) {
@@ -385,8 +388,6 @@ task drivePIDTask() {
 
 		gyroPID.input = SensorValue[gyro] + gyroOffset;
 
-		writeDebugStreamLine("%i", gyroPID.input);
-
 		// account for gyro rollover
 		gyroDelta = SensorValue[gyro] - lastGyro;
 		if(gyroDelta > 1800) {
@@ -401,6 +402,8 @@ task drivePIDTask() {
 			gyroOffset += 3600;
 			gyroPID.input += gyroOffset; // add back new gyroOffset
 		}
+
+		writeDebugStreamLine("%i", gyroPID.input);
 
 		updatePIDVar(&drivePID);
 		updatePIDVar(&gyroPID);
