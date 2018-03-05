@@ -170,31 +170,35 @@ void driveSlow(float distance, float maxPow){
 }
 
 // absolute counterclockwise swing turn using left side
-void swingTurnLeft(float degrees, bool incremental = false) {
+void swingTurnLeft(float degrees) {
 	driveMode = SWING_LEFT;
 
 	drivePID.target = getRDriveEnc();
-	if (incremental) {
-		resetGyro();
-		gyroPID.target += degToGyro(degrees);
-	}
-	else {
-		gyroPID.target = degToGyro(degrees);
-	}
+	gyroPID.target = degToGyro(degrees);
+}
+
+// Inc counterclockwise swing turn using left side
+void swingTurnLeftInc(float degrees) {
+	driveMode = SWING_LEFT;
+
+	drivePID.target = getRDriveEnc();
+	gyroPID.target += degToGyro(degrees);
 }
 
 // absolute counterclockwise swing turn using right side
-void swingTurnRight(float degrees, bool incremental = false) {
+void swingTurnRight(float degrees) {
 	driveMode = SWING_RIGHT;
 
 	drivePID.target = getLDriveEnc();
-	if (incremental) {
-		resetGyro();
-		gyroPID.target += degToGyro(degrees);
-	}
-	else {
-		gyroPID.target = degToGyro(degrees);
-	}
+	gyroPID.target = degToGyro(degrees);
+}
+
+// Inc counterclockwise swing turn using right side
+void swingTurnRightInc(float degrees) {
+	driveMode = SWING_RIGHT;
+
+	drivePID.target = getLDriveEnc();
+	gyroPID.target += degToGyro(degrees);
 }
 
 // absolute counterclockwise point turn using gyro position
@@ -205,7 +209,7 @@ void pointTurn(float degrees) {
 	gyroPID.target = degToGyro(degrees);
 }
 
-void pointTurnIncremental(float degrees) {
+void pointTurnInc(float degrees) {
 	driveMode = POINT_TURN;
 
 	resetDrive();
@@ -272,6 +276,7 @@ task stackCone() {
 	motor[rollers] = ROLLERS_IN;
 }
 
+//returns true if timeout happens
 void waitForPID(PIDStruct PIDVar, int timeout) {
 	int startTime = nSysTime;
 

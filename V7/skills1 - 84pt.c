@@ -43,6 +43,8 @@ void pre_auton(){
 	bLCDBacklight = false;
   /////
 
+	displayLCDCenteredString(0,"Red Right");
+
 //#include "pre_auton.c"
 }//END pre_auton
 
@@ -50,7 +52,7 @@ void pre_auton(){
 // AUTONOMOUS
 ///////////////////////////////////////////////////////////////////////////////////
 
-// skills - blue side facing mogo
+// skills - red side right
 task autonomous(){
 	writeDebugStreamLine("auton - skills");
 
@@ -155,8 +157,8 @@ task autonomous(){
 	// intakeMogo();
 	waitForPID(gyroPID);
 
-	tardDrive(-40);
-	wait1Msec(600);
+	tardDrive(-50);
+	wait1Msec(1000);
 	tardDrive(0);
 	wait1Msec(200);
 	writeDebugStreamLine("3gyroOffset: %f\t gyro: %i\t heading:%f", gyroOffset, SensorValue[gyro],getHeading());

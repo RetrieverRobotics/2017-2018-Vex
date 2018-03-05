@@ -34,7 +34,8 @@
 
 #define SWING_OUT_TIME 500
 #define SWING_IN_TIME 400
-#define SWING_HOLD_POW 20//15
+#define SWING_HOLD_IN_POW 0//15
+#define SWING_HOLD_OUT_POW 20//15
 
 #define FLIPPER_OUT 1
 #define FLIPPER_IN 0

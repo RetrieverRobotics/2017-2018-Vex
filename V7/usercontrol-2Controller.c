@@ -226,7 +226,7 @@ while (true) {
         motor[swing] = 127;
       }
       else {
-        motor[swing] = SWING_HOLD_POW;
+        motor[swing] = SWING_HOLD_IN_POW;
       }
     }
     else if (swingOutToggle) {
@@ -234,7 +234,7 @@ while (true) {
         motor[swing] = -127;
       }
       else {
-        motor[swing] = -SWING_HOLD_POW;
+        motor[swing] = -SWING_HOLD_OUT_POW;
       }
     }
 
