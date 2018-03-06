@@ -34,7 +34,7 @@
 
 #define SWING_OUT_TIME 500
 #define SWING_IN_TIME 400
-#define SWING_HOLD_IN_POW 0//15
+#define SWING_HOLD_IN_POW 20//15
 #define SWING_HOLD_OUT_POW 20//15
 
 #define FLIPPER_OUT 1
@@ -75,7 +75,7 @@ void initPIDVars() {
 
 	gyroPID.kP = .25;//.15;//.7;
 	gyroPID.kI = 0.0004;//.002//0.0009;
-	gyroPID.kD = 25;//21//18//65;
+	gyroPID.kD = 35;//21//18//65;
 	gyroPID.enabled = true;
 	gyroPID.debug = false;
 	gyroPID.integralLimit = 127;

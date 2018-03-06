@@ -378,7 +378,6 @@ task drivePIDTask() {
 	float lastGyro = SensorValue[gyro];
 	// int gyroOffset = 0; // for gyro rollover
 	int gyroDelta;
-	// int driveOut = 0;
 	updatePIDVar(&drivePID);
 	updatePIDVar(&gyroPID);
 
@@ -414,13 +413,12 @@ task drivePIDTask() {
 		updatePIDVar(&drivePID);
 		updatePIDVar(&gyroPID);
 		// gyroPID.output = 0;
-		// driveOut = lim127(drivePID.output);
 
 		if(driveMode == POINT_TURN) {
 			// combine PID outputs and lim127 so the gyro has more influence
 			tankDrive(
-				lim127(lim127(drivePID.output) - (gyroPID.output)),
-				lim127(lim127(drivePID.output) + (gyroPID.output))
+				lim127(lim127(drivePID.output,100) - (gyroPID.output+4*sgn(gyroPID.output))),
+				lim127(lim127(drivePID.output,100) + (gyroPID.output+4*sgn(gyroPID.output)))
 			);
 		}
 		else if (driveMode == SLOW_DRIVE){

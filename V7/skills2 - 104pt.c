@@ -60,12 +60,12 @@ task autonomous(){
 	motor[rollers] = ROLLERS_HOLD;
   setLiftHeight(LIFT_SCHMEDIUM);
   resetDrive();
-  driveIncremental(0);
   // resetGyro();
 	setGyro(0);
 	pointTurn(0);
-  startTask(liftPIDTask);
+	driveIncremental(0);
 	startTask(drivePIDTask);
+  startTask(liftPIDTask);
 
 	wait1Msec(200);
 
@@ -80,11 +80,19 @@ task autonomous(){
 
 	////dropoff
 	driveIncremental(-48);
+
+	setLiftHeight(LIFT_FLOOR_HEIGHT);
+  wait1Msec(300);
+  motor[rollers] = ROLLERS_OUT;
+	wait1Msec(500);
+	setLiftHeight(LIFT_SCHMEDIUM);
+	motor[rollers] = 0;
+
 	waitForPID(drivePID);
 
 	pointTurnInc(45);
 	waitForPID(gyroPID);
-	driveIncremental(-12);
+	driveIncremental(-20);
 	waitForPID(drivePID);
 	pointTurnInc(90);
 	waitForPID(gyroPID);
@@ -99,32 +107,44 @@ task autonomous(){
 	// setGyro(135);
 
 	///back up
-  driveIncremental(-18);
-  waitForPID(drivePID);
+  driveIncremental(-18);//18);
+  waitForPID(drivePID,3000);
 
 ////////////////////////mogo 2
-	swingTurnLeftInc(-180);
+	pointTurnInc(-90);
+	waitForPID(gyroPID);
+	driveIncremental(6);
 	extendMogo();
+	pointTurnInc(-90);
 	waitForPID(gyroPID);
 
-	driveIncremental(24);
+	driveIncremental(32);
 	waitForPID(drivePID, 4000);
 	intakeMogo();
-	driveIncremental(-31);
+	driveIncremental(-38);//31);
 	waitForPID(drivePID);
 
-	pointTurnInc(180);
+	nogoGadget();
+	pointTurnInc(-180);
+	wait1Msec(400);
+	wait1Msec(300);
+	motor[mogo] = 0;
 	waitForPID(gyroPID);
 
 	////dropoff
-	nogoGadget();
 
-	driveIncremental(6);
-	waitForPID(drivePID);
+	// tardDrive(127);
+	// wait1Msec(300);
+	// tardDrive(-127);
+	// wait1Msec(300);
+	// tardDrive(0);
 
-	tardDrive(26);
-	extendMogo();
-	tardDrive(0);
+	// driveIncremental(6);
+	// waitForPID(drivePID);
+
+	// tardDrive(26);
+	// extendMogo();
+	// tardDrive(0);
 
 	driveIncremental(-12);
 	waitForPID(drivePID);
@@ -133,18 +153,18 @@ task autonomous(){
 	pointTurnInc(-180);
 	waitForPID(gyroPID);
 
-	driveIncremental(68);
+	extendMogo();
+	driveIncremental(58);
 	waitForPID(drivePID);
-	driveIncremental(26);
-	intakeMogo();
+	driveIncremental(36);
+	motor[mogo] = 127;
 	waitForPID(drivePID);
+	motor[mogo] = 0;
 
 	////dropoff
-	nogoGadget();
-
-	tardDrive(26);
-	extendMogo();
-	tardDrive(0);
+	// tardDrive(26);
+	// extendMogo();
+	// tardDrive(0);
 
 	driveIncremental(-12);
 	waitForPID(drivePID);
@@ -152,11 +172,11 @@ task autonomous(){
 ////////////////////////////////mogo 4
 	pointTurnInc(115);
 	waitForPID(gyroPID);
-	driveIncremental(12);
+	driveIncremental(18);
 	waitForPID(drivePID, 2000);
 	pointTurnInc(20);
 	waitForPID(gyroPID);
-	driveIncremental(24);
+	driveIncremental(16);
 	waitForPID(drivePID);
 
 	////dropoff

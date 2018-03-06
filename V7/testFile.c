@@ -87,14 +87,15 @@ task usercontrol(){
 //while(1){
 //	motor[swing] = vexRT[Ch2];
 //}
+	//pointTurn(5);
 	//pointTurn(180);
-	//startTask(drivePIDTask);
-	//waitForPID(gyroPID);
+	startTask(drivePIDTask);
+	waitForPID(gyroPID);
 	//wait1Msec(300);
 
 	//driveIncremental(24);
 
-	//while(true){wait1Msec(1000);}
+	while(true){wait1Msec(1000);}
 	// for testing code above here
 
 	// check if second controller is connected
