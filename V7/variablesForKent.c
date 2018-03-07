@@ -40,7 +40,7 @@
 #define FLIPPER_OUT 1
 #define FLIPPER_IN 0
 
-#define MOGO_EXTEND_TIME 1200//1100//1000
+#define MOGO_EXTEND_TIME 1000//1100//1000
 #define MOGO_INTAKE_TIME 1000//1500
 #define MOGO_SECONDARY_WAIT_TIME 0//100
 
@@ -67,7 +67,7 @@ void initPIDVars() {
 	drivePID.kI = 0.0007;//0.001;
 	drivePID.kD = 39;//37//60;
 	drivePID.enabled = true;
-	drivePID.debug = false;
+	drivePID.debug = true;
 	drivePID.integralLimit = 127;
 	drivePID.integralActiveZone = 40./drivePID.kP;
 	drivePID.loopTime = 50; // ms

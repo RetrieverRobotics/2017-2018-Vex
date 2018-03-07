@@ -44,18 +44,26 @@ void setLift(int setPow) {
 }
 
 void tankDrive(int lPow, int rPow) {
+	// float leftSide;
 	// account for drive deadbands
 	lPow = abs(lPow) < DRIVE_DEADBAND ? 0 : lPow;
 	rPow = abs(rPow) < DRIVE_DEADBAND ? 0 : rPow;
+	// writeDebugStreamLine("before: %i", lPow);
+	// leftSide = round(lPow * 0.92222);
+	lPow = round(lPow * 0.92222);//(float)
+	// writeDebugStreamLine("after: %i", leftSide);
 
 	// account for drive deadbands and set power
-	motor[driveLF] 	= lPow;
-	motor[driveLBT] = lPow;
-	motor[driveLBB] = lPow;
-
 	motor[driveRF]  = rPow;
 	motor[driveRBT] = rPow;
 	motor[driveRBB] = rPow;
+
+	motor[driveLF] 	= lPow;
+	motor[driveLBT] = lPow;
+	motor[driveLBB] = lPow;
+	// motor[driveLF] 	= leftSide;
+	// motor[driveLBT] = leftSide;
+	// motor[driveLBB] = leftSide;
 }
 
 int getLDriveEnc(){
@@ -411,7 +419,8 @@ task drivePIDTask() {
 			gyroPID.input += gyroOffset; // add back new gyroOffset
 		}
 
-		writeDebugStreamLine("%i", gyroPID.input);
+		// writeDebugStreamLine("%i", gyroPID.input);
+		writeDebugStream("R:%i\tL:%i\t", getRDriveEnc(), getLDriveEnc());
 
 		updatePIDVar(&drivePID);
 		updatePIDVar(&gyroPID);
@@ -421,8 +430,8 @@ task drivePIDTask() {
 		if(driveMode == POINT_TURN) {
 			// combine PID outputs and lim127 so the gyro has more influence
 			tankDrive(
-				lim127(driveOut - (gyroPID.output + 3 * gyroPID.output*abs(driveOut)/90)),
-				lim127(driveOut + (gyroPID.output + 3 * gyroPID.output*abs(driveOut)/90))
+				lim127(driveOut - (gyroPID.output + 2 * gyroPID.output*abs(driveOut)/90)),
+				lim127(driveOut + (gyroPID.output + 2 * gyroPID.output*abs(driveOut)/90))
 			);
 		}
 		else if (driveMode == SLOW_DRIVE){

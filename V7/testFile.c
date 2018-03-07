@@ -89,11 +89,13 @@ task usercontrol(){
 //}
 	//pointTurn(5);
 	//pointTurn(180);
-	startTask(drivePIDTask);
-	waitForPID(gyroPID);
+	//startTask(drivePIDTask);
+	//waitForPID(gyroPID);
 	//wait1Msec(300);
 
 	//driveIncremental(24);
+
+
 
 	while(true){wait1Msec(1000);}
 	// for testing code above here
