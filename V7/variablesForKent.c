@@ -41,7 +41,7 @@
 #define FLIPPER_IN 0
 
 #define MOGO_EXTEND_TIME 1000//1100//1000
-#define MOGO_INTAKE_TIME 1000//1500
+#define MOGO_INTAKE_TIME 800//1500
 #define MOGO_SECONDARY_WAIT_TIME 0//100
 
 #define DRIVE_DEADBAND 5 // amount of power where drive wont move

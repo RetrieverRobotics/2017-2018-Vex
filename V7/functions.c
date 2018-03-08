@@ -430,8 +430,8 @@ task drivePIDTask() {
 		if(driveMode == POINT_TURN) {
 			// combine PID outputs and lim127 so the gyro has more influence
 			tankDrive(
-				lim127(driveOut - (gyroPID.output + 2 * gyroPID.output*abs(driveOut)/90)),
-				lim127(driveOut + (gyroPID.output + 2 * gyroPID.output*abs(driveOut)/90))
+				lim127(driveOut - (gyroPID.output + 1 * gyroPID.output*abs(driveOut)/90)),
+				lim127(driveOut + (gyroPID.output + 1 * gyroPID.output*abs(driveOut)/90))
 			);
 		}
 		else if (driveMode == SLOW_DRIVE){
