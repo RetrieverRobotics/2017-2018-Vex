@@ -176,7 +176,7 @@ task autonomous(){
 	// extendMogo();///this?
 	driveIncremental(58);
 	waitForPID(drivePID);
-	driveIncremental(46);
+	driveIncremental(47);
 	motor[mogo] = 127;
 	// motor[mogo] = -127;
 	wait1Msec(500);
@@ -205,13 +205,13 @@ task autonomous(){
 	waitForPID(gyroPID);
 	motor[mogo] = -127;
 	wait1Msec(200);
-	driveIncremental(40);
+	driveIncremental(41.984652397463);
 	extendMogo();
 	waitForPID(drivePID);
 	intakeMogo();
 
 	////dropoff
-	driveIncremental(-50);
+	driveIncremental(-52.79456132);
 	waitForPID(drivePID);
 
 	pointTurnInc(-39);
@@ -241,8 +241,10 @@ task autonomous(){
 	waitForPID(drivePID, 4000);
 	pointTurnInc(-34);
 	waitForPID(gyroPID);
-	extendMogo();
+	motor[mogo] = -127;
+	wait1Msec(300);
 	driveIncremental(32);
+	extendMogo();
 	waitForPID(drivePID);
 	intakeMogo();
 
@@ -252,7 +254,7 @@ task autonomous(){
 
 	pointTurnInc(44);
 	waitForPID(gyroPID);
-	driveIncremental(-30);
+	driveIncremental(-27.78946513256799846512);
 	waitForPID(drivePID);
 
 	nogoGadget();
@@ -275,7 +277,7 @@ task autonomous(){
 	//mogo2 code:
 		// pointTurnInc(-90);
 		// waitForPID(gyroPID);
-		driveIncremental(6);
+		driveIncremental(8.325879422699955);//8.3257
 		waitForPID(drivePID);
 		pointTurnInc(-90);
 		extendMogo();
@@ -296,13 +298,13 @@ task autonomous(){
 		waitForPID(drivePID);
 
 		// pointTurnInc(-180);
-		pointTurnInc(-354);
+		pointTurnInc(-355.9764531256);
 		wait1Msec(400);
 		nogoGadget();
 		motor[mogo] = -127;
-		wait1Msec(400);
-		motor[mogo] = 0;
+		//wait1Msec(400);
 		waitForPID(gyroPID);
+		motor[mogo] = 0;
 	//////end mogo 2 code
 
 	// swingTurnLeftInc(-180);
@@ -338,15 +340,21 @@ task autonomous(){
 	// pointTurnInc(-179);
 	// waitForPID(gyroPID);
 
-	extendMogo();
 	driveIncremental(58);
 	waitForPID(drivePID);
-	driveIncremental(40);
+	driveIncremental(47);
 	motor[mogo] = 127;
-	wait1Msec(500);
 	// motor[mogo] = -127;
-	// wait1Msec(300);
+	wait1Msec(500);
 	motor[mogo] = 0;
+	waitForPID(drivePID);
+	motor[mogo] = -127;
+	//motor[mogo] = -127;
+	// motor[mogo] = -127;
+	//wait1Msec(580);
+	//motor[mogo] = 0;
+	//motor[mogo] = 127;
+	//wait1Msec(500);
 	waitForPID(drivePID);
 	// motor[mogo] = 0;
 
@@ -355,36 +363,41 @@ task autonomous(){
 	// extendMogo();
 	// tardDrive(0);
 
-	driveIncremental(-12);
+	driveIncremental(-18);
+	wait1Msec(300);
+	motor[mogo] = 0;
 	waitForPID(drivePID);
 
 /////////////////////mogo 8
-	pointTurnInc(115);
+	pointTurnInc(100);
 	waitForPID(gyroPID);
-	driveIncremental(12);
-	waitForPID(drivePID, 2000);
-	pointTurnInc(20);
+	driveIncremental(32);
+	waitForPID(drivePID, 4000);
+	pointTurnInc(34);
+	intakeMogo();
 	waitForPID(gyroPID);
-	driveIncremental(24);
+	// extendMogo();
+	// driveIncremental(32);
+	// waitForPID(drivePID);
+	// intakeMogo();
+
+	/////dropoff
+	driveIncremental(-50);
+	waitForPID(drivePID, 4000);
+
+	pointTurnInc(-44);
+	waitForPID(gyroPID);
+	driveIncremental(-27.78946513256799846512);
 	waitForPID(drivePID);
 
-	////dropoff
-	driveIncremental(-48);
-	waitForPID(drivePID);
-
-	pointTurnInc(-45);
+	nogoGadget();
+	pointTurnInc(-360);
+	motor[mogo] = -127;
+	wait1Msec(400);
+	motor[mogo] = 127;
+	wait1Msec(400);
+	motor[mogo] = 0;
 	waitForPID(gyroPID);
-	driveIncremental(-12);
-	waitForPID(drivePID);
-	pointTurnInc(-90);
-	waitForPID(gyroPID);
-
-	tardDrive(26);
-	extendMogo();
-	tardDrive(0);
-
-	driveIncremental(-8);
-	waitForPID(drivePID, 2000);
 
 ////////////////////////park
 	pointTurnInc(130);
