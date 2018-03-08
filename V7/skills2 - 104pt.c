@@ -203,7 +203,7 @@ task autonomous(){
 	waitForPID(gyroPID);
 	driveIncremental(12);
 	waitForPID(drivePID, 2000);
-	pointTurnInc(86);
+	pointTurnInc(90);
 	waitForPID(gyroPID);
 	motor[mogo] = -127;
 	wait1Msec(200);
@@ -375,7 +375,9 @@ task autonomous(){
 
 /////////////////////mogo 8
 	pointTurnInc(120);
+	motor[mogo] = -127;
 	waitForPID(gyroPID);
+	motor[mogo] = 0;
 	driveIncremental(38);
 	waitForPID(drivePID, 4000);
 	pointTurnInc(5);
@@ -395,9 +397,10 @@ task autonomous(){
 	// driveIncremental(-27.78946513256799846512);
 	// waitForPID(drivePID);
 
-	nogoGadget();
 	pointTurnInc(-180);
+	wait1Msec(400);
 	motor[mogo] = -127;
+	nogoGadget();
 	wait1Msec(400);
 	motor[mogo] = 127;
 	wait1Msec(400);
@@ -407,7 +410,7 @@ task autonomous(){
 ////////////////////////park
 	// pointTurnInc(130);
 	// waitForPID(gyroPID, 5000);
-	driveIncremental(-68);
+	driveIncremental(-78);
 
 
 	while(1){wait1Msec(1000);}
@@ -420,12 +423,360 @@ task autonomous(){
 task usercontrol(){
 	writeDebugStreamLine("usrctrl");
 
-	// check if second controller is connected
-	if (nVexRCReceiveState & vrXmit2) {
-	  #include "usercontrol-2Controller.c"
-	}
-	else {
-	  #include "usercontrol-singleController.c"
-	}
+	// writeDebugStreamLine("auton - skills");
+
+	// initialization
+	motor[rollers] = ROLLERS_HOLD;
+  setLiftHeight(LIFT_SCHMEDIUM);
+	nMotorEncoder[driveLBB] = 0;
+	nMotorEncoder[driveRBB] = 0;
+  resetDrive();
+  // resetGyro();
+	setGyro(0);
+	pointTurn(0);
+	driveIncremental(0);
+	startTask(drivePIDTask);
+  startTask(liftPIDTask);
+
+	// wait1Msec(200);
+
+//////////////////mogo1
+	motor[mogo] = -127;
+	wait1Msec(400); // 400
+	driveIncremental(48);
+	extendMogo();
+	waitForPID(drivePID);
+
+	intakeMogo();
+
+	////dropoff
+	driveIncremental(-48);
+
+	setLiftHeight(LIFT_FLOOR_HEIGHT);
+  wait1Msec(300);
+  motor[rollers] = ROLLERS_OUT;
+	wait1Msec(500);
+	setLiftHeight(LIFT_SCHMEDIUM);
+	motor[rollers] = 0;
+
+	waitForPID(drivePID, 4000);
+
+	pointTurnInc(45);
+	waitForPID(gyroPID);
+	driveIncremental(-31);
+	waitForPID(drivePID);
+	pointTurnInc(90);
+	waitForPID(gyroPID);
+
+	nogoGadget();
+	tardDrive(127);
+  wait1Msec(400);
+  tardDrive(60);
+  wait1Msec(500);
+  tardDrive(0);
+	wait1Msec(300);
+	// setGyro(135);
+
+	///back up
+  driveIncremental(-18);//18);
+  waitForPID(drivePID,3000);
+
+////////////////////////mogo 2
+	motor[mogo] = -127;
+	pointTurnInc(-90);
+	waitForPID(gyroPID);
+	driveIncremental(8);//12
+	// extendMogo();
+	waitForPID(drivePID);
+	motor[mogo] = 0;
+	pointTurnInc(-90);
+	waitForPID(gyroPID);
+
+	driveIncremental(34);
+	waitForPID(drivePID, 4000);
+	intakeMogo();
+	driveIncremental(-36);//31);
+	waitForPID(drivePID, 3000);
+
+	tardDrive(-50);
+	wait1Msec(500);
+	tardDrive(0);
+	resetGyro();
+
+	driveIncremental(3);
+	waitForPID(drivePID);
+
+	// pointTurnInc(-180);
+	pointTurnInc(-354);
+	wait1Msec(400);
+	nogoGadget();
+	wait1Msec(200);
+	motor[mogo] = -127;
+	// wait1Msec(400);
+	waitForPID(gyroPID);
+	wait1Msec(5);
+	motor[mogo] = 0;
+
+	////dropoff
+
+	// tardDrive(127);
+	// wait1Msec(300);
+	// tardDrive(-127);
+	// wait1Msec(300);
+	// tardDrive(0);
+
+	// driveIncremental(6);
+	// waitForPID(drivePID);
+
+	// tardDrive(26);
+	// extendMogo();
+	// tardDrive(0);
+
+	// driveIncremental(-12);
+	// waitForPID(drivePID);
+
+///////////////////////mogo 3
+	// pointTurnInc(-177);
+	// waitForPID(gyroPID);
+
+	// extendMogo();///this?
+	driveIncremental(58);
+	waitForPID(drivePID);
+	driveIncremental(47);
+	motor[mogo] = 127;
+	// motor[mogo] = -127;
+	wait1Msec(500);
+	motor[mogo] = 0;
+	waitForPID(drivePID);
+	motor[mogo] = -127;
+	// motor[mogo] = 0;
+
+	////dropoff
+	// tardDrive(26);
+	// extendMogo();
+	// tardDrive(0);
+
+	driveIncremental(-14);//-18
+	wait1Msec(300);
+	motor[mogo] = 0;
+	waitForPID(drivePID);
+
+////////////////////////////////mogo 4
+	pointTurnInc(45);
+	intakeMogo();
+	waitForPID(gyroPID);
+	driveIncremental(12);
+	waitForPID(drivePID, 2000);
+	pointTurnInc(90);
+	waitForPID(gyroPID);
+	motor[mogo] = -127;
+	wait1Msec(200);
+	driveIncremental(41.984652397463);
+	extendMogo();
+	waitForPID(drivePID);
+	intakeMogo();
+
+	////dropoff
+	driveIncremental(-52.79456132);
+	waitForPID(drivePID);
+
+	pointTurnInc(-39);
+	waitForPID(gyroPID);
+	driveIncremental(-32);
+	waitForPID(drivePID);
+	pointTurnInc(-90);
+	waitForPID(gyroPID);
+
+	nogoGadget();
+	tardDrive(127);
+  wait1Msec(400);
+  tardDrive(60);
+  wait1Msec(500);
+  tardDrive(0);
+	wait1Msec(300);
+	// setGyro(45);
+
+	///back up
+  driveIncremental(-20);
+  waitForPID(drivePID, 3000);
+
+/////////////////////mogo 5
+	pointTurnInc(-100);
+	waitForPID(gyroPID);
+	driveIncremental(32);
+	waitForPID(drivePID, 4000);
+	pointTurnInc(-34);
+	waitForPID(gyroPID);
+	motor[mogo] = -127;
+	wait1Msec(450);
+	driveIncremental(32);
+	extendMogo();
+	waitForPID(drivePID);
+	intakeMogo();
+
+	/////dropoff
+	driveIncremental(-50);
+	waitForPID(drivePID, 4000);
+
+	pointTurnInc(44);
+	waitForPID(gyroPID);
+	driveIncremental(-27.78946513256799846512);//-27.789
+	waitForPID(drivePID);
+
+	nogoGadget();
+	pointTurnInc(360);
+	motor[mogo] = -127;
+	wait1Msec(400);
+	motor[mogo] = 127;
+	wait1Msec(400);
+	motor[mogo] = 0;
+	waitForPID(gyroPID);
+
+	// tardDrive(26);
+  // extendMogo();
+  // tardDrive(0);
+	//
+	// driveIncremental(-8);
+	// waitForPID(drivePID);
+
+/////////////////////mogo 6
+	//mogo2 code:
+		// pointTurnInc(-90);
+		// waitForPID(gyroPID);
+		driveIncremental(8.325879422699955);//8.3257
+		waitForPID(drivePID);
+		pointTurnInc(-90);
+		extendMogo();
+		waitForPID(gyroPID);
+
+		driveIncremental(30);
+		waitForPID(drivePID, 4000);
+		intakeMogo();
+		driveIncremental(-36);//31);
+		waitForPID(drivePID, 3000);
+
+		tardDrive(-50);
+		wait1Msec(500);
+		tardDrive(0);
+		resetGyro();
+
+		driveIncremental(3);
+		waitForPID(drivePID);
+
+		// pointTurnInc(-180);
+		pointTurnInc(-355.9764531256);
+		wait1Msec(400);
+		nogoGadget();
+		wait1Msec(200);
+		motor[mogo] = -127;
+		//wait1Msec(400);
+		waitForPID(gyroPID);
+		wait1Msec(5);
+		motor[mogo] = 0;
+	//////end mogo 2 code
+
+
+	// swingTurnLeftInc(-180);
+	// motor[mogo] = 127;
+	// wait1Msec(400);
+	// motor[mogo] = -127;
+	// wait1Msec(400);
+	// waitForPID(gyroPID);
+	//
+	// driveIncremental(24);
+	// waitForPID(drivePID, 4000);
+	// intakeMogo();
+	// driveIncremental(-31);
+	// waitForPID(drivePID);
+	//
+	// pointTurnInc(180);
+	// waitForPID(gyroPID);
+	//
+	// ////dropoff
+	// nogoGadget();
+	//
+	// driveIncremental(6);
+	// waitForPID(drivePID);
+	//
+	// tardDrive(26);
+	// extendMogo();
+	// tardDrive(0);
+	//
+	// driveIncremental(-12);
+	// waitForPID(drivePID);
+
+///////////////////////////mogo 7
+	// pointTurnInc(-179);
+	// waitForPID(gyroPID);
+
+	driveIncremental(58);
+	waitForPID(drivePID);
+	driveIncremental(48);
+	motor[mogo] = 127;
+	// motor[mogo] = -127;
+	wait1Msec(500);
+	motor[mogo] = 0;
+	waitForPID(drivePID);
+	motor[mogo] = -127;
+	//motor[mogo] = -127;
+	// motor[mogo] = -127;
+	//wait1Msec(580);
+	//motor[mogo] = 0;
+	//motor[mogo] = 127;
+	//wait1Msec(500);
+	waitForPID(drivePID);
+	// motor[mogo] = 0;
+
+	////dropoff
+	// tardDrive(26);
+	// extendMogo();
+	// tardDrive(0);
+
+	driveIncremental(-12);
+	wait1Msec(300);
+	motor[mogo] = 0;
+	waitForPID(drivePID);
+
+/////////////////////mogo 8
+	pointTurnInc(120);
+	motor[mogo] = -127;
+	waitForPID(gyroPID);
+	motor[mogo] = 0;
+	driveIncremental(38);
+	waitForPID(drivePID, 4000);
+	pointTurnInc(5);
+	intakeMogo();
+	waitForPID(gyroPID);
+	// extendMogo();
+	// driveIncremental(32);
+	// waitForPID(drivePID);
+	// intakeMogo();
+
+	/////dropoff
+	driveIncremental(-70);
+	waitForPID(drivePID, 4000);
+
+	// pointTurnInc(-44);
+	// waitForPID(gyroPID);
+	// driveIncremental(-27.78946513256799846512);
+	// waitForPID(drivePID);
+
+	pointTurnInc(-180);
+	wait1Msec(400);
+	motor[mogo] = -127;
+	nogoGadget();
+	wait1Msec(400);
+	motor[mogo] = 127;
+	wait1Msec(400);
+	motor[mogo] = 0;
+	waitForPID(gyroPID, 5000);
+
+////////////////////////park
+	// pointTurnInc(130);
+	// waitForPID(gyroPID, 5000);
+	driveIncremental(-78);
+
+
+	while(1){wait1Msec(1000);}
 
 }//END usercontrol()
