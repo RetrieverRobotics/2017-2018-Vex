@@ -145,7 +145,7 @@ if (autonSelection == BLUE_PRIMARY) {
 
   wait1Msec(600);
 
-  resetGyro();
+  // resetGyro();
 
   // driveIncremental(1);
   // waitForPID(drivePID);
