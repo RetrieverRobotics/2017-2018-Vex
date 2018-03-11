@@ -61,6 +61,8 @@
 #define MOGO_PISTONS_IN 1
 #define MOGO_PISTONS_OUT 0
 
+#define CONE_PICKUP_WAIT_TIME 400
+
 // PID tuning variables
 void initPIDVars() {
 	drivePID.kP = .31;
