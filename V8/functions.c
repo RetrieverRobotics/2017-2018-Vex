@@ -248,9 +248,9 @@ task driveSlew() {
 
 		#else
 		// leftDrive 	= slew(vexRT[Ch3], 	leftDrive,  DRIVE_SLEW_RATE);
-		leftDrive 	= slew(vexRT[Ch3]*100/127, 	leftDrive,  DRIVE_SLEW_RATE);
+		leftDrive 	= slew(round(vexRT[Ch3]*100/127), 	leftDrive,  DRIVE_SLEW_RATE);
 		// rightDrive 	= slew(vexRT[Ch2], rightDrive, 	DRIVE_SLEW_RATE);
-		rightDrive 	= slew(vexRT[Ch2]*100/127, rightDrive, 	DRIVE_SLEW_RATE);
+		rightDrive 	= slew(round(vexRT[Ch2]*100/127), rightDrive, 	DRIVE_SLEW_RATE);
 
 		#endif
 		tankDrive(leftDrive, rightDrive);
@@ -420,7 +420,8 @@ task drivePIDTask() {
 		}
 
 		// writeDebugStreamLine("%i", gyroPID.input);
-		writeDebugStream("R:%i\tL:%i\t", getRDriveEnc(), getLDriveEnc());
+		// writeDebugStreamLine("%i", gyroPID.error);
+		// writeDebugStream("R:%i\tL:%i\t", getRDriveEnc(), getLDriveEnc());
 
 		updatePIDVar(&drivePID);
 		updatePIDVar(&gyroPID);
@@ -430,8 +431,8 @@ task drivePIDTask() {
 		if(driveMode == POINT_TURN) {
 			// combine PID outputs and lim127 so the gyro has more influence
 			tankDrive(
-				lim127(driveOut - (gyroPID.output + 1 * gyroPID.output*abs(driveOut)/90)),
-				lim127(driveOut + (gyroPID.output + 1 * gyroPID.output*abs(driveOut)/90))
+				lim127(driveOut - lim127((gyroPID.output + 1 * gyroPID.output*abs(driveOut)/90),90),90),
+				lim127(driveOut + lim127((gyroPID.output + 1 * gyroPID.output*abs(driveOut)/90),90),90)
 			);
 		}
 		else if (driveMode == SLOW_DRIVE){

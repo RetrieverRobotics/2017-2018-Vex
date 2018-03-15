@@ -30,7 +30,7 @@
 #define LIFT_CONE_2 300
 #define LIFT_CONE_3 350
 #define LIFT_DROP_DELTA 100
-#define LIFT_STATIONARY 1100
+#define LIFT_STATIONARY 900
 
 #define SWING_OUT_TIME 500
 #define SWING_IN_TIME 400
@@ -61,7 +61,8 @@
 #define MOGO_PISTONS_IN 1
 #define MOGO_PISTONS_OUT 0
 
-#define CONE_PICKUP_WAIT_TIME 400
+#define CONE_PICKUP_WAIT_TIME 500
+#define CONE_RELEASE_TIME 400
 
 // PID tuning variables
 void initPIDVars() {
@@ -69,21 +70,21 @@ void initPIDVars() {
 	drivePID.kI = 0.0007;//0.001;
 	drivePID.kD = 39;//37//60;
 	drivePID.enabled = true;
-	drivePID.debug = true;
+	drivePID.debug = false;
 	drivePID.integralLimit = 127;
 	drivePID.integralActiveZone = 40./drivePID.kP;
 	drivePID.loopTime = 50; // ms
-	drivePID.errorThreshold = 50;//50
+	drivePID.errorThreshold = 30;//50
 
-	gyroPID.kP = .25;//.15;//.7;
+	gyroPID.kP = .3;//.25;//.15;//.7;
 	gyroPID.kI = 0.0004;//.002//0.0009;
 	gyroPID.kD = 35;//21//18//65;
 	gyroPID.enabled = true;
-	gyroPID.debug = false;
+	gyroPID.debug = true;
 	gyroPID.integralLimit = 127;
 	gyroPID.integralActiveZone = 40./gyroPID.kP;
 	gyroPID.loopTime = drivePID.loopTime;//50; // ms
-	gyroPID.errorThreshold = 50;//50//100 // 5 degree of error
+	gyroPID.errorThreshold = 30;//50//100 // 5 degree of error
 	gyroPID.target = SensorValue[gyro];
 
 	liftPID.kP = .3;
