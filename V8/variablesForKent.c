@@ -29,6 +29,7 @@
 #define LIFT_CLEAR_CONE 250//?
 #define LIFT_CONE_2 300
 #define LIFT_CONE_3 350
+#define LIFT_CONE_4 400
 #define LIFT_DROP_DELTA 100
 #define LIFT_STATIONARY 900
 
@@ -62,7 +63,8 @@
 #define MOGO_PISTONS_OUT 0
 
 #define CONE_PICKUP_WAIT_TIME 500
-#define CONE_RELEASE_TIME 400
+#define CONE_RELEASE_TIME 500
+#define CONE_SECONDARY_RELEASE_TIME 400
 
 // PID tuning variables
 void initPIDVars() {

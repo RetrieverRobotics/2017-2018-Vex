@@ -97,7 +97,7 @@ task usercontrol(){
 
 
 
-	while(true){wait1Msec(1000);}
+	//while(true){wait1Msec(1000);}
 	// for testing code above here
 
 	// check if second controller is connected

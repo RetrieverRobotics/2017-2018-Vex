@@ -40,20 +40,19 @@ if (autonSelection == BLUE_PRIMARY) {
 ////////////////////////////////mogo 1
   motor[mogo] = -127;
   wait1Msec(400); // 400
-  driveIncremental(47);//48
+  driveIncremental(45);//48
   extendMogo();
   waitForPID(drivePID);
 
   intakeMogo();
 
-  setLiftHeight(LIFT_FLOOR_HEIGHT);
-  wait1Msec(300);
-  motor[rollers] = ROLLERS_OUT;
-///////////cone2
+  //////////////////////////////////////cone2 (first mogo)
   driveIncremental(6);//8
   swingOut();
   motor[swing] = -50;
   motor[rollers] = ROLLERS_IN;
+
+  waitForPID(drivePID);
 
   setLiftHeight(LIFT_FLOOR_HEIGHT);
   waitForPID(liftPID);
@@ -67,27 +66,55 @@ if (autonSelection == BLUE_PRIMARY) {
   tardLift(-70);
   wait1Msec(CONE_RELEASE_TIME);
   motor[rollers] = ROLLERS_OUT;
+  wait1Msec(CONE_SECONDARY_RELEASE_TIME);
   tardLift(127);
   wait1Msec(100);
   setLiftHeight(LIFT_CONE_2);
 
 /////////////////////////////////////cone 3
   driveIncremental(8);//8
+  waitForPID(liftPID);
   swingOut();
   motor[swing] = -50;
   motor[rollers] = ROLLERS_IN;
   // wait1Msec(500);
+
+  waitForPID(drivePID);
 
   setLiftHeight(LIFT_FLOOR_HEIGHT);
   waitForPID(liftPID);
   wait1Msec(CONE_PICKUP_WAIT_TIME);
   motor[rollers] = ROLLERS_HOLD;
 
+  setLiftHeight(LIFT_CONE_3);
+  waitForPID(liftPID);
+  swingIn();
+  tardLift(-70);
+  wait1Msec(CONE_RELEASE_TIME);
+  tardLift(-20);
+  motor[rollers] = ROLLERS_OUT;
+  wait1Msec(CONE_SECONDARY_RELEASE_TIME);
+  setLiftHeight(LIFT_CONE_3);
+
+/////////////////////////////////////cone 3.1
+  driveIncremental(8);//8
+  waitForPID(liftPID);
+  swingOut();
+  motor[swing] = -50;
+  motor[rollers] = ROLLERS_IN;
+  // wait1Msec(500);
+
+  waitForPID(drivePID);
+
+  setLiftHeight(LIFT_FLOOR_HEIGHT);
+  waitForPID(liftPID);
+  wait1Msec(CONE_PICKUP_WAIT_TIME);
+  motor[rollers] = ROLLERS_HOLD;
 
   ///////////////////////////////////dropoff
-  driveIncremental(-60);//-60
+  driveIncremental(-74);//-60
 
-  setLiftHeight(LIFT_CONE_3);
+  setLiftHeight(LIFT_CONE_4);
   waitForPID(liftPID);
   swingIn();
   tardLift(-70);
@@ -102,9 +129,9 @@ if (autonSelection == BLUE_PRIMARY) {
 
   pointTurnInc(44);//45
   waitForPID(gyroPID);
-  driveIncremental(-36);//-26
+  driveIncremental(-31);//-36//-26
   waitForPID(drivePID);
-  pointTurnInc(97);///90
+  pointTurnInc(95);//97///90
   waitForPID(gyroPID);
 
 
@@ -164,8 +191,8 @@ if (autonSelection == BLUE_PRIMARY) {
 
   resetGyro();
 
-  driveIncremental(1);
-  waitForPID(drivePID, 2000);
+  // driveIncremental(1);
+  // waitForPID(drivePID, 2000);
   pointTurnInc(-90.5);//90
   setLiftHeight(LIFT_CONE_2);
   waitForPID(gyroPID);
@@ -175,41 +202,47 @@ if (autonSelection == BLUE_PRIMARY) {
   intakeMogo();
 
   ///////////cone4
-  driveIncremental(5.5);//8
+  driveIncremental(7);//8
   swingOut();
   motor[swing] = -50;
   motor[rollers] = ROLLERS_IN;
 
+  waitForPID(drivePID);
+
   setLiftHeight(LIFT_FLOOR_HEIGHT);
-  waitForPID(liftPID, 2000);
+  waitForPID(liftPID);
   wait1Msec(CONE_PICKUP_WAIT_TIME);
   motor[rollers] = ROLLERS_HOLD;
 
-  setLiftHeight(LIFT_CONE_2);//CONE_1 ?
+  setLiftHeight(LIFT_CONE_2);
   waitForPID(liftPID);
 
   swingIn();
   tardLift(-70);
   wait1Msec(CONE_RELEASE_TIME);
   motor[rollers] = ROLLERS_OUT;
+  wait1Msec(CONE_SECONDARY_RELEASE_TIME);
   tardLift(127);
   wait1Msec(100);
   setLiftHeight(LIFT_CONE_2);
 
 /////////////////////////////////////cone 5
-  driveIncremental(8);
+  driveIncremental(5);//8
+  waitForPID(liftPID);
   swingOut();
   motor[swing] = -50;
   motor[rollers] = ROLLERS_IN;
   // wait1Msec(500);
 
+  waitForPID(drivePID);
+
   setLiftHeight(LIFT_FLOOR_HEIGHT);
-  waitForPID(liftPID, 3000);
+  waitForPID(liftPID);
   wait1Msec(CONE_PICKUP_WAIT_TIME);
   motor[rollers] = ROLLERS_HOLD;
 
   ///////////////////////////////////dropoff
-  driveIncremental(-60);//-60
+  driveIncremental(-70);//-60
 
   setLiftHeight(LIFT_CONE_2);
   waitForPID(liftPID);
@@ -218,9 +251,10 @@ if (autonSelection == BLUE_PRIMARY) {
   wait1Msec(CONE_RELEASE_TIME);
   tardLift(-20);
   motor[rollers] = ROLLERS_OUT;
+  wait1Msec(CONE_SECONDARY_RELEASE_TIME);
   setLiftHeight(LIFT_SCHMEDIUM);
 
-  waitForPID(drivePID);
+  waitForPID(drivePID, 5000);
   motor[rollers] = 0;
 
 
@@ -234,12 +268,12 @@ if (autonSelection == BLUE_PRIMARY) {
   tardDrive(0);
 
   //////////////////////////////mogo3
-  driveIncremental(-12);
+  driveIncremental(-8);
   waitForPID(drivePID);
   pointTurnInc(-55);//-45
   intakeMogo();
   waitForPID(gyroPID);
-  driveIncremental(-34);//-36
+  driveIncremental(-50);//-50//-36
   waitForPID(drivePID);
   pointTurnInc(-120);
   waitForPID(gyroPID);
@@ -247,11 +281,11 @@ if (autonSelection == BLUE_PRIMARY) {
 
   driveIncremental(42);
   waitForPID(drivePID);
-  driveIncremental(-22);//-24
+  driveIncremental(-25);//-24
   extendMogo();
   waitForPID(drivePID);
 
-  pointTurnInc(30);//35
+  pointTurnInc(37);//35
   waitForPID(gyroPID);
   driveIncremental(24);
   waitForPID(drivePID);
@@ -259,19 +293,29 @@ if (autonSelection == BLUE_PRIMARY) {
 
   //OPTIONAL YEET CODE
   //****//
-  pointTurnInc(-40);
+  pointTurnInc(-53);
   waitForPID(gyroPID);
 
   driveIncremental(-40);
+  setLiftHeight(LIFT_FLOOR_HEIGHT);
+  motor[rollers] = ROLLERS_IN;
+  swingOut();
   waitForPID(drivePID);
 
   swingTurnLeftInc(-186);//-180
   waitForPID(gyroPID);
 
-  driveIncremental(36);
+  driveIncremental(46);//36
+  nogoGadget();
+  setLiftHeight(LIFT_SCHMEDIUM);
+  swingIn();
   waitForPID(drivePID, 3000);
 
-  extendMogo();
+  tardDrive(-127);
+  wait1Msec(300);
+  tardDrive(0);
+
+  // extendMogo();
 
   //****//
 
