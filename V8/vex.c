@@ -44,6 +44,8 @@
 /*    ----------------   seconds it has been running.                        */
 /*---------------------------------------------------------------------------*/
 
+#warning "Im dead inside"
+
 // Forward references for functions in the competition template
 void pre_auton();
 task autonomous();

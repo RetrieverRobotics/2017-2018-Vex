@@ -287,19 +287,19 @@ task stackCone() {
 }
 
 //returns true if timeout happens
-void waitForPID(PIDStruct PIDVar, int timeout) {
+bool waitForPID(PIDStruct PIDVar, int timeout) {
 	int startTime = nSysTime;
 
 	while (true) {
 		wait1Msec(PIDVar.loopTime);
 		if(fabs(PIDVar.error) < PIDVar.errorThreshold){
-			return;
+			return false;
 		}
 		if(nSysTime - startTime > timeout){
-			return;
+			return true;
 		}
 	}
-	return;
+	return false;
 }
 
 void waitForPID(PIDStruct PIDVar){

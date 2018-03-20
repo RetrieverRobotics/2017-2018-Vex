@@ -61,6 +61,6 @@ short liftMode = LIFT_PID_CONTROL;
 int slowDrivePow = 60;
 
 void setLift(int setPow);
-void waitForPID(PIDStruct PIDVar, int timeout);
+bool waitForPID(PIDStruct PIDVar, int timeout);
 void waitForPID(PIDStruct PIDVar);
 task liftPIDTask();

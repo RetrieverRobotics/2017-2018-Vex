@@ -138,16 +138,17 @@ while (true) {
     bRollerMacro = false;
   }
 
-  // in on 6U
   if (!bRollerMacro) {
-    if (vexRT[Btn6UXmtr2]) {
-      motor[rollers] = ROLLERS_IN;
-      rollerIdleIn = true;
-    }
+    // take higher precedence to outtake so you can hold intake and quick override outtake
     // out on 6D
-    else if (vexRT[Btn6DXmtr2]) {
+    if (vexRT[Btn6DXmtr2]) {
       motor[rollers] = ROLLERS_OUT;
       rollerIdleIn = false;
+    }
+    // in on 6U
+    else if (vexRT[Btn6UXmtr2]) {
+      motor[rollers] = ROLLERS_IN;
+      rollerIdleIn = true;
     }
     else {
       if(rollerIdleIn) {
