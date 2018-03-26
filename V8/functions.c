@@ -43,15 +43,14 @@ void setLift(int setPow) {
 	motor[lift] = setPow;
 }
 
-void tankDrive(int lPow, int rPow) {
-	// float leftSide;
+void tankDrive(int lPow, int rPow, bool straight = true) {
 	// account for drive deadbands
 	lPow = abs(lPow) < DRIVE_DEADBAND ? 0 : lPow;
 	rPow = abs(rPow) < DRIVE_DEADBAND ? 0 : rPow;
-	// writeDebugStreamLine("before: %i", lPow);
-	// leftSide = round(lPow * 0.92222);
-	lPow = round(lPow * 0.92222);//(float)
-	// writeDebugStreamLine("after: %i", leftSide);
+
+	if(straight){
+		lPow = round(lPow * DRIVE_LEFT_MULTIPLIER);//(float)
+	}
 
 	// account for drive deadbands and set power
 	motor[driveRF]  = rPow;
@@ -61,9 +60,6 @@ void tankDrive(int lPow, int rPow) {
 	motor[driveLF] 	= lPow;
 	motor[driveLBT] = lPow;
 	motor[driveLBB] = lPow;
-	// motor[driveLF] 	= leftSide;
-	// motor[driveLBT] = leftSide;
-	// motor[driveLBB] = leftSide;
 }
 
 int getLDriveEnc(){
@@ -235,27 +231,32 @@ task driveSlew() {
 	int rightDrive = 0;
 	while(true) {
 		#ifdef POLY_DRIVE
-		leftDrive 	= slew(
-			polyDrive(vexRT[Ch3], POLY_DRIVE_DEGREE),
-			leftDrive,
-			DRIVE_SLEW_RATE
+		leftDrive = slew(
+			polyDrive(vexRT[Ch3], POLY_DRIVE_DEGREE)
+			, leftDrive
+			, DRIVE_SLEW_RATE
 		);
-		rightDrive 	= slew(
-			polyDrive(vexRT[Ch2], POLY_DRIVE_DEGREE),
-			rightDrive,
-			DRIVE_SLEW_RATE
+		rightDrive = slew(
+			polyDrive(vexRT[Ch2], POLY_DRIVE_DEGREE)
+			, rightDrive
+			, DRIVE_SLEW_RATE
 		);
 
 		#else
 
 		#ifdef DRIVE_ALT_STICKS
-		leftDrive 	= slew(
+		leftDrive = slew(
 			round((vexRT[Ch3] + vexRT[Ch1]) * 100 / 127)
-			, leftDrive,  DRIVE_SLEW_RATE);
+			, leftDrive
+			, DRIVE_SLEW_RATE
+		);
 
-		rightDrive 	= slew(
+		rightDrive = slew(
 			round((vexRT[Ch3] - vexRT[Ch1]) * 100 / 127)
-			, rightDrive, 	DRIVE_SLEW_RATE);
+			, rightDrive
+			,	DRIVE_SLEW_RATE
+		);
+
 		#else
 		leftDrive 	= slew(round(vexRT[Ch3]*100/127), 	leftDrive,  DRIVE_SLEW_RATE);
 		rightDrive 	= slew(round(vexRT[Ch2]*100/127), rightDrive, 	DRIVE_SLEW_RATE);
@@ -296,7 +297,7 @@ task stackCone() {
 }
 
 //returns true if timeout happens
-bool waitForPID(PIDStruct PIDVar, int timeout) {
+bool waitForPID(PIDStruct &PIDVar, int timeout) {
 	int startTime = nSysTime;
 
 	while (true) {
@@ -311,7 +312,7 @@ bool waitForPID(PIDStruct PIDVar, int timeout) {
 	return false;
 }
 
-void waitForPID(PIDStruct PIDVar){
+void waitForPID(PIDStruct &PIDVar){
 	while (true) {
 		wait1Msec(PIDVar.loopTime);
 		if(fabs(PIDVar.error) < PIDVar.errorThreshold){
@@ -351,43 +352,43 @@ void waitForSensor(int sensor, int target, int threshold){
 //----------------------------------------------------------------------------
 
 // The heavy lifter for PID tasks
-void updatePIDVar(PIDStruct *PIDVar) {
+void updatePIDVar(PIDStruct &PIDVar) {
 	// only run if enabled
-	if(PIDVar->enabled) {
+	if(PIDVar.enabled) {
 		float proportional = 0;
 		float derivative = 0;
 
-		PIDVar->error = PIDVar->target - PIDVar->input;
+		PIDVar.error = PIDVar.target - PIDVar.input;
 
 		// Proportional
-		proportional = PIDVar->kP * PIDVar->error;
+		proportional = PIDVar.kP * PIDVar.error;
 		// Integral
-		if (fabs(PIDVar->error) <= PIDVar->integralActiveZone) {
-			PIDVar->integral += PIDVar->kI * PIDVar->error * PIDVar->loopTime;
+		if (fabs(PIDVar.error) <= PIDVar.integralActiveZone) {
+			PIDVar.integral += PIDVar.kI * PIDVar.error * PIDVar.loopTime;
 			// limit I
-			if(fabs(PIDVar->integral) >= PIDVar->integralLimit)
-				PIDVar->integral = sgn(PIDVar->integral) * PIDVar->integralLimit;
+			if(fabs(PIDVar.integral) >= PIDVar.integralLimit)
+				PIDVar.integral = sgn(PIDVar.integral) * PIDVar.integralLimit;
 		}
 		else {
-			PIDVar->integral = 0;
+			PIDVar.integral = 0;
 		}
 		// Derivative
-		derivative = PIDVar->kD * (PIDVar->inputLast - PIDVar->input) / PIDVar->loopTime; // D
+		derivative = PIDVar.kD * (PIDVar.inputLast - PIDVar.input) / PIDVar.loopTime; // D
 
-		PIDVar->output = round(proportional + PIDVar->integral + derivative);
+		PIDVar.output = round(proportional + PIDVar.integral + derivative);
 		// deadband
-		PIDVar->output = abs(PIDVar->output) < PIDVar->deadband ? 0 : PIDVar->output;
+		PIDVar.output = abs(PIDVar.output) < PIDVar.deadband ? 0 : PIDVar.output;
 
-		PIDVar->previousError = PIDVar->error;
-		PIDVar->inputLast = PIDVar->input;
+		PIDVar.previousError = PIDVar.error;
+		PIDVar.inputLast = PIDVar.input;
 
-		if(PIDVar->debug) {
-			writeDebugStream("%f\t%f\t%f\t%f\n", PIDVar->error, proportional, PIDVar->integral, derivative);
+		if(PIDVar.debug) {
+			writeDebugStream("%f\t%f\t%f\t%f\n", PIDVar.error, proportional, PIDVar.integral, derivative);
 		}
 	}
 	// if disabled set output to 0
 	else {
-		PIDVar->output = 0;
+		PIDVar.output = 0;
 	}
 }
 
@@ -398,8 +399,8 @@ task drivePIDTask() {
 	// int gyroOffset = 0; // for gyro rollover
 	int gyroDelta;
 	int driveOut = 0;
-	updatePIDVar(&drivePID);
-	updatePIDVar(&gyroPID);
+	updatePIDVar(drivePID);
+	updatePIDVar(gyroPID);
 
 	while(true) {
 		// decide which encoders to use for input based on turning mode
@@ -432,8 +433,8 @@ task drivePIDTask() {
 		// writeDebugStreamLine("%i", gyroPID.error);
 		// writeDebugStream("R:%i\tL:%i\t", getRDriveEnc(), getLDriveEnc());
 
-		updatePIDVar(&drivePID);
-		updatePIDVar(&gyroPID);
+		updatePIDVar(drivePID);
+		updatePIDVar(gyroPID);
 		// gyroPID.output = 0;
 		driveOut = lim127(drivePID.output, 90);
 
@@ -479,13 +480,13 @@ task drivePIDTask() {
 // set height with liftPID.target
 task liftPIDTask() {
 	liftPID.input = getLiftHeight();
-	updatePIDVar(&liftPID);
+	updatePIDVar(liftPID);
 
 	while(true) {
 		// average the 2 pots for height
 		liftPID.input = getLiftHeight();
 
-		updatePIDVar(&liftPID);
+		updatePIDVar(liftPID);
 
 		if (liftMode == LIFT_PID_CONTROL) {
 			setLift(lim127(liftPID.output));
@@ -500,14 +501,14 @@ task swingPIDTask() {
 	int currSwing = 0;
 
 	swingPID.input = SensorValue[swingPot];
-	updatePIDVar(&swingPID);
+	updatePIDVar(swingPID);
 
 	while (true) {
 		currSwing = SensorValue[swingPot];
 
 		if (swingPID.enabled) {
 			swingPID.input = currSwing;
-			updatePIDVar(&swingPID);
+			updatePIDVar(swingPID);
 			SensorValue[swing] = swingPID.output;
 		}
 

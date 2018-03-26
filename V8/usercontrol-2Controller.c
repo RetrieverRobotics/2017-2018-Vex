@@ -257,12 +257,18 @@ while (true) {
     // in on 5U
     if (vexRT[Btn5U]) {
       motor[mogo] = 127;
-      mogoGadget();
+      // only close pneumatics if not holding the open button
+      if(!vexRT[Btn6D]){
+        mogoGadget();
+      }
     }
     //out on 5D
     else if (vexRT[Btn5D]) {
       motor[mogo] = -127;
-      nogoGadget();
+      // only open pneumatics if not holding the open button
+      if(!vexRT[Btn6U]){
+        nogoGadget();
+      }
     }
     else {
       motor[mogo] = 0;

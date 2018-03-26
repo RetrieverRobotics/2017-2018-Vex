@@ -54,6 +54,7 @@
 #define POLY_DRIVE_DEGREE 1.5//1.5
 // if this is defined, left stick is power and right stick is turn
 #define DRIVE_ALT_STICKS
+#define DRIVE_LEFT_MULTIPLIER 0.92222
 
 #define ROLLERS_IN 127
 #define ROLLERS_OUT -127

@@ -696,6 +696,33 @@ else if (autonSelection == RED_PRIMARY) {
   while(1){wait1Msec(1000);}
 
 }
-else if (1){
+else if (autonSelection == DEFAULT){
+  writeDebugStreamLine("stationary cone running");
 
+  // initialization
+	motor[rollers] = ROLLERS_HOLD;
+  setLiftHeight(LIFT_STATIONARY);
+	nMotorEncoder[driveLBB] = 0;
+	nMotorEncoder[driveRBB] = 0;
+  resetDrive();
+	setGyro(0);
+	pointTurn(0);
+	driveIncremental(0);
+	startTask(drivePIDTask);
+  startTask(liftPIDTask);
+
+  ////////////////////////////stationary cone
+  driveIncremental(15);//16
+  waitForPID(drivePID, 3000);
+  waitForPID(liftPID);
+  swingOut();
+  tardLift(-60);
+  wait1Msec(400);
+  motor[rollers] = ROLLERS_OUT;
+
+  setLiftHeight(LIFT_STATIONARY);
+  swingIn();
+  driveIncremental(-16);//-18
+  waitForPID(drivePID);
+  setLiftHeight(LIFT_SCHMEDIUM);
 }

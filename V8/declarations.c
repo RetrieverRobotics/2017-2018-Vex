@@ -12,9 +12,8 @@
 #define DEFAULT 0 // for auton selection
 #define BLUE_PRIMARY 1
 #define RED_PRIMARY 2
-#define STATIONARY_CONE 3
-#define RAM_AUTON 4
-#define NUM_AUTONS 5
+#define RAM_AUTON 3
+#define NUM_AUTONS 4
 
 #define X_COORD 0
 #define Y_COORD 1
@@ -61,6 +60,6 @@ short liftMode = LIFT_PID_CONTROL;
 int slowDrivePow = 60;
 
 void setLift(int setPow);
-bool waitForPID(PIDStruct PIDVar, int timeout);
-void waitForPID(PIDStruct PIDVar);
+bool waitForPID(PIDStruct &PIDVar, int timeout);
+void waitForPID(PIDStruct &PIDVar);
 task liftPIDTask();

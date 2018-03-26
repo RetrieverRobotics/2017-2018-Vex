@@ -9,7 +9,7 @@ clearLCDLine(1);
 displayLCDCenteredString(0, "yeet");
 bLCDBacklight = true;
 short nLCDButtons_last = 0;
-string autonSelectionString[NUM_AUTONS] = {"0: Default", "1: Blue Primary", "2: Red Primary", "3: Post Cone", "4: Ram"};
+string autonSelectionString[NUM_AUTONS] = {"0: Default", "1: Blue Primary", "2: Red Primary", "3: Ram"};
 
 // only run if a button is pushed to prevent hanging up in a reset
 if(nLCDButtons > 0){
