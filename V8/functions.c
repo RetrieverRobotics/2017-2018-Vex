@@ -247,10 +247,19 @@ task driveSlew() {
 		);
 
 		#else
-		// leftDrive 	= slew(vexRT[Ch3], 	leftDrive,  DRIVE_SLEW_RATE);
+
+		#ifdef DRIVE_ALT_STICKS
+		leftDrive 	= slew(
+			round((vexRT[Ch3] + vexRT[Ch1]) * 100 / 127)
+			, leftDrive,  DRIVE_SLEW_RATE);
+
+		rightDrive 	= slew(
+			round((vexRT[Ch3] - vexRT[Ch1]) * 100 / 127)
+			, rightDrive, 	DRIVE_SLEW_RATE);
+		#else
 		leftDrive 	= slew(round(vexRT[Ch3]*100/127), 	leftDrive,  DRIVE_SLEW_RATE);
-		// rightDrive 	= slew(vexRT[Ch2], rightDrive, 	DRIVE_SLEW_RATE);
 		rightDrive 	= slew(round(vexRT[Ch2]*100/127), rightDrive, 	DRIVE_SLEW_RATE);
+		#endif
 
 		#endif
 		tankDrive(leftDrive, rightDrive);
