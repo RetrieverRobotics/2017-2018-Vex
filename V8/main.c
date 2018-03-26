@@ -16,6 +16,7 @@
 #include "declarations.c"
 #include "variablesForKent.c"
 #include "functions.c"
+#include "spiDriver.c"
 
 ///////////////////////////////////////////////////////////////////////////////////
 // PRE AUTON

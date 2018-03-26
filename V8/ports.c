@@ -7,6 +7,8 @@
 #pragma config(Sensor, in8,    gyro,           sensorGyro)
 #pragma config(Sensor, dgtl1,  mogoGrabber,    sensorDigitalOut)
 #pragma config(Sensor, dgtl3,  liftEnc,        sensorQuadEncoder)
+#pragma config(Sensor, dgtl5,  data,           sensorDigitalOut)
+#pragma config(Sensor, dgtl6,  clock,          sensorDigitalOut)
 #pragma config(Sensor, I2C_1,  driveLEnc,      sensorQuadEncoderOnI2CPort,    , AutoAssign )
 #pragma config(Sensor, I2C_2,  driveREnc,      sensorQuadEncoderOnI2CPort,    , AutoAssign )
 #pragma config(Motor,  port1,           mogo,          tmotorVex393_HBridge, openLoop, reversed)
