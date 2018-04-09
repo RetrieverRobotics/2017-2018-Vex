@@ -30,25 +30,35 @@ void pre_auton(){
 	///// pre auton accelerated for testing
 	// Calibrate gyro
 	displayLCDCenteredString(0,"Calibrating...");
-  SensorType[gyro] = sensorNone;
-  wait1Msec(10);
-  SensorType[gyro] = sensorGyro;
-  wait1Msec(1300);
-  //Adjust SensorScale to correct the scaling for your gyro
-  SensorScale[gyro] = 138.5;
-  clearLCDLine(0);
-  clearLCDLine(1);
+	SensorType[gyro] = sensorNone;
+	wait1Msec(10);
+	SensorType[gyro] = sensorGyro;
+	wait1Msec(1300);
+	//Adjust SensorScale to correct the scaling for your gyro
+	SensorScale[gyro] = 138.5;
+	clearLCDLine(0);
+	clearLCDLine(1);
 
-  initPIDVars();
+	initPIDVars();
 	bLCDBacklight = false;
-  /////
+	/////
 
-//#include "pre_auton.c"
+	//#include "pre_auton.c"
 }//END pre_auton
 
 ///////////////////////////////////////////////////////////////////////////////////
 // AUTONOMOUS
 ///////////////////////////////////////////////////////////////////////////////////
+
+void sendByte(int byte1){
+	sendChar(UART1, byte1);
+	//if(!bXmitComplete(UART0))  //Wait until character has been transmitted
+	//wait1Msec(1);
+	//writeDebugStreamline(" %i",getChar(UART1));
+	//while(getChar(UART1) != byte1){
+	//	sendChar(UART1, byte1);
+	//}
+}
 
 task autonomous(){
 	writeDebugStreamLine("auton");
@@ -65,7 +75,7 @@ task autonomous(){
 
 	//startTask(displayTime);
 
-	#include "auton.c"
+#include "auton.c"
 
 	stopTask(displayTime);
 }
@@ -74,8 +84,65 @@ task autonomous(){
 // USERCONTROL
 ///////////////////////////////////////////////////////////////////////////////////
 
+#define WAIT_T 500
+
 task usercontrol(){
+	//	while(1){
+	//		writeDebugStreamline(" %i",getChar(UART1));
+	//		wait1Msec(WAIT_T);
+	//}
 	writeDebugStreamLine("usrctrl");
+	wait1Msec(1000);
+	sendByte(0);//garbo to clear pipes
+	sendByte(0);//garbo to clear pipes
+	sendByte(0);//garbo to clear pipes
+	sendByte(250);//fookin BENINS
+	sendByte(0);//garbo to clear pipes
+	writeDebugStreamLine("yee");
+
+	while(1){
+		sendByte(12);
+		sendByte(3);
+		sendByte(37);
+		sendByte(91);
+		sendByte(250);//fookin BENINS
+		wait1Msec(WAIT_T);
+
+		//sendByte(1);
+		//sendByte(0);
+		//sendByte(0xFF);
+		//sendByte(0xFF);
+		//wait1Msec(WAIT_T);
+
+		//sendByte(1);
+		//sendByte(0xFF);
+		//sendByte(0);
+		//sendByte(0xFF);
+		//wait1Msec(WAIT_T);
+
+		//sendByte(1);
+		//sendByte(0xFF);
+		//sendByte(0xFF);
+		//sendByte(0);
+		//wait1Msec(WAIT_T);
+
+		//sendByte(0);
+		//sendByte(0);
+		//sendByte(0);
+		//sendByte(0);
+		//wait1Msec(WAIT_T);
+	}
+
+	while(1){
+		//for(int i = 0; i < 5; i++){
+		//	sendChar(UART1, i);
+		//	sendChar(UART1, 255);
+		//	sendChar(UART1, 255);
+		//	sendChar(UART1, 255);
+		//	wait1Msec(1000);
+		//}
+		wait1Msec(20);
+	}
 
 
 	//setLiftHeight(700);
@@ -84,9 +151,9 @@ task usercontrol(){
 	//wait1Msec(1000);
 	//setLift(0);
 
-//while(1){
-//	motor[swing] = vexRT[Ch2];
-//}
+	//while(1){
+	//	motor[swing] = vexRT[Ch2];
+	//}
 	//pointTurn(5);
 	//pointTurn(180);
 	//startTask(drivePIDTask);
@@ -101,14 +168,14 @@ task usercontrol(){
 	// for testing code above here
 
 	// check if second controller is connected
-	if (nVexRCReceiveState & vrXmit2) {
-		#include "usercontrol-2Controller.c"
-	}
-	else {
-		#include "usercontrol-singleController.c"
-	}
-
-	if("we haven't won yet")
-		smackVcat();
+	// if (nVexRCReceiveState & vrXmit2) {
+	// 	#include "usercontrol-2Controller.c"
+	// }
+	// else {
+	// 	#include "usercontrol-singleController.c"
+	// }
+	//
+	// if("we haven't won yet")
+	// 	smackVcat();
 
 }//END usercontrol()

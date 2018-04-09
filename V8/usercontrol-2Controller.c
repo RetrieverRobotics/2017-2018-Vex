@@ -53,20 +53,20 @@ while (true) {
   //--------------------------------------------------------------------------------
   // Macro buttons
   //--------------------------------------------------------------------------------
-  if (!bSwingManual && vexRT[Btn7RXmtr2]) {
-    if(b7R2Toggle){
-      startTask(stackCone);
-      b7R2Toggle = false;
-    }
-    swingInToggle = false;
-    swingOutToggle = false;
-
-    liftMacroSet = true;
-    bRollerMacro = true;
-  }
-  else{
-    b7R2Toggle = true;
-  }
+  // if (!bSwingManual && vexRT[Btn7RXmtr2]) {
+  //   if(b7R2Toggle){
+  //     startTask(stackCone);
+  //     b7R2Toggle = false;
+  //   }
+  //   swingInToggle = false;
+  //   swingOutToggle = false;
+  //
+  //   liftMacroSet = true;
+  //   bRollerMacro = true;
+  // }
+  // else{
+  //   b7R2Toggle = true;
+  // }
 
   // floor height
   // release and go up then back to floor height after tard down
@@ -155,7 +155,7 @@ while (true) {
         motor[rollers] = ROLLERS_HOLD;
       }
       else {
-        motor[rollers] = -ROLLERS_HOLD;
+        motor[rollers] = 0;
       }
     }
   }

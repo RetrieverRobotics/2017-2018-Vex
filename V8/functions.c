@@ -43,6 +43,10 @@ void setLift(int setPow) {
 	motor[lift] = setPow;
 }
 
+int deadband(int pow1, int limit) {
+	return abs(pow1) < limit ? 0 : pow1;
+}
+
 void tankDrive(int lPow, int rPow, bool straight = true) {
 	// account for drive deadbands
 	lPow = abs(lPow) < DRIVE_DEADBAND ? 0 : lPow;
@@ -51,6 +55,10 @@ void tankDrive(int lPow, int rPow, bool straight = true) {
 	if(straight){
 		lPow = round(lPow * DRIVE_LEFT_MULTIPLIER);//(float)
 	}
+
+	// for demoing
+	// rPow  = rPow / 2;
+	// lPow  = lPow /2;
 
 	// account for drive deadbands and set power
 	motor[driveRF]  = rPow;
@@ -229,6 +237,12 @@ int polyDrive(float input, float power) {
 task driveSlew() {
 	int leftDrive = 0;
 	int rightDrive = 0;
+
+	#ifdef DRIVE_ALT_STICKS
+	int yIn = 0;
+	int rotIn = 0;
+	#endif
+
 	while(true) {
 		#ifdef POLY_DRIVE
 		leftDrive = slew(
@@ -245,24 +259,29 @@ task driveSlew() {
 		#else
 
 		#ifdef DRIVE_ALT_STICKS
+
+		yIn = deadband(vexRT[Ch3], JOYSTICKS_DEADBAND);
+		rotIn = deadband(vexRT[Ch1], JOYSTICKS_DEADBAND);
+
 		leftDrive = slew(
-			round((vexRT[Ch3] + vexRT[Ch1]) * 100 / 127)
+			round((yIn + rotIn) * 100. / 127.)
 			, leftDrive
 			, DRIVE_SLEW_RATE
 		);
 
 		rightDrive = slew(
-			round((vexRT[Ch3] - vexRT[Ch1]) * 100 / 127)
+			round((yIn - rotIn) * 100. / 127.)
 			, rightDrive
 			,	DRIVE_SLEW_RATE
 		);
 
 		#else
-		leftDrive 	= slew(round(vexRT[Ch3]*100/127), 	leftDrive,  DRIVE_SLEW_RATE);
-		rightDrive 	= slew(round(vexRT[Ch2]*100/127), rightDrive, 	DRIVE_SLEW_RATE);
+		leftDrive 	= slew(round(vexRT[Ch3]*100./127.), 	leftDrive,  DRIVE_SLEW_RATE);
+		rightDrive 	= slew(round(vexRT[Ch2]*100./127.),  rightDrive, 	DRIVE_SLEW_RATE);
 		#endif
 
 		#endif
+
 		tankDrive(leftDrive, rightDrive);
 		wait1Msec(DRIVE_SLEW_TIME);
 	}

@@ -53,8 +53,10 @@
 // #define POLY_DRIVE // if this is defined, poly drive will be in effect
 #define POLY_DRIVE_DEGREE 1.5//1.5
 // if this is defined, left stick is power and right stick is turn
-#define DRIVE_ALT_STICKS
+// #define DRIVE_ALT_STICKS
 #define DRIVE_LEFT_MULTIPLIER 0.92222
+
+#define JOYSTICKS_DEADBAND 10
 
 #define ROLLERS_IN 127
 #define ROLLERS_OUT -127
@@ -62,8 +64,8 @@
 
 #define PID_SETTLE_TIME 0 // ms
 
-#define MOGO_PISTONS_IN 1
-#define MOGO_PISTONS_OUT 0
+#define MOGO_PISTONS_IN 0
+#define MOGO_PISTONS_OUT 1
 
 #define CONE_PICKUP_WAIT_TIME 500
 #define CONE_RELEASE_TIME 500
