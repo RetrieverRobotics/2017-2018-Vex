@@ -49,6 +49,11 @@ if(nLCDButtons > 0){
 
   displayLCDCenteredString(0,"RReady");
   bLCDBacklight = false;
+
+  setAllLeds(255,0,255); // purple flare
+  wait1Msec(1000);
+
+  spinnyBoi(255,0,255); // purple spin
 }//end buttons > 0
 else {
   displayLCDCenteredString(0, "No Auton");

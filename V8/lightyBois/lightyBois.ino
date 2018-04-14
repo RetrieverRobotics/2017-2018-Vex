@@ -7,13 +7,12 @@
 
 CRGB leds[NUM_LEDS];
 
-int selectionByte = 0;
-int optionsByte[NUM_OPTIONS] = {0, 0, 0};
-char serialIn;
+uint8_t selectionByte = 2;
+uint8_t optionsByte[NUM_OPTIONS] = {0};
 const bool lightsOn = true;
 uint8_t max_bright = 255;
-uint8_t startingHue = 0;
-uint8_t hueStep = 5;
+// for display rainbow
+const uint8_t hueStep = 5;
 
 void setup() {
   delay(1000);
@@ -24,96 +23,74 @@ void setup() {
 
   Serial.begin(BAUD_RATE);
 
-  //RGB gradient
-  //  DEFINE_GRADIENT_PALLETE(heatmap_gp){
-  //    0,    255,  0,    0,
-  //    128,  0,    255,  0,
-  //    255,  0,    0,    255
-  //  };
-
   setAllLeds(CRGB::Yellow);
   delay(1000);
   setAllLeds(CRGB::Black);
 }
 
 void loop() {
-  //  if (lightsOn) {
-  //    switch (selectionByte) {
-  //      default:
-  //      case 0:
-  //        ledsOff();
-  //        break;
-  //
-  //      case 1:
-  //        setAllLeds(CRGB(optionsByte[0], optionsByte[1], optionsByte[2]));
-  //        break;
-  //
-  //      //      case 1:
-  //      //        rave();
-  //      //        break;
-  //
-  //      case 2:
-  //        setAllLeds(CRGB::Red);
-  //        //        spinnyBoi();
-  //        break;
-  //
-  //      case 3:
-  //        //        rave();
-  //        break;
-  //    }
-  //  }
+  //  readUART();
+  //Serial.println(72);
 
-  //  setAllLeds(CRGB(optionsByte[0], optionsByte[1], optionsByte[2]));
+  if (Serial.available() > 0) {
+    Serial.write(Serial.read());
+  }
+
+  //delay(500);
 
   if (lightsOn) {
-    for (int i = 0; i < NUM_LEDS; i++) {
-      uint8_t curLedHue = startingHue + hueStep * i;
-      while (curLedHue > 255){
-        curLedHue -= 255;
-      }
-      leds[i] = CHSV(curLedHue, 255, 255);
-    }
-    startingHue += hueStep;
-    if(startingHue > 255){
-      startingHue = 0;
+    switch (selectionByte) {
+      default:
+      case 0:
+        ledsOff();
+        break;
+
+      case 1:
+        setAllLeds(CRGB(optionsByte[0], optionsByte[1], optionsByte[2]));
+        break;
+
+      case 2:
+        displayRainbow();
+        break;
+
+      case 3:
+        rave();
+        break;
+
+      case 4:
+        spinnyBoi(CRGB(optionsByte[0], optionsByte[1], optionsByte[2]));
+        break;
     }
   }
   else {
     setAllLeds(CRGB::Black);
   }
-  show_at_max_brightness_for_power();
 
   delay(10);
 }
 
+//  if (lightsOn) {
+//    for (int i = 0; i < NUM_LEDS; i++) {
+//      uint8_t curLedHue = startingHue + hueStep * i;
+//      while (curLedHue > 255){
+//        curLedHue -= 255;
+//      }
+//      leds[i] = CHSV(curLedHue, 255, 255);
+//    }
+//    startingHue += hueStep;
+//    if(startingHue > 255){
+//      startingHue = 0;
+//    }
+//  }
+//  else {
+//    setAllLeds(CRGB::Black);
+//  }
+//  show_at_max_brightness_for_power();
 
 
 void readUART() {
-  //
-  //  if (Serial.available() > 0) {
-  //    selectionByte = Serial.read();
-  ////    Serial.print("sel: ");
-  //    Serial.write(selectionByte);
-  //
-  ////    Serial.println("other: ");
-  //    for (int i = 0; i < NUM_OPTIONS; i++) {
-  //      while (Serial.available() == 0) {delay(1);} //wait for next byte
-  ////      delay(10);
-  //      optionsByte[i] = Serial.read();
-  //      Serial.write(optionsByte[i]);
-  //    }
-  //
-  //    while (Serial.available() > 0) {
-  //      Serial.read();
-  //    }
-  //
-  //  }
-  //
-
-
   if (Serial.available() > 0) {
     selectionByte = Serial.read();
-    Serial.println("new");
     Serial.println(selectionByte);
 
     for (int i = 0; i < NUM_OPTIONS; i++) {
@@ -139,20 +116,36 @@ void setAllLeds(CRGB color) {
 }
 
 void displayRainbow() {
-  for (int i = 0; i < NUM_LEDS; i++) {
+  uint8_t startingHue = 0;
 
+  while (Serial.available() == 0) {
+    for (int i = 0; i < NUM_LEDS; i++) {
+      uint8_t curLedHue = startingHue + hueStep * i;
+      while (curLedHue > 255) {
+        curLedHue -= 255;
+      }
+      leds[i] = CHSV(curLedHue, 255, 255);
+    }
+    startingHue += hueStep;
+    if (startingHue > 255) {
+      startingHue = 0;
+    }
+
+    show_at_max_brightness_for_power();
+    delay(10);
   }
-  show_at_max_brightness_for_power();
 }
 
 void rave() {
   for (int l = 0; l < 255; l += 25) {
     for (int k = 0; k < 255; k += 25) {
       for (int j = 0; j < 255; j += 25) {
-        for (int i = 0; i < NUM_LEDS; i++) {
-          leds[i] = CRGB(j, l, k);
-          //      delayMicroseconds(1);
-
+        //        for (int i = 0; i < NUM_LEDS; i++) {
+        //          leds[i] = CRGB(j, l, k);
+        //        }
+        setAllLeds(CRGB(j, l, k));
+        if (Serial.available() > 0) {
+          return;
         }
         show_at_max_brightness_for_power();
         //    delayMicroseconds(5);
@@ -162,10 +155,13 @@ void rave() {
   }
 }
 
-void spinnyBoi() {
+void spinnyBoi(CRGB color) {
   for (int dot = 0; dot < NUM_LEDS; dot++) {
-    leds[dot] = CRGB::Yellow;
+    leds[dot] = color;
     show_at_max_brightness_for_power();
+    if (Serial.available() > 0) {
+      return;
+    }
     // clear this led for the next time around the loop
     leds[dot] = CRGB::Black;
     delay(10);

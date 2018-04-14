@@ -12,6 +12,7 @@
 //Main competition background code...do not modify!
 // #include "Vex_Competition_Includes.c"
 #warning "main"
+#include "ledControl.c"
 #include "vex.c"
 #include "declarations.c"
 #include "variablesForKent.c"
@@ -52,6 +53,7 @@ void pre_auton(){
 
 void sendByte(int byte1){
 	sendChar(UART1, byte1);
+	//writeDebugStreamline(" %i",byte1)
 	//if(!bXmitComplete(UART0))  //Wait until character has been transmitted
 	//wait1Msec(1);
 	//writeDebugStreamline(" %i",getChar(UART1));
@@ -100,7 +102,19 @@ task usercontrol(){
 	sendByte(0);//garbo to clear pipes
 	writeDebugStreamLine("yee");
 
+
+	//while(1){
+	//	int x = getChar(UART1);
+	//	if(x != -1){
+	//	writeDebugStreamline(" %i",x);
+	//	}
+
+	//}
 	while(1){
+		writeDebugStreamline(" %i",getChar(UART1));
+
+		sendChar(UART1, 88);
+
 		sendByte(12);
 		sendByte(3);
 		sendByte(37);

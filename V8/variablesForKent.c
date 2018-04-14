@@ -53,7 +53,7 @@
 // #define POLY_DRIVE // if this is defined, poly drive will be in effect
 #define POLY_DRIVE_DEGREE 1.5//1.5
 // if this is defined, left stick is power and right stick is turn
-// #define DRIVE_ALT_STICKS
+#define DRIVE_ALT_STICKS
 #define DRIVE_LEFT_MULTIPLIER 0.92222
 
 #define JOYSTICKS_DEADBAND 10

@@ -20,7 +20,14 @@ float  deltaHeight = 0;
 float  lastDeltaHeight = 0;
 // bool rollerToggle = true;
 // bool rollersIdle = true;
+bool   bSwingManual = false;
 bool rollerIdleIn = true;
+bool   bSwingToggle = true;
+int swingTime = nSysTime;
+bool b7U2Toggle = true;
+bool b7D2Toggle = true;
+bool swingInToggle = false;
+bool swingOutToggle = false;
 
 swingPID.target = SensorValue[swingPot];
 tardLift(0);
@@ -119,45 +126,106 @@ while (true) {
   //   rollerToggle = true;
   // }
 
-  // in on 6U
-  if (vexRT[Btn6U]) {
-    motor[rollers] = ROLLERS_IN;
-    rollerIdleIn = true;
-  }
+  // take higher precedence to outtake so you can hold intake and quick override outtake
   // out on 6D
-  else if (vexRT[Btn6D]){
+  if (vexRT[Btn6D]) {
     motor[rollers] = ROLLERS_OUT;
     rollerIdleIn = false;
   }
+  // in on 6U
+  else if (vexRT[Btn6U]) {
+    motor[rollers] = ROLLERS_IN;
+    rollerIdleIn = true;
+  }
   else {
-    // if(rollersIdle){
-      if(rollerIdleIn) {
-        motor[rollers] = ROLLERS_HOLD;
-      }
-      else {
-        motor[rollers] = -ROLLERS_HOLD;
-      }
-    // }
-    // else {
-    //   motor[rollers] = 0;
-    // }
+    if(rollerIdleIn) {
+      motor[rollers] = ROLLERS_HOLD;
+    }
+    else {
+      motor[rollers] = 0;
+    }
   }
 
   //--------------------------------------------------------------------------------
   // Swing
   //--------------------------------------------------------------------------------
 
-  // swing in on 7U
-  if (vexRT[Btn7U]) {
-    motor[swing] = 90;
-  }
-  // swing out on 7D
-  else if (vexRT[Btn7D]) {
-    motor[swing] = -90;
+  //switch between manual and PID for swing on 7L
+  if (vexRT[Btn7L]) {
+    if (bSwingToggle) {
+      bSwingManual = !bSwingManual;
+      bSwingToggle = false;
+    }
   }
   else {
-    motor[swing] = 0;
+    bSwingToggle = true;
   }
+
+  // if  manual control is selected
+  if (bSwingManual) {
+    swingPID.enabled = false;
+    // swing in on 7U
+    if (vexRT[Btn7D]) {
+      motor[swing] = 127;
+    }
+    // swing out on 7D
+    else if (vexRT[Btn7U]) {
+      motor[swing] = -127;
+    }
+    else {
+      // swing on Ch3
+      motor[swing] = 0;
+    }
+  }
+
+  //////////////////////////////
+  // otherwise use ?!not?PID? control
+  //////////////////////////////
+  else {
+    ////////////////////////////toggle buttons
+    // in on 7D
+    if (vexRT[Btn7D]) {
+      if(b7D2Toggle){
+        swingTime = nSysTime;
+        b7D2Toggle = false;
+      }
+      swingInToggle = true;
+      swingOutToggle = false;
+    }
+    else {
+      b7D2Toggle = true;
+    }
+    // out on 7U
+    if (vexRT[Btn7U]) {
+      if(b7U2Toggle){
+        swingTime = nSysTime;
+        b7U2Toggle = false;
+      }
+      swingInToggle = false;
+      swingOutToggle = true;
+    }
+    else {
+      b7U2Toggle = true;
+    }
+/////////////////////////macros
+    if (swingInToggle) {
+      if(nSysTime - swingTime < SWING_IN_TIME) {
+        motor[swing] = 127;
+      }
+      else {
+        motor[swing] = SWING_HOLD_IN_POW;
+      }
+    }
+    else if (swingOutToggle) {
+      if(nSysTime - swingTime < SWING_OUT_TIME) {
+        motor[swing] = -127;
+      }
+      else {
+        motor[swing] = -SWING_HOLD_OUT_POW;
+      }
+    }
+
+  }//END not manual control
 
   //--------------------------------------------------------------------------------
   // Mogo
@@ -168,10 +236,12 @@ while (true) {
     // in on 5U
     if (vexRT[Btn5U]) {
       motor[mogo] = 127;
+      mogoGadget();
     }
     //out on 5D
     else if (vexRT[Btn5D]) {
       motor[mogo] = -127;
+      nogoGadget();
     }
     else {
       motor[mogo] = 0;

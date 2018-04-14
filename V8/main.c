@@ -12,6 +12,7 @@
 //Main competition background code...do not modify!
 // #include "Vex_Competition_Includes.c"
 #warning "main"
+#include "ledControl.c"
 #include "vex.c"
 #include "declarations.c"
 #include "variablesForKent.c"
@@ -51,6 +52,7 @@ task autonomous(){
 
 task usercontrol(){
 	writeDebugStreamLine("usrctrl");
+	rainbowSpin();
 
 	// check if second controller is connected
 	if (nVexRCReceiveState & vrXmit2) {
