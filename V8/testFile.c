@@ -94,13 +94,13 @@ task usercontrol(){
 	//		wait1Msec(WAIT_T);
 	//}
 	writeDebugStreamLine("usrctrl");
-	wait1Msec(1000);
-	sendByte(0);//garbo to clear pipes
-	sendByte(0);//garbo to clear pipes
-	sendByte(0);//garbo to clear pipes
-	sendByte(250);//fookin BENINS
-	sendByte(0);//garbo to clear pipes
-	writeDebugStreamLine("yee");
+	//wait1Msec(1000);
+	//sendByte(0);//garbo to clear pipes
+	//sendByte(0);//garbo to clear pipes
+	//sendByte(0);//garbo to clear pipes
+	//sendByte(250);//fookin BENINS
+	//sendByte(0);//garbo to clear pipes
+	//writeDebugStreamLine("yee");
 
 
 	//while(1){
@@ -110,32 +110,32 @@ task usercontrol(){
 	//	}
 
 	//}
-	while(1){
-		writeDebugStreamline(" %i",getChar(UART1));
+	//while(1){
+		//writeDebugStreamline(" %i",getChar(UART1));
 
-		sendChar(UART1, 88);
+		//sendChar(UART1, 88);
 
-		sendByte(12);
-		sendByte(3);
-		sendByte(37);
-		sendByte(91);
-		sendByte(250);//fookin BENINS
-		wait1Msec(WAIT_T);
-
-		//sendByte(1);
-		//sendByte(0);
-		//sendByte(0xFF);
-		//sendByte(0xFF);
+		//sendByte(12);
+		//sendByte(3);
+		//sendByte(37);
+		//sendByte(91);
+		//sendByte(250);//fookin BENINS
 		//wait1Msec(WAIT_T);
 
 		//sendByte(1);
-		//sendByte(0xFF);
 		//sendByte(0);
+		//sendByte(0xFF);
 		//sendByte(0xFF);
 		//wait1Msec(WAIT_T);
 
 		//sendByte(1);
 		//sendByte(0xFF);
+		//sendByte(0);
+		//sendByte(0xFF);
+		//wait1Msec(WAIT_T);
+
+		//sendByte(1);
+		//sendByte(0xFF);
 		//sendByte(0xFF);
 		//sendByte(0);
 		//wait1Msec(WAIT_T);
@@ -145,9 +145,9 @@ task usercontrol(){
 		//sendByte(0);
 		//sendByte(0);
 		//wait1Msec(WAIT_T);
-	}
+	//}
 
-	while(1){
+	//while(1){
 		//for(int i = 0; i < 5; i++){
 		//	sendChar(UART1, i);
 		//	sendChar(UART1, 255);
@@ -155,8 +155,8 @@ task usercontrol(){
 		//	sendChar(UART1, 255);
 		//	wait1Msec(1000);
 		//}
-		wait1Msec(20);
-	}
+		//wait1Msec(20);
+	//}
 
 
 	//setLiftHeight(700);
@@ -177,19 +177,22 @@ task usercontrol(){
 	//driveIncremental(24);
 
 
+	//setGyro(0);
+	//startTask(drivePIDTask);
+	//pointTurnInc(90);
 
 	//while(true){wait1Msec(1000);}
-	// for testing code above here
+	 //for testing code above here
 
-	// check if second controller is connected
-	// if (nVexRCReceiveState & vrXmit2) {
-	// 	#include "usercontrol-2Controller.c"
-	// }
-	// else {
-	// 	#include "usercontrol-singleController.c"
-	// }
-	//
-	// if("we haven't won yet")
-	// 	smackVcat();
+	 //check if second controller is connected
+	 if (nVexRCReceiveState & vrXmit2) {
+	 	#include "usercontrol-2Controller.c"
+	 }
+	 else {
+	 	#include "usercontrol-singleController.c"
+	 }
+
+	 if("we haven't won yet")
+	 	smackVcat();
 
 }//END usercontrol()

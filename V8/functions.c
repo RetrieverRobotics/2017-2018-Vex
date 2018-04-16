@@ -112,9 +112,11 @@ void intakeMogo() {
 	motor[mogo] = 0;
 }
 
-void extendMogo() {
+void extendMogo(bool yeet = true) {
 	motor[mogo] = -127; // negative for out
-	nogoGadget();
+	if(yeet){
+		nogoGadget();
+	}
 	wait1Msec(MOGO_EXTEND_TIME);
 	motor[mogo] = -50;
 	wait1Msec(MOGO_SECONDARY_WAIT_TIME);

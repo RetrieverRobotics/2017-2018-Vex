@@ -16,33 +16,33 @@
 #define AUTON_STACK_COUNT 9
 #define INCHES_PER_CONE 2.4 // inches added with each cone
 
-#define LIFT_SCHMEDIUM 500//?
-#define LIFT_HIGHER 700
-#define LIFT_PRELOAD_HEIGHT 200//?
-#define LIFT_FLOOR_HEIGHT 100
-#define LIFT_BLOCK_MOGO 300 // 1200
+#define LIFT_SCHMEDIUM 600//?
+#define LIFT_HIGHER 1000
+#define LIFT_PRELOAD_HEIGHT 500//?
+#define LIFT_FLOOR_HEIGHT 350
+#define LIFT_BLOCK_MOGO 600 // 1200
 #define LIFT_TICKS_PER_INCH 38
 #define LIFT_DEADBAND 10
-#define LIFT_STARTING_HEIGHT 100//?
+#define LIFT_STARTING_HEIGHT 400//?
 // distance the lift must go up for the swing to clear the cone
 // in liftPot ticks
-#define LIFT_CLEAR_CONE 250//?
-#define LIFT_CONE_2 300
-#define LIFT_CONE_3 350
-#define LIFT_CONE_4 400
-#define LIFT_DROP_DELTA 100
-#define LIFT_STATIONARY 900
+#define LIFT_CLEAR_CONE 550//?
+#define LIFT_CONE_2 550
+#define LIFT_CONE_3 600
+#define LIFT_CONE_4 700
+#define LIFT_DROP_DELTA 50
+#define LIFT_STATIONARY 1000
 
 #define SWING_OUT_TIME 500
 #define SWING_IN_TIME 400
-#define SWING_HOLD_IN_POW 0//15
+#define SWING_HOLD_IN_POW 15//15
 #define SWING_HOLD_OUT_POW 20//15
 
 #define FLIPPER_OUT 1
 #define FLIPPER_IN 0
 
 #define MOGO_EXTEND_TIME 1000//1100//1000
-#define MOGO_INTAKE_TIME 800//1500
+#define MOGO_INTAKE_TIME 1000//1500
 #define MOGO_SECONDARY_WAIT_TIME 0//100
 
 #define DRIVE_DEADBAND 5 // amount of power where drive wont move
@@ -53,7 +53,7 @@
 // #define POLY_DRIVE // if this is defined, poly drive will be in effect
 #define POLY_DRIVE_DEGREE 1.5//1.5
 // if this is defined, left stick is power and right stick is turn
-#define DRIVE_ALT_STICKS
+// #define DRIVE_ALT_STICKS
 #define DRIVE_LEFT_MULTIPLIER 0.92222
 
 #define JOYSTICKS_DEADBAND 10
@@ -69,7 +69,7 @@
 
 #define CONE_PICKUP_WAIT_TIME 500
 #define CONE_RELEASE_TIME 500
-#define CONE_SECONDARY_RELEASE_TIME 400
+#define CONE_SECONDARY_RELEASE_TIME 10
 
 // PID tuning variables
 void initPIDVars() {
