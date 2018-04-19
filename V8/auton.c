@@ -435,43 +435,82 @@ else if (autonSelection == RED_PRIMARY) {
     swingIn();
     wait1Msec(1000);
     driveIncremental(-54);
+    goto scronch;
   }
-  else{
 
-    setLiftHeight(LIFT_FLOOR_HEIGHT);
-    waitForPID(liftPID, 2000);
-    wait1Msec(CONE_PICKUP_WAIT_TIME);
-    motor[rollers] = ROLLERS_HOLD;
-
-    setLiftHeight(LIFT_CONE_3);
-    waitForPID(liftPID, 2000);
-    swingIn();
-    tardLift(-70);
-    wait1Msec(CONE_RELEASE_TIME);
-    tardLift(-20);
-    motor[rollers] = ROLLERS_OUT;
-    wait1Msec(CONE_SECONDARY_RELEASE_TIME);
-    setLiftHeight(LIFT_CONE_3);
-
-  /////////////////////////////////////cone 3.1
-    waitForPID(liftPID);
-    swingOut();
-    setLiftHeight(LIFT_FLOOR_HEIGHT);
-    driveIncremental(10);//8
-    motor[swing] = -50;
-    motor[rollers] = ROLLERS_IN;
-    // wait1Msec(500);
-
+  setLiftHeight(LIFT_FLOOR_HEIGHT);
+  //if timeout
+  if(waitForPID(liftPID, 2000)){
+    motor[rollers] = 0;
+    motor[swing] = 0;
+    driveIncremental(-12);
     waitForPID(drivePID, 2000);
-
-    waitForPID(liftPID, 2000);
-    tardLift(-15);
-    wait1Msec(CONE_PICKUP_WAIT_TIME);
-    motor[rollers] = ROLLERS_HOLD;
-
-    ///////////////////////////////////dropoff
-    driveIncremental(-74);//-60
+    swingIn();
+    wait1Msec(1000);
+    driveIncremental(-54);
+    goto scronch;
   }
+  wait1Msec(CONE_PICKUP_WAIT_TIME);
+  motor[rollers] = ROLLERS_HOLD;
+
+  setLiftHeight(LIFT_CONE_3);
+  if(waitForPID(liftPID, 2000)){
+    motor[rollers] = 0;
+    motor[swing] = 0;
+    driveIncremental(-12);
+    waitForPID(drivePID, 2000);
+    swingIn();
+    wait1Msec(1000);
+    driveIncremental(-54);
+    goto scronch;
+  }
+  swingIn();
+  tardLift(-70);
+  wait1Msec(CONE_RELEASE_TIME);
+  tardLift(-20);
+  motor[rollers] = ROLLERS_OUT;
+  wait1Msec(CONE_SECONDARY_RELEASE_TIME);
+  setLiftHeight(LIFT_CONE_3);
+
+/////////////////////////////////////cone 3.1
+  waitForPID(liftPID);
+  swingOut();
+  setLiftHeight(LIFT_FLOOR_HEIGHT);
+  driveIncremental(10);//8
+  motor[swing] = -50;
+  motor[rollers] = ROLLERS_IN;
+  // wait1Msec(500);
+
+  if(waitForPID(drivePID, 2000)){
+    motor[rollers] = 0;
+    motor[swing] = 0;
+    driveIncremental(-22);
+    waitForPID(drivePID, 2000);
+    swingIn();
+    wait1Msec(1000);
+    driveIncremental(-54);
+    goto scronch;
+  }
+
+  if(waitForPID(liftPID, 2000)){
+    motor[rollers] = 0;
+    motor[swing] = 0;
+    driveIncremental(-22);
+    waitForPID(drivePID, 2000);
+    swingIn();
+    wait1Msec(1000);
+    driveIncremental(-54);
+    goto scronch;
+  }
+
+  tardLift(-15);
+  wait1Msec(CONE_PICKUP_WAIT_TIME);
+  motor[rollers] = ROLLERS_HOLD;
+
+  ///////////////////////////////////dropoff
+  driveIncremental(-74);//-60
+
+  scronch:
 
   setLiftHeight(LIFT_CONE_4);
   waitForPID(liftPID);

@@ -11,10 +11,6 @@ SensorValue[driveREnc] = 0;
 string displayString;
 bool   bSwingManual = false;
 bool   bSwingToggle = true;
-bool   bLiftJustUsed = false;
-bool   bLiftHeightRecorded = false;
-bool   bFlagRecordLift = false;
-int    liftSetPow = 0;
 int    currLiftHeight = getLiftHeight();
 int    lastLiftHeight = currLiftHeight;
 float  deltaHeight = 0;
@@ -23,7 +19,6 @@ bool rollerIdleIn = true;
 int swingTime = nSysTime;
 bool b7U2Toggle = true;
 bool b7D2Toggle = true;
-bool b7R2Toggle = true;
 bool liftMacroSet = false;
 bool swingInToggle = false;
 bool swingOutToggle = false;
@@ -76,12 +71,24 @@ while (true) {
   // Lift
   //--------------------------------------------------------------------------------
 
+  // go to schmedium
   if (vexRT[Btn8LXmtr2]){
     setLiftHeight(LIFT_SCHMEDIUM);
     liftMacroSet = true;
   }
-  else if(vexRT[Btn8DXmtr2]) {
-    setLiftHeight(LIFT_SCHMEDIUM);
+  //go to floor height
+  // else if(vexRT[Btn8DXmtr2]) {
+  //   setLiftHeight(LIFT_FLOOR_HEIGHT);
+  //   liftMacroSet = true;
+  // }
+  //hold lift down const pow
+  else if(vexRT[Btn5DXmtr2]) {
+    tardLift(LIFT_HOLD_DOWN_POW);
+    liftMacroSet = true;
+  }
+  // hold position
+  else if(vexRT[Btn8RXmtr2]) {
+    setLiftHeight(currLiftHeight);
     liftMacroSet = true;
   }
   // unset macros on these btns
@@ -94,41 +101,7 @@ while (true) {
 
   if(!liftMacroSet) {
     // right joystick y axis on slave controller controls lift
-    liftSetPow = vexRT[Ch2Xmtr2];
-    // hold position inside deabands
-    if (fabs(liftSetPow) < LIFT_DEADBAND) {
-      // clear timer once immediately after button release
-      if (bLiftJustUsed) {
-        clearTimer(T2);
-        bLiftHeightRecorded = false; // set up to turn on pid later
-        tardLift(0);
-      }
-
-      // check conditions to set lift height
-      bFlagRecordLift = false;
-      // enable conditions
-      // look for local extrema of the height function and record position there
-      // if (sgn(deltaHeight) != sgn(lastDeltaHeight)) bFlagRecordLift = true;
-      // if (deltaHeight == 0) bFlagRecordLift = true;
-      if (vexRT[Btn8RXmtr2]) bFlagRecordLift = true;
-      // timeout after 500 ms
-      // if (time1[T2] > 500) bFlagRecordLift = true;
-
-      // disable conditions
-      // only turn on PIDs if the lift is up
-      if (currLiftHeight < LIFT_BLOCK_MOGO) bFlagRecordLift = false;
-
-      if (!bLiftHeightRecorded && bFlagRecordLift) {
-        setLiftHeight(currLiftHeight);
-        bLiftHeightRecorded = true;
-      }
-
-      bLiftJustUsed = false;
-    }
-    else {
-      tardLift(liftSetPow);
-      bLiftJustUsed = true;
-    }
+    tardLift(vexRT[Ch2Xmtr2]);
   }//END liftmacroset
 
   //--------------------------------------------------------------------------------
@@ -165,13 +138,15 @@ while (true) {
 
   //switch between manual and PID for swing on 7L
   if (vexRT[Btn7LXmtr2]) {
-    if (bSwingToggle) {
-      bSwingManual = !bSwingManual;
-      bSwingToggle = false;
-    }
+    // if (bSwingToggle) {
+      // bSwingManual = !bSwingManual;
+      bSwingManual = false;
+    //   bSwingToggle = false;
+    // }
   }
-  else {
-    bSwingToggle = true;
+  else if (vexRT[Btn7RXmtr2]) {
+    bSwingManual = true;
+    // bSwingToggle = true;
   }
 
   // if  manual control is selected
@@ -187,7 +162,7 @@ while (true) {
     }
     else {
       // swing on Ch3Xmtr2
-      motor[swing] = -vexRT[Ch3Xmtr2];
+      motor[swing] = deadband(-vexRT[Ch3Xmtr2], 15);
     }
   }
 

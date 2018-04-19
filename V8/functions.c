@@ -504,7 +504,6 @@ task liftPIDTask() {
 	updatePIDVar(liftPID);
 
 	while(true) {
-		// average the 2 pots for height
 		liftPID.input = getLiftHeight();
 
 		updatePIDVar(liftPID);
