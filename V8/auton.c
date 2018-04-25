@@ -11,8 +11,8 @@ if (autonSelection == BLUE_PRIMARY) {
   // initialization
 	motor[rollers] = ROLLERS_HOLD;
   setLiftHeight(LIFT_STATIONARY);
-	nMotorEncoder[driveLBB] = 0;
-	nMotorEncoder[driveRBB] = 0;
+	nMotorEncoder[driveBL] = 0;
+	nMotorEncoder[driveBR] = 0;
   resetDrive();
 	setGyro(0);
 	pointTurn(0);
@@ -50,7 +50,8 @@ if (autonSelection == BLUE_PRIMARY) {
   setLiftHeight(LIFT_FLOOR_HEIGHT);
   driveIncremental(6);//8
   swingOut();
-  motor[swing] = -50;
+  setSwing(-50);
+  setSwing(-50);
   motor[rollers] = ROLLERS_IN;
 
   waitForPID(drivePID, 2000);
@@ -75,14 +76,14 @@ if (autonSelection == BLUE_PRIMARY) {
   driveIncremental(8);//8
   waitForPID(liftPID, 2000);
   swingOut();
-  motor[swing] = -50;
+  setSwing(-50);
   motor[rollers] = ROLLERS_IN;
   // wait1Msec(500);
 
   if(waitForPID(drivePID, 2000)){
     // do something?
     motor[rollers] = 0;
-    motor[swing] = 0;
+    setSwing(0);
     driveIncremental(-12);
     waitForPID(drivePID, 2000);
     swingIn();
@@ -110,7 +111,7 @@ if (autonSelection == BLUE_PRIMARY) {
     driveIncremental(8);//8
     waitForPID(liftPID);
     swingOut();
-    motor[swing] = -50;
+    setSwing(-50);
     motor[rollers] = ROLLERS_IN;
     // wait1Msec(500);
 
@@ -215,7 +216,7 @@ if (autonSelection == BLUE_PRIMARY) {
   ///////////cone4
   driveIncremental(7);//8
   swingOut();
-  motor[swing] = -50;
+  setSwing(-50);
   motor[rollers] = ROLLERS_IN;
 
   waitForPID(drivePID);
@@ -241,7 +242,7 @@ if (autonSelection == BLUE_PRIMARY) {
   driveIncremental(5);//8
   waitForPID(liftPID);
   swingOut();
-  motor[swing] = -50;
+  setSwing(-50);
   motor[rollers] = ROLLERS_IN;
   // wait1Msec(500);
 
@@ -357,8 +358,8 @@ else if (autonSelection == RED_PRIMARY) {
   // initialization
 	motor[rollers] = ROLLERS_HOLD;
   setLiftHeight(LIFT_STATIONARY);
-	nMotorEncoder[driveLBB] = 0;
-	nMotorEncoder[driveRBB] = 0;
+  nMotorEncoder[driveBL] = 0;
+	nMotorEncoder[driveBR] = 0;
   resetDrive();
 	setGyro(0);
 	pointTurn(0);
@@ -396,7 +397,7 @@ else if (autonSelection == RED_PRIMARY) {
   setLiftHeight(LIFT_FLOOR_HEIGHT);
   driveIncremental(6);//8
   swingOut();
-  motor[swing] = -50;
+  setSwing(-50);
   motor[rollers] = ROLLERS_IN;
 
   waitForPID(drivePID, 2000);
@@ -421,7 +422,7 @@ else if (autonSelection == RED_PRIMARY) {
   driveIncremental(8);//8
   waitForPID(liftPID, 2000);
   swingOut();
-  motor[swing] = -50;
+  setSwing(-50);
   motor[rollers] = ROLLERS_IN;
   // wait1Msec(500);
 
@@ -429,7 +430,7 @@ else if (autonSelection == RED_PRIMARY) {
   if(waitForPID(drivePID, 2000)){
     // do something?
     motor[rollers] = 0;
-    motor[swing] = 0;
+    setSwing(0);
     driveIncremental(-12);
     waitForPID(drivePID, 2000);
     swingIn();
@@ -442,7 +443,7 @@ else if (autonSelection == RED_PRIMARY) {
   //if timeout
   if(waitForPID(liftPID, 2000)){
     motor[rollers] = 0;
-    motor[swing] = 0;
+    setSwing(0);
     driveIncremental(-12);
     waitForPID(drivePID, 2000);
     swingIn();
@@ -456,7 +457,7 @@ else if (autonSelection == RED_PRIMARY) {
   setLiftHeight(LIFT_CONE_3);
   if(waitForPID(liftPID, 2000)){
     motor[rollers] = 0;
-    motor[swing] = 0;
+    setSwing(0);
     driveIncremental(-12);
     waitForPID(drivePID, 2000);
     swingIn();
@@ -477,13 +478,13 @@ else if (autonSelection == RED_PRIMARY) {
   swingOut();
   setLiftHeight(LIFT_FLOOR_HEIGHT);
   driveIncremental(10);//8
-  motor[swing] = -50;
+  setSwing(-50);
   motor[rollers] = ROLLERS_IN;
   // wait1Msec(500);
 
   if(waitForPID(drivePID, 2000)){
     motor[rollers] = 0;
-    motor[swing] = 0;
+    setSwing(0);
     driveIncremental(-22);
     waitForPID(drivePID, 2000);
     swingIn();
@@ -494,7 +495,7 @@ else if (autonSelection == RED_PRIMARY) {
 
   if(waitForPID(liftPID, 2000)){
     motor[rollers] = 0;
-    motor[swing] = 0;
+    setSwing(0);
     driveIncremental(-22);
     waitForPID(drivePID, 2000);
     swingIn();
@@ -602,7 +603,7 @@ else if (autonSelection == RED_PRIMARY) {
   ///////////cone4
   driveIncremental(7);//8
   swingOut();
-  motor[swing] = -50;
+  setSwing(-50);
   motor[rollers] = ROLLERS_IN;
 
   waitForPID(drivePID);
@@ -628,7 +629,7 @@ else if (autonSelection == RED_PRIMARY) {
   driveIncremental(5);//8
   waitForPID(liftPID);
   swingOut();
-  motor[swing] = -50;
+  setSwing(-50);
   motor[rollers] = ROLLERS_IN;
   // wait1Msec(500);
 
@@ -654,7 +655,7 @@ else if (autonSelection == RED_PRIMARY) {
     swingOut();
     setLiftHeight(LIFT_FLOOR_HEIGHT);
     driveIncremental(10);//8
-    motor[swing] = -50;
+    setSwing(-50);
     motor[rollers] = ROLLERS_IN;
     // wait1Msec(500);
 
@@ -772,8 +773,8 @@ else if (autonSelection == DEFAULT){
   // initialization
 	motor[rollers] = ROLLERS_HOLD;
   setLiftHeight(LIFT_STATIONARY);
-	nMotorEncoder[driveLBB] = 0;
-	nMotorEncoder[driveRBB] = 0;
+  nMotorEncoder[driveBL] = 0;
+	nMotorEncoder[driveBR] = 0;
   resetDrive();
 	setGyro(0);
 	pointTurn(0);

@@ -10,7 +10,6 @@ SensorValue[driveLEnc] = 0;
 SensorValue[driveREnc] = 0;
 string displayString;
 bool   bSwingManual = false;
-bool   bSwingToggle = true;
 int    currLiftHeight = getLiftHeight();
 int    lastLiftHeight = currLiftHeight;
 float  deltaHeight = 0;
@@ -154,15 +153,15 @@ while (true) {
     swingPID.enabled = false;
     // swing in on 7U
     if (vexRT[Btn7DXmtr2]) {
-      motor[swing] = 127;
+      setSwing(127);
     }
     // swing out on 7D
     else if (vexRT[Btn7UXmtr2]) {
-      motor[swing] = -127;
+      setSwing(-127);
     }
     else {
       // swing on Ch3Xmtr2
-      motor[swing] = deadband(-vexRT[Ch3Xmtr2], 15);
+      setSwing(deadband(-vexRT[Ch3Xmtr2], 15));
     }
   }
 
@@ -199,18 +198,18 @@ while (true) {
 /////////////////////////macros
     if (swingInToggle) {
       if(nSysTime - swingTime < SWING_IN_TIME) {
-        motor[swing] = 127;
+        setSwing(127);
       }
       else {
-        motor[swing] = SWING_HOLD_IN_POW;
+        setSwing(SWING_HOLD_IN_POW);
       }
     }
     else if (swingOutToggle) {
       if(nSysTime - swingTime < SWING_OUT_TIME) {
-        motor[swing] = -127;
+        setSwing(-127);
       }
       else {
-        motor[swing] = -SWING_HOLD_OUT_POW;
+        setSwing(-SWING_HOLD_OUT_POW);
       }
     }
 

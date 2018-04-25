@@ -40,7 +40,13 @@ int lim127(int power, int limit = 127) {
 }
 
 void setLift(int setPow) {
-	motor[lift] = setPow;
+	motor[liftL] = setPow;
+	motor[liftR] = setPow;
+}
+
+void setSwing(int setPow) {
+	motor[swingL] = setPow;
+	motor[swingR] = setPow;
 }
 
 int deadband(int pow1, int limit) {
@@ -61,21 +67,19 @@ void tankDrive(int lPow, int rPow, bool straight = true) {
 	// lPow  = lPow /2;
 
 	// account for drive deadbands and set power
-	motor[driveRF]  = rPow;
-	motor[driveRBT] = rPow;
-	motor[driveRBB] = rPow;
+	motor[driveFR] = rPow;
+	motor[driveBR] = rPow;
 
-	motor[driveLF] 	= lPow;
-	motor[driveLBT] = lPow;
-	motor[driveLBB] = lPow;
+	motor[driveFL] = lPow;
+	motor[driveBL] = lPow;
 }
 
 int getLDriveEnc(){
-	return nMotorEncoder[driveLBB];
+	return nMotorEncoder[driveBL];
 }
 
 int getRDriveEnc(){
-	return -nMotorEncoder[driveRBB];
+	return -nMotorEncoder[driveBR];
 }
 
 void resetDrive() {
@@ -124,15 +128,19 @@ void extendMogo(bool yeet = true) {
 }
 
 void swingIn(){
-	motor[swing] = 127;
+	motor[swingL] = 127;
+	motor[swingR] = 127;
 	wait1Msec(SWING_IN_TIME);
-	motor[swing] = SWING_HOLD_IN_POW;
+	motor[swingL] = SWING_HOLD_IN_POW;
+	motor[swingR] = SWING_HOLD_IN_POW;
 }
 
 void swingOut(){
-	motor[swing] = -127;
+	motor[swingL] = -127;
+	motor[swingR] = -127;
 	wait1Msec(SWING_OUT_TIME);
-	motor[swing] = -SWING_HOLD_OUT_POW;
+	motor[swingL] = -SWING_HOLD_OUT_POW;
+	motor[swingR] = -SWING_HOLD_OUT_POW;
 }
 
 void setLiftHeight(int height){
@@ -516,25 +524,25 @@ task liftPIDTask() {
 	}
 }
 
-// yeetsauce
-task swingPIDTask() {
-	int currSwing = 0;
-
-	swingPID.input = SensorValue[swingPot];
-	updatePIDVar(swingPID);
-
-	while (true) {
-		currSwing = SensorValue[swingPot];
-
-		if (swingPID.enabled) {
-			swingPID.input = currSwing;
-			updatePIDVar(swingPID);
-			SensorValue[swing] = swingPID.output;
-		}
-
-		wait1Msec(swingPID.loopTime);
-	}
-}
+// // yeetsauce
+// task swingPIDTask() {
+// 	int currSwing = 0;
+//
+// 	swingPID.input = SensorValue[swingPot];
+// 	updatePIDVar(swingPID);
+//
+// 	while (true) {
+// 		currSwing = SensorValue[swingPot];
+//
+// 		if (swingPID.enabled) {
+// 			swingPID.input = currSwing;
+// 			updatePIDVar(swingPID);
+// 			SensorValue[swing] = swingPID.output;
+// 		}
+//
+// 		wait1Msec(swingPID.loopTime);
+// 	}
+// }
 
 #ifdef sploof
 #warning "sploof mode activated"

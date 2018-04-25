@@ -46,7 +46,7 @@
 #define MOGO_INTAKE_TIME 1000//1500
 #define MOGO_SECONDARY_WAIT_TIME 0//100
 
-#define DRIVE_DEADBAND 5 // amount of power where drive wont move
+#define DRIVE_DEADBAND 10 // amount of power where drive wont move
 #define DRIVE_SLEW_TIME 15 // update period for drive slew rate
 #define DRIVE_SLEW_RATE 127//15 // maximum motor power change allowed per DRIVE_SLEW_TIME ms
 #define DRIVE_TPI 30
