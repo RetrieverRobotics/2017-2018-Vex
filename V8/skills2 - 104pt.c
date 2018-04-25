@@ -64,8 +64,8 @@ task autonomous(){
 	// initialization
 	motor[rollers] = ROLLERS_HOLD;
   setLiftHeight(LIFT_SCHMEDIUM);
-	nMotorEncoder[driveLBB] = 0;
-	nMotorEncoder[driveRBB] = 0;
+	nMotorEncoder[driveBL] = 0;
+	nMotorEncoder[driveBR] = 0;
   resetDrive();
   // resetGyro();
 	setGyro(0);
@@ -281,7 +281,7 @@ task autonomous(){
 	//mogo2 code:
 		// pointTurnInc(-90);
 		// waitForPID(gyroPID);
-		driveIncremental(10;//8.3257
+		driveIncremental(10);//8.3257
 		waitForPID(drivePID);
 		pointTurnInc(-90);
 		extendMogo();

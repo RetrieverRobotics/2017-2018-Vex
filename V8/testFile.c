@@ -72,12 +72,25 @@ task autonomous(){
 
 	//while(true){wait1Msec(1000);}
 	//////////////////////////////////////
+	// initialization
+	motor[rollers] = ROLLERS_HOLD;
+  setLiftHeight(LIFT_SCHMEDIUM);
+  nMotorEncoder[driveBL] = 0;
+	nMotorEncoder[driveBR] = 0;
+  resetDrive();
+	setGyro(0);
+	pointTurn(0);
+	driveIncremental(0);
+	startTask(drivePIDTask);
+  startTask(liftPIDTask);
+
+	driveIncremental(144);
 
 	autonSelection = RED_PRIMARY;
 
 	//startTask(displayTime);
 
-#include "auton.c"
+//#include "auton.c"
 
 	stopTask(displayTime);
 }

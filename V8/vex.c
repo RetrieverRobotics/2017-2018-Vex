@@ -83,7 +83,7 @@ task main()
 	displayLCDCenteredString(0, "LIL SHAQ");
 	displayLCDCenteredString(1, "STARTING UP");
 	wait1Msec(2000);
-  spinnyBoi(255,255,0);//yellow spin
+  //spinnyBoi(255,255,0);//yellow spin
 	clearLCDLine(1);
   bLCDBacklight = false;
 

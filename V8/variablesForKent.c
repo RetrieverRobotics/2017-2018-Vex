@@ -32,7 +32,7 @@
 #define LIFT_CONE_4 700
 #define LIFT_DROP_DELTA 50
 #define LIFT_STATIONARY 1000
-#define LIFT_HOLD_DOWN_POW -20
+#define LIFT_HOLD_DOWN_POW -127
 
 #define SWING_OUT_TIME 500
 #define SWING_IN_TIME 400
@@ -55,7 +55,7 @@
 #define POLY_DRIVE_DEGREE 1.5//1.5
 // if this is defined, left stick is power and right stick is turn
 // #define DRIVE_ALT_STICKS
-#define DRIVE_LEFT_MULTIPLIER 0.92222
+#define DRIVE_LEFT_MULTIPLIER 0.94444444444
 
 #define JOYSTICKS_DEADBAND 10
 
