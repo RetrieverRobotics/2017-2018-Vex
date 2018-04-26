@@ -21,7 +21,7 @@ if (autonSelection == BLUE_PRIMARY) {
   startTask(liftPIDTask);
 
   ////////////////////////////stationary cone
-  driveIncremental(15);//16
+  driveIncremental(14);//16
   waitForPID(drivePID, 3000);
   waitForPID(liftPID);
   swingOut();
@@ -33,7 +33,7 @@ if (autonSelection == BLUE_PRIMARY) {
   swingIn();
   setLiftHeight(LIFT_SCHMEDIUM);
   waitForPID(liftPID);
-  driveIncremental(-18);//-18
+  driveIncremental(-14);//-18
   waitForPID(drivePID);
   pointTurnInc(91); //90
   waitForPID(gyroPID);
@@ -257,7 +257,7 @@ if (autonSelection == BLUE_PRIMARY) {
   setLiftHeight(LIFT_CONE_2);
   waitForPID(gyroPID);
 
-  driveIncremental(34);//3838);//42//44//37
+  driveIncremental(32);//3838);//42//44//37
   waitForPID(drivePID);
   intakeMogo();
 
@@ -288,7 +288,7 @@ if (autonSelection == BLUE_PRIMARY) {
   setLiftHeight(LIFT_CONE_2);
 
 /////////////////////////////////////cone 5
-  driveIncremental(5);//8
+  driveIncremental(9);//8
   waitForPID(liftPID);
   swingOut();
   setSwing(-50);
@@ -447,7 +447,7 @@ else if (autonSelection == RED_PRIMARY) {
   startTask(liftPIDTask);
 
   ////////////////////////////stationary cone
-  driveIncremental(15);//16
+  driveIncremental(14);//16
   waitForPID(drivePID, 3000);
   waitForPID(liftPID);
   swingOut();
@@ -459,7 +459,7 @@ else if (autonSelection == RED_PRIMARY) {
   swingIn();
   setLiftHeight(LIFT_SCHMEDIUM);
   waitForPID(liftPID);
-  driveIncremental(-18);//-18
+  driveIncremental(-14);//-18
   waitForPID(drivePID);
   pointTurnInc(-91); //90
   waitForPID(gyroPID);
@@ -683,7 +683,7 @@ else if (autonSelection == RED_PRIMARY) {
   setLiftHeight(LIFT_CONE_2);
   waitForPID(gyroPID);
 
-  driveIncremental(34);//3838);//42//44//37
+  driveIncremental(32);//3838);//42//44//37
   waitForPID(drivePID);
   intakeMogo();
 
@@ -714,7 +714,7 @@ else if (autonSelection == RED_PRIMARY) {
   setLiftHeight(LIFT_CONE_2);
 
 /////////////////////////////////////cone 5
-  driveIncremental(5);//8
+  driveIncremental(9);//8
   waitForPID(liftPID);
   swingOut();
   setSwing(-50);
